@@ -1,0 +1,185 @@
+---
+import Base from "@/layouts/Base.astro";
+import PageHeader from "@/components/PageHeader.astro";
+import Faq from "@/components/Faq.astro";
+import { SERVICES } from "@/data/services";
+import { SITE } from "@/data/site";
+import { idx } from "@/lib/format";
+
+export function getStaticPaths() {
+  return SERVICES.map((service) => ({
+    params: { slug: service.slug },
+    props: { service },
+  }));
+}
+
+const { service } = Astro.props;
+
+// Gli altri servizi, per il rimando in fondo alla pagina.
+const others = SERVICES.filter((s) => s.slug !== service.slug);
+
+const schema = [
+  {
+    "@type": "Service",
+    name: service.title,
+    description: service.summary,
+    url: `${SITE.url}/servizi/${service.slug}`,
+    provider: { "@id": `${SITE.url}/#organization` },
+    areaServed: { "@type": "Country", name: SITE.countryName },
+    serviceType: service.title,
+  },
+  {
+    "@type": "FAQPage",
+    mainEntity: service.faq.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  },
+];
+---
+
+<Base
+  title={service.title}
+  description={service.summary}
+  canonical={`/servizi/${service.slug}`}
+  schema={schema}
+>
+  <PageHeader
+    index={service.index}
+    label="Servizio"
+    title={service.headline}
+    lead={service.intro}
+    crumbs={[{ label: "Servizi", href: "/servizi" }, { label: service.title }]}
+  >
+    <!-- Scheda tecnica: tempi e tecnologie, dichiarati subito -->
+    <dl class="mt-12 grid gap-px border border-[var(--color-hairline)] bg-[var(--color-hairline)] sm:grid-cols-2">
+      <div class="bg-[var(--color-paper)] p-5">
+        <dt class="t-label">Tempi indicativi</dt>
+        <dd class="t-h3 mt-2 tabular">{service.timeline}</dd>
+      </div>
+      <div class="bg-[var(--color-paper)] p-5">
+        <dt class="t-label">Tecnologie</dt>
+        <dd class="mt-2 flex flex-wrap gap-2">
+          {service.stack.map((t) => <span class="chip">{t}</span>)}
+        </dd>
+      </div>
+    </dl>
+  </PageHeader>
+
+  <!-- A chi serve -->
+  <section class="section">
+    <div class="wrap">
+      <div class="grid gap-10 lg:grid-cols-12 lg:gap-16">
+        <div class="lg:col-span-4">
+          <div class="flex items-baseline gap-3">
+            <span class="t-index">A</span>
+            <span class="t-label">Quando ha senso</span>
+          </div>
+          <h2 class="t-h2 mt-4">A chi serve davvero</h2>
+        </div>
+
+        <div class="lg:col-span-8">
+          <ul>
+            {
+              service.bestFor.map((item, i) => (
+                <li class="row-tech reveal">
+                  <span class="t-index pt-1">{idx(i + 1)}</span>
+                  <span class="t-lead !text-[var(--color-ink)]">{item}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cosa comprende -->
+  <section class="section border-t border-[var(--color-hairline)] bg-[var(--color-paper-2)]">
+    <div class="wrap">
+      <div class="flex items-baseline gap-3">
+        <span class="t-index">B</span>
+        <span class="t-label">Contenuto</span>
+      </div>
+      <h2 class="t-h2 mt-4 max-w-2xl">Cosa comprende</h2>
+
+      <div class="mt-12 grid gap-px border border-[var(--color-hairline)] bg-[var(--color-hairline)] sm:grid-cols-2">
+        {
+          service.includes.map((item, i) => (
+            <div class="bg-[var(--color-paper)] p-7">
+              <span class="t-index">{idx(i + 1)}</span>
+              <h3 class="t-h3 mt-3">{item.title}</h3>
+              <p class="t-body mt-3 text-[0.9375rem]">{item.text}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Domande -->
+  <section class="section">
+    <div class="wrap">
+      <div class="grid gap-10 lg:grid-cols-12 lg:gap-16">
+        <div class="lg:col-span-4">
+          <div class="flex items-baseline gap-3">
+            <span class="t-index">C</span>
+            <span class="t-label">Domande</span>
+          </div>
+          <h2 class="t-h2 mt-4">Quello che ci chiedono</h2>
+        </div>
+        <div class="lg:col-span-8">
+          <Faq items={service.faq} />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chiusura + altri servizi -->
+  <section class="on-dark section">
+    <div class="wrap">
+      <div class="flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
+        <div>
+          <h2 class="t-h2 max-w-xl">Parliamo del tuo caso</h2>
+          <p class="t-lead mt-4 max-w-xl">
+            Raccontaci cosa ti serve. Ti diamo una stima chiara, e se pensiamo che
+            ti convenga qualcos'altro te lo diciamo.
+          </p>
+        </div>
+        <a href="/contatti" class="btn btn-on-dark shrink-0">
+          Scrivici
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+
+      <hr class="rule my-12" />
+
+      <h3 class="t-label">Altri servizi</h3>
+      <ul class="mt-5 flex flex-wrap gap-x-8 gap-y-3">
+        {
+          others.map((s) => (
+            <li>
+              <a href={`/servizi/${s.slug}`} class="link-underline text-[0.9375rem]">
+                {s.title}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .chip {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+    border: 1px solid var(--color-hairline);
+    border-radius: 2px;
+    padding: 0.25rem 0.5rem;
+  }
+</style>

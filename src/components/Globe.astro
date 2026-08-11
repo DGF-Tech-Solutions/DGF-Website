@@ -1,0 +1,133 @@
+---
+/*
+ * Globo wireframe — sostituisce il canvas del vecchio sito.
+ *
+ * Prima: d3-geo + topojson-client + world-atlas/land-110m.json importato
+ * staticamente (≈110 kB di JSON dentro il bundle) e un canvas ridisegnato a
+ * ogni frame, cioè CPU costante e memoria che cresce.
+ *
+ * Adesso: undici div con un bordo, disposti nello spazio 3D dal browser.
+ * Una sola animazione `transform` sul contenitore, gestita dalla GPU: il
+ * thread principale non fa assolutamente nulla. Costo in JavaScript: zero.
+ *
+ * Il reticolo di meridiani e paralleli è anche più coerente con la direzione
+ * Swiss del sito rispetto ai continenti pieni: è un disegno tecnico.
+ */
+
+interface Props {
+  /** Classi aggiuntive sul contenitore. */
+  class?: string;
+}
+const { class: className = "" } = Astro.props;
+
+// Meridiani: cerchi verticali ruotati attorno all'asse Y.
+const MERIDIANS = [0, 30, 60, 90, 120, 150];
+
+// Paralleli: cerchi orizzontali. Per la latitudine φ il raggio del cerchio
+// vale cos(φ) e la sua quota sin(φ) — la geometria della sfera, nient'altro.
+const LATITUDES = [-60, -30, 0, 30, 60];
+const PARALLELS = LATITUDES.map((deg) => {
+  const rad = (deg * Math.PI) / 180;
+  return {
+    /** Diametro relativo del cerchio, in percentuale del globo. */
+    size: +(Math.cos(rad) * 100).toFixed(3),
+    /** Spostamento lungo l'asse polare, in percentuale del raggio. */
+    offset: +(Math.sin(rad) * 50).toFixed(3),
+    /** L'equatore è marcato più forte: è un riferimento, non decorazione. */
+    equator: deg === 0,
+  };
+});
+---
+
+<div class={`globe ${className}`} aria-hidden="true">
+  <div class="globe-stage">
+    <div class="globe-spin">
+      {MERIDIANS.map((deg) => <span class="ring meridian" style={`--rot:${deg}deg`} />)}
+      {
+        PARALLELS.map((p) => (
+          <span
+            class:list={["ring", "parallel", { "is-equator": p.equator }]}
+            style={`--size:${p.size}%; --z:${p.offset}%`}
+          />
+        ))
+      }
+    </div>
+  </div>
+</div>
+
+<style>
+  .globe {
+    /* Quadrato perfetto: nessun salto di layout mentre la pagina si compone. */
+    aspect-ratio: 1;
+    width: 100%;
+    display: grid;
+    place-items: center;
+    /* Il contenitore isola gli effetti 3D dal resto del documento. */
+    contain: layout paint style;
+  }
+
+  .globe-stage {
+    width: 100%;
+    height: 100%;
+    perspective: 1200px;
+  }
+
+  .globe-spin {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    /* Inclinazione: guardiamo il globo un po' dall'alto, come un mappamondo. */
+    transform: rotateX(-16deg) rotateY(0deg);
+    animation: globe-rotate 42s linear infinite;
+    will-change: transform;
+  }
+
+  @keyframes globe-rotate {
+    from { transform: rotateX(-16deg) rotateY(0deg); }
+    to   { transform: rotateX(-16deg) rotateY(360deg); }
+  }
+
+  .ring {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    border: 1px solid var(--color-brand-200);
+    border-radius: 50%;
+    /* I cerchi si vedono anche "di spalle": è un reticolo, non un solido. */
+    backface-visibility: visible;
+  }
+
+  .meridian {
+    transform: rotateY(var(--rot));
+  }
+
+  .parallel {
+    width: var(--size);
+    height: var(--size);
+    transform: rotateX(90deg) translateZ(var(--z));
+    border-color: var(--color-brand-100);
+  }
+
+  /* L'equatore è l'unico elemento colorato: marca il riferimento. */
+  .is-equator {
+    border-color: var(--color-cyan);
+    opacity: 0.55;
+  }
+
+  /* Sui fondi scuri il reticolo va schiarito, non scurito. */
+  :global(.on-dark) .ring { border-color: rgb(255 255 255 / 0.14); }
+  :global(.on-dark) .parallel { border-color: rgb(255 255 255 / 0.09); }
+  :global(.on-dark) .is-equator {
+    border-color: var(--color-cyan);
+    opacity: 0.7;
+  }
+
+  /* Chi ha chiesto meno movimento vede un reticolo fermo, in posa. */
+  @media (prefers-reduced-motion: reduce) {
+    .globe-spin {
+      animation: none;
+      transform: rotateX(-16deg) rotateY(-24deg);
+    }
+  }
+</style>

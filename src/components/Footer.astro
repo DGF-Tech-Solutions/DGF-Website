@@ -1,0 +1,107 @@
+---
+import { Image } from "astro:assets";
+import { SITE, NAV, FOOTER_LEGAL } from "@/data/site";
+import { SERVICES } from "@/data/services";
+import logo from "@/assets/logo-dgf.png";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="on-dark">
+  <div class="wrap section-sm">
+    <!-- Blocco superiore: identità + colonne di navigazione -->
+    <div class="grid gap-10 md:grid-cols-12 md:gap-8">
+      <div class="md:col-span-4">
+        <Image
+          src={logo}
+          alt={SITE.name}
+          width={74}
+          height={36}
+          densities={[1, 2]}
+          loading="lazy"
+          class="h-7 w-auto brightness-0 invert"
+        />
+        <p class="t-body mt-4 max-w-xs">{SITE.tagline}</p>
+        <a
+          href={`mailto:${SITE.email}`}
+          class="link-underline mt-5 inline-block text-[0.9375rem] break-all"
+        >
+          {SITE.email}
+        </a>
+      </div>
+
+      <nav class="md:col-span-3" aria-label="Servizi">
+        <h2 class="t-label">Servizi</h2>
+        <ul class="mt-4 space-y-2.5">
+          {
+            SERVICES.map((s) => (
+              <li>
+                <a href={`/servizi/${s.slug}`} class="footer-link">
+                  {s.title}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <nav class="md:col-span-2" aria-label="Azienda">
+        <h2 class="t-label">Azienda</h2>
+        <ul class="mt-4 space-y-2.5">
+          {
+            NAV.map((l) => (
+              <li>
+                <a href={l.href} class="footer-link">
+                  {l.label}
+                </a>
+              </li>
+            ))
+          }
+          <li><a href="/contatti" class="footer-link">Contatti</a></li>
+        </ul>
+      </nav>
+
+      <div class="md:col-span-3">
+        <h2 class="t-label">Sede</h2>
+        <address class="t-body mt-4 not-italic">
+          {SITE.city} ({SITE.region})<br />
+          {SITE.countryName}
+        </address>
+        <p class="t-small mt-4">
+          P. IVA <span class="tabular">{SITE.vatId}</span>
+        </p>
+      </div>
+    </div>
+
+    <hr class="rule mt-12 mb-6" />
+
+    <!-- Blocco inferiore -->
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <p class="t-small">
+        © <span class="tabular">{year}</span> {SITE.legalName}. Tutti i diritti riservati.
+      </p>
+      <ul class="flex flex-wrap gap-x-6 gap-y-2">
+        {
+          FOOTER_LEGAL.map((l) => (
+            <li>
+              <a href={l.href} class="footer-link text-[0.8125rem]">
+                {l.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer-link {
+    font-size: 0.9375rem;
+    color: var(--color-ink-2);
+    transition: color var(--dur) var(--ease-out-quart);
+  }
+  @media (hover: hover) {
+    .footer-link:hover { color: #fff; }
+  }
+</style>

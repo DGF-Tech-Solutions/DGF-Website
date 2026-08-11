@@ -1,0 +1,110 @@
+---
+import { getCollection, render } from "astro:content";
+import Base from "@/layouts/Base.astro";
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import ArticleCard from "@/components/ArticleCard.astro";
+import { SITE } from "@/data/site";
+import { formatDate, isoDate, readingMinutes } from "@/lib/format";
+
+export async function getStaticPaths() {
+  const articles = await getCollection("blog", ({ data }) => !data.draft);
+  return articles.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+
+// Se il frontmatter non dichiara i minuti, li stimiamo dal testo.
+const minutes = d.readingTime ?? readingMinutes(entry.body ?? "");
+
+const others = (await getCollection("blog", ({ data }) => !data.draft))
+  .filter((a) => a.id !== entry.id)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 2);
+
+const schema = {
+  "@type": "BlogPosting",
+  headline: d.title,
+  description: d.excerpt,
+  datePublished: d.date.toISOString(),
+  dateModified: d.date.toISOString(),
+  inLanguage: "it-IT",
+  url: `${SITE.url}/blog/${entry.id}`,
+  mainEntityOfPage: { "@type": "WebPage", "@id": `${SITE.url}/blog/${entry.id}` },
+  author: { "@type": "Organization", name: d.author, "@id": `${SITE.url}/#organization` },
+  publisher: { "@id": `${SITE.url}/#organization` },
+  articleSection: d.category,
+  wordCount: (entry.body ?? "").trim().split(/\s+/).length,
+};
+---
+
+<Base
+  title={d.title}
+  description={d.excerpt}
+  canonical={`/blog/${entry.id}`}
+  ogType="article"
+  schema={schema}
+>
+  <article>
+    <!-- Testata dell'articolo -->
+    <header class="grid-lines border-b border-[var(--color-hairline)]">
+      <div class="wrap pt-8 pb-12 sm:pt-10 sm:pb-16">
+        <Breadcrumbs
+          items={[{ label: "Blog", href: "/blog" }, { label: d.title }]}
+          class="mb-8 sm:mb-12"
+        />
+
+        <div class="flex flex-wrap items-baseline gap-x-4 gap-y-2">
+          <span class="t-label">{d.category}</span>
+          <time datetime={isoDate(d.date)} class="t-small">{formatDate(d.date)}</time>
+          <span class="t-small" aria-hidden="true">·</span>
+          <span class="t-small">{minutes} min di lettura</span>
+        </div>
+
+        <h1 class="t-h1 mt-6 max-w-4xl anim-rise">{d.title}</h1>
+        <p class="t-lead mt-6 max-w-2xl anim-fade-rise delay-2">{d.excerpt}</p>
+      </div>
+    </header>
+
+    <!-- Corpo -->
+    <div class="wrap section">
+      <div class="prose">
+        <Content />
+      </div>
+
+      <!-- Firma -->
+      <div class="prose-measure mt-16 border-t border-[var(--color-hairline)] pt-6">
+        <p class="t-small">
+          Scritto da <span class="text-[var(--color-ink-2)]">{d.author}</span>.
+          Hai una domanda su questo argomento?
+          <a href="/contatti" class="link-underline">Scrivici</a>.
+        </p>
+      </div>
+    </div>
+  </article>
+
+  <!-- Altri articoli -->
+  {
+    others.length > 0 && (
+      <section class="section border-t border-[var(--color-hairline)] bg-[var(--color-paper-2)]">
+        <div class="wrap">
+          <div class="flex flex-wrap items-end justify-between gap-6">
+            <h2 class="t-h2">Continua a leggere</h2>
+            <a href="/blog" class="link-underline pb-2">
+              Tutti gli articoli →
+            </a>
+          </div>
+          <div class="mt-8">
+            {others.map((a, i) => (
+              <ArticleCard entry={a} index={i} />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+</Base>

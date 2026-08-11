@@ -1,0 +1,74 @@
+---
+import { Image } from "astro:assets";
+import type { CollectionEntry } from "astro:content";
+import Arrow from "@/components/Arrow.astro";
+
+interface Props {
+  entry: CollectionEntry<"portfolio">;
+  /** Carica l'immagine subito. Da usare SOLO se la scheda è sopra la piega. */
+  eager?: boolean;
+  /**
+   * Livello del titolo. Va scelto in base a cosa precede la scheda nella
+   * pagina: dopo un h1 (pagine hub) serve h2, dentro una sezione con un
+   * proprio h2 serve h3. Saltare un livello è un errore di accessibilità.
+   */
+  as?: "h2" | "h3";
+}
+const { entry, eager = false, as: Heading = "h3" } = Astro.props;
+const d = entry.data;
+
+/*
+ * Qualità 72 invece dell'80 di default: su un'anteprima ritagliata 16:10 la
+ * differenza non si distingue, ma sull'hub con quattro schede vale decine di
+ * kB in meno di banda al primo caricamento.
+ */
+---
+
+<article class="group">
+  <a href={`/portfolio/${entry.id}`} class="block surface surface-hover overflow-hidden">
+    <div class="ratio-16-10 overflow-hidden border-b border-[var(--color-hairline)] bg-[var(--color-paper-2)]">
+      <Image
+        src={d.cover}
+        alt={`Anteprima del progetto ${d.client}`}
+        widths={[340, 460, 620, 780]}
+        sizes="(min-width: 1024px) 32vw, (min-width: 640px) 48vw, 90vw"
+        quality={72}
+        loading={eager ? "eager" : "lazy"}
+        class="h-full w-full object-cover object-top transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-[1.03]"
+      />
+    </div>
+
+    <div class="p-5 sm:p-6">
+      <div class="flex items-center justify-between gap-3">
+        <span class="t-label">{d.category}</span>
+        <span class="t-label tabular">{d.year}</span>
+      </div>
+
+      <Heading class="t-h3 mt-3">{d.client}</Heading>
+      <p class="t-body mt-2 text-[0.9375rem]">{d.summary}</p>
+
+      <div class="mt-5 flex items-center justify-between gap-3">
+        <span class="badge-kind">
+          {d.kind === "dimostrativo" ? "Progetto dimostrativo" : "Progetto cliente"}
+        </span>
+        <Arrow size="sm" class="text-[var(--color-blue)]" />
+      </div>
+    </div>
+  </a>
+</article>
+
+<style>
+  /* Etichetta di natura del progetto. Piccola ma sempre presente:
+     dichiarare che un lavoro è dimostrativo costa poco e vale molto. */
+  .badge-kind {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+    border: 1px solid var(--color-hairline);
+    border-radius: 2px;
+    padding: 0.25rem 0.5rem;
+    white-space: nowrap;
+  }
+</style>

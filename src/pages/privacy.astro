@@ -1,0 +1,127 @@
+---
+import Legal from "@/layouts/Legal.astro";
+import { SITE } from "@/data/site";
+---
+
+<Legal
+  title="Privacy policy"
+  description="Come DGF Tech Solutions tratta i dati personali raccolti tramite il sito e il modulo di contatto."
+  canonical="/privacy"
+  updated="2026-08-11"
+>
+  <p>
+    Questa informativa descrive come <strong>{SITE.legalName}</strong> tratta i dati
+    personali raccolti attraverso il sito <strong>{SITE.url.replace("https://", "")}</strong>,
+    ai sensi del Regolamento UE 2016/679 (GDPR).
+  </p>
+
+  <h2>Titolare del trattamento</h2>
+  <p>
+    {SITE.legalName}, con sede a {SITE.city} ({SITE.region}), {SITE.countryName} —
+    P. IVA {SITE.vatId}.<br />
+    Contatto: <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+  </p>
+
+  <h2>Quali dati raccogliamo</h2>
+  <p>
+    Il sito è statico e non richiede registrazione. L'unico punto in cui
+    raccogliamo dati personali è il modulo di contatto, dove ci fornisci:
+  </p>
+  <ul>
+    <li><strong>Obbligatori:</strong> nome, indirizzo email e testo del messaggio.</li>
+    <li><strong>Facoltativi:</strong> cognome, numero di telefono, nome dell'azienda.</li>
+  </ul>
+  <p>
+    Non raccogliamo dati di navigazione a fini statistici o pubblicitari: il sito
+    non usa Google Analytics né alcun altro sistema di misurazione del pubblico.
+  </p>
+
+  <h2>Perché li trattiamo e su quale base giuridica</h2>
+  <p>
+    Usiamo i dati esclusivamente per <strong>leggere la tua richiesta e risponderti</strong>,
+    e se il contatto prosegue per formulare una proposta.
+  </p>
+  <p>
+    La base giuridica è l'esecuzione di misure precontrattuali adottate su tua
+    richiesta (art. 6, par. 1, lett. b del GDPR). Non usiamo i tuoi dati per
+    invio di comunicazioni commerciali non richieste.
+  </p>
+
+  <h2>A chi vengono comunicati</h2>
+  <p>
+    Per far funzionare il sito e il modulo ci appoggiamo a fornitori che agiscono
+    come responsabili del trattamento o titolari autonomi:
+  </p>
+  <ul>
+    <li>
+      <strong>Web3Forms</strong> — riceve i dati del modulo e ce li recapita via
+      email. I dati transitano dai loro server per il tempo tecnico necessario
+      all'inoltro.
+    </li>
+    <li>
+      <strong>hCaptcha (Intuition Machines, Inc.)</strong> — verifica anti-bot,
+      caricata solo quando inizi a compilare il modulo. Tratta dati tecnici
+      (indirizzo IP, interazioni con la pagina) per distinguere le persone dai
+      programmi automatici.
+    </li>
+    <li>
+      <strong>GitHub Pages (GitHub, Inc.)</strong> — ospita il sito. Come ogni
+      server web registra dati tecnici di connessione, tra cui l'indirizzo IP,
+      per finalità di sicurezza e funzionamento.
+    </li>
+    <li>
+      <strong>Google Workspace</strong> — la casella di posta su cui riceviamo le
+      richieste.
+    </li>
+  </ul>
+  <p>
+    Alcuni di questi fornitori hanno sede negli Stati Uniti: i trasferimenti
+    avvengono sulla base delle garanzie previste dal Capo V del GDPR (clausole
+    contrattuali standard o adesione al Data Privacy Framework).
+  </p>
+  <p>Non vendiamo né cediamo i tuoi dati a terzi per finalità di marketing.</p>
+
+  <h2>Per quanto tempo li conserviamo</h2>
+  <ul>
+    <li>
+      <strong>Richieste senza seguito:</strong> conservate per un massimo di
+      24 mesi, poi cancellate.
+    </li>
+    <li>
+      <strong>Richieste che diventano un rapporto contrattuale:</strong>
+      conservate per la durata del rapporto e per i successivi 10 anni, come
+      richiesto dagli obblighi civilistici e fiscali.
+    </li>
+  </ul>
+
+  <h2>I tuoi diritti</h2>
+  <p>Puoi in qualsiasi momento chiederci di:</p>
+  <ul>
+    <li>accedere ai dati che ti riguardano (art. 15);</li>
+    <li>correggerli se inesatti o incompleti (art. 16);</li>
+    <li>cancellarli (art. 17);</li>
+    <li>limitarne il trattamento (art. 18);</li>
+    <li>riceverli in formato leggibile da un computer (art. 20);</li>
+    <li>opporti al trattamento (art. 21).</li>
+  </ul>
+  <p>
+    Per esercitarli scrivi a <a href={`mailto:${SITE.email}`}>{SITE.email}</a>:
+    rispondiamo entro 30 giorni. Se ritieni che il trattamento violi il GDPR puoi
+    presentare reclamo al
+    <a href="https://www.garanteprivacy.it" rel="noopener noreferrer" target="_blank">
+      Garante per la protezione dei dati personali</a>.
+  </p>
+
+  <h2>Sicurezza</h2>
+  <p>
+    Il sito è servito esclusivamente in HTTPS. I dati del modulo viaggiano
+    cifrati. L'accesso alla casella di posta su cui arrivano le richieste è
+    protetto da autenticazione a due fattori.
+  </p>
+
+  <h2>Modifiche</h2>
+  <p>
+    Se cambieremo strumenti o finalità aggiorneremo questo documento e la data in
+    cima alla pagina.
+  </p>
+</Legal>

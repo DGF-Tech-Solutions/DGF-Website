@@ -1,0 +1,306 @@
+---
+import { CONTACT } from "@/data/site";
+
+/*
+ * Form di contatto — miglioramento progressivo.
+ *
+ * BASE (senza JavaScript): è un normale <form method="POST"> verso Web3Forms.
+ * Se lo script non parte, o l'utente ha JS disattivato, il form funziona
+ * comunque: invia e reindirizza alla pagina di conferma.
+ *
+ * MIGLIORAMENTO (con JavaScript): l'invio avviene in background e la risposta
+ * appare sotto il bottone senza cambiare pagina.
+ *
+ * ANTI-SPAM: honeypot sempre attivo (campo `botcheck`, invisibile agli umani).
+ * hCaptcha viene caricato SOLO al primo tocco di un campo: è uno script di
+ * terze parti pesante e non deve pesare sul caricamento iniziale della pagina.
+ */
+---
+
+<form
+  id="contact-form"
+  action="https://api.web3forms.com/submit"
+  method="POST"
+  class="grid gap-5"
+  novalidate
+  data-hcaptcha={CONTACT.hcaptchaSiteKey}
+>
+  <!-- Campi tecnici di Web3Forms -->
+  <input type="hidden" name="access_key" value={CONTACT.web3formsKey} />
+  <input type="hidden" name="from_name" value={CONTACT.fromName} />
+  <input type="hidden" name="subject" value={`${CONTACT.subjectPrefix}`} />
+  <input type="hidden" name="redirect" value="https://dgftechsolutions.com/contatti/inviato" />
+
+  <!-- Honeypot: i bot lo compilano, le persone non lo vedono nemmeno -->
+  <input
+    type="checkbox"
+    name="botcheck"
+    class="hidden"
+    style="display:none !important"
+    tabindex="-1"
+    autocomplete="off"
+    aria-hidden="true"
+  />
+
+  <div class="grid gap-5 sm:grid-cols-2">
+    <div class="field">
+      <label for="nome">Nome <span aria-hidden="true">*</span></label>
+      <input type="text" id="nome" name="nome" required autocomplete="given-name" />
+    </div>
+    <div class="field">
+      <label for="cognome">Cognome</label>
+      <input type="text" id="cognome" name="cognome" autocomplete="family-name" />
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="email">Email <span aria-hidden="true">*</span></label>
+    <input
+      type="email"
+      id="email"
+      name="email"
+      required
+      autocomplete="email"
+      inputmode="email"
+    />
+  </div>
+
+  <div class="grid gap-5 sm:grid-cols-2">
+    <div class="field">
+      <label for="telefono">Telefono</label>
+      <input type="tel" id="telefono" name="telefono" autocomplete="tel" inputmode="tel" />
+    </div>
+    <div class="field">
+      <label for="azienda">Azienda</label>
+      <input type="text" id="azienda" name="azienda" autocomplete="organization" />
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="messaggio">Di cosa hai bisogno? <span aria-hidden="true">*</span></label>
+    <textarea id="messaggio" name="messaggio" rows="5" required></textarea>
+    <p class="t-small mt-2">
+      Più sei specifico, più la nostra risposta sarà utile. Non serve un capitolato:
+      bastano l'obiettivo e qualche vincolo.
+    </p>
+  </div>
+
+  <!-- Contenitore hCaptcha: riempito solo al primo tocco di un campo -->
+  {CONTACT.hcaptchaSiteKey && <div id="captcha-slot" class="min-h-0" />}
+
+  <div class="flex flex-wrap items-center gap-4 pt-1">
+    <button type="submit" class="btn btn-primary" data-submit>
+      <span data-submit-label>Invia richiesta</span>
+      <span class="arrow" aria-hidden="true">→</span>
+    </button>
+    <p class="t-small">Rispondiamo entro un giorno lavorativo.</p>
+  </div>
+
+  <!-- Area di stato: annunciata dagli screen reader quando cambia -->
+  <p id="form-status" role="status" aria-live="polite" class="form-status" hidden></p>
+</form>
+
+<style>
+  .field { display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .field label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 500;
+    color: var(--color-ink-3);
+  }
+  .field label span { color: var(--color-blue); }
+
+  .field input,
+  .field textarea {
+    width: 100%;
+    padding: 0.75rem 0.875rem;
+    font: inherit;
+    font-size: 1rem; /* ≥16px: impedisce a iOS di zoomare al focus */
+    color: var(--color-ink);
+    background: var(--color-paper);
+    border: 1px solid var(--color-hairline);
+    border-radius: 3px;
+    transition:
+      border-color var(--dur) var(--ease-out-quart),
+      box-shadow var(--dur) var(--ease-out-quart);
+  }
+  .field textarea { resize: vertical; min-height: 8rem; }
+
+  .field input:hover,
+  .field textarea:hover { border-color: var(--color-brand-300); }
+
+  .field input:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: var(--color-blue);
+    box-shadow: 0 0 0 3px rgb(21 117 164 / 0.12);
+  }
+
+  /* Errore segnalato dal colore E dal testo: mai dal solo colore (WCAG 1.4.1) */
+  .field input[aria-invalid="true"],
+  .field textarea[aria-invalid="true"] {
+    border-color: #b4232a;
+  }
+  .field-error {
+    font-size: 0.8125rem;
+    color: #b4232a;
+  }
+
+  .form-status {
+    padding: 0.875rem 1rem;
+    border-radius: 3px;
+    font-size: 0.9375rem;
+    border: 1px solid;
+  }
+  .form-status[data-state="success"] {
+    background: #f0f8f2;
+    border-color: #bcdcc6;
+    color: #1d6334;
+  }
+  .form-status[data-state="error"] {
+    background: #fdf2f2;
+    border-color: #f0c8c8;
+    color: #b4232a;
+  }
+</style>
+
+<script>
+  const form = document.getElementById("contact-form") as HTMLFormElement | null;
+  const status = document.getElementById("form-status") as HTMLParagraphElement | null;
+  const slot = document.getElementById("captcha-slot");
+
+  if (form && status) {
+    const button = form.querySelector<HTMLButtonElement>("[data-submit]");
+    const label = form.querySelector<HTMLElement>("[data-submit-label]");
+    const siteKey = form.dataset.hcaptcha ?? "";
+
+    /* ── hCaptcha pigro ──────────────────────────────────────────────────
+       Lo script di hCaptcha pesa parecchio ed è di terze parti. Caricarlo
+       all'apertura della pagina peggiorerebbe ogni metrica per tutti,
+       compreso chi il form non lo compilerà mai. Lo carichiamo al primo
+       segnale di intenzione: un tocco su un campo qualsiasi. */
+    let captchaLoaded = false;
+    function loadCaptcha() {
+      if (captchaLoaded || !slot || !siteKey) return;
+      captchaLoaded = true;
+      const box = document.createElement("div");
+      box.className = "h-captcha";
+      box.dataset.sitekey = siteKey;
+      slot.appendChild(box);
+      const s = document.createElement("script");
+      s.src = "https://js.hcaptcha.com/1/api.js";
+      s.async = true;
+      s.defer = true;
+      document.head.appendChild(s);
+    }
+    form.addEventListener("focusin", loadCaptcha, { once: true });
+
+    /* ── Validazione ─────────────────────────────────────────────────── */
+    function setError(field: HTMLElement, message: string | null) {
+      const wrap = field.closest(".field");
+      if (!wrap) return;
+      wrap.querySelector(".field-error")?.remove();
+      if (message) {
+        field.setAttribute("aria-invalid", "true");
+        const p = document.createElement("p");
+        p.className = "field-error";
+        p.textContent = message;
+        wrap.appendChild(p);
+      } else {
+        field.removeAttribute("aria-invalid");
+      }
+    }
+
+    function show(state: "success" | "error", message: string) {
+      status!.hidden = false;
+      status!.dataset.state = state;
+      status!.textContent = message;
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const data = new FormData(form);
+      const get = (k: string) => String(data.get(k) ?? "").trim();
+
+      const nome = form.querySelector<HTMLInputElement>("#nome")!;
+      const email = form.querySelector<HTMLInputElement>("#email")!;
+      const messaggio = form.querySelector<HTMLTextAreaElement>("#messaggio")!;
+
+      let firstInvalid: HTMLElement | null = null;
+      const check = (el: HTMLElement, ok: boolean, msg: string) => {
+        setError(el, ok ? null : msg);
+        if (!ok && !firstInvalid) firstInvalid = el;
+      };
+
+      check(nome, get("nome").length > 0, "Inserisci il tuo nome.");
+      check(
+        email,
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(get("email")),
+        "Inserisci un indirizzo email valido.",
+      );
+      check(messaggio, get("messaggio").length > 0, "Scrivi due righe su cosa ti serve.");
+
+      if (firstInvalid) {
+        show("error", "Controlla i campi segnalati e riprova.");
+        (firstInvalid as HTMLElement).focus();
+        return;
+      }
+
+      // Nome e cognome viaggiano uniti: nell'email arriva un campo solo.
+      const fullName = `${get("nome")} ${get("cognome")}`.trim();
+      const payload: Record<string, string> = {
+        access_key: get("access_key"),
+        subject: `${get("subject")} — ${fullName}`,
+        from_name: get("from_name"),
+        replyto: get("email"), // "Rispondi" nella mail va dritto al visitatore
+        name: fullName,
+        email: get("email"),
+        message: get("messaggio"),
+        botcheck: get("botcheck"),
+        "h-captcha-response": get("h-captcha-response"),
+      };
+      if (get("telefono")) payload.Telefono = get("telefono");
+      if (get("azienda")) payload.Azienda = get("azienda");
+
+      button?.setAttribute("disabled", "true");
+      if (label) label.textContent = "Invio in corso…";
+      show("success", "Invio in corso…");
+      status!.removeAttribute("data-state");
+
+      try {
+        const res = await fetch("https://api.web3forms.com/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const json = (await res.json().catch(() => ({}))) as {
+          success?: boolean;
+          message?: string;
+        };
+
+        if (!res.ok || !json.success) {
+          throw new Error(json.message ?? "Errore durante l'invio.");
+        }
+
+        form.reset();
+        show(
+          "success",
+          "Richiesta inviata. Ti rispondiamo entro un giorno lavorativo — controlla anche lo spam.",
+        );
+      } catch (error) {
+        const detail = error instanceof Error ? error.message : "Errore sconosciuto";
+        show(
+          "error",
+          `Non siamo riusciti a inviare la richiesta (${detail}). Scrivici direttamente a founders.dgftechsolutions@gmail.com`,
+        );
+      } finally {
+        button?.removeAttribute("disabled");
+        if (label) label.textContent = "Invia richiesta";
+      }
+    });
+  }
+</script>

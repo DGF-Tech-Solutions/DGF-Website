@@ -1,0 +1,52 @@
+---
+import Base from "@/layouts/Base.astro";
+import { SITE } from "@/data/site";
+
+/*
+ * Pagina di conferma. La raggiunge solo chi invia il form SENZA JavaScript
+ * (Web3Forms reindirizza qui). Con JS attivo la conferma appare in linea e
+ * questa pagina non viene mai vista — ma deve esistere, altrimenti chi ha
+ * JS disattivato finirebbe su una pagina di Web3Forms.
+ *
+ * Esclusa dall'indicizzazione: non ha senso su Google.
+ */
+---
+
+<Base
+  title="Richiesta inviata"
+  description="La tua richiesta è stata inviata a DGF Tech Solutions."
+  canonical="/contatti/inviato"
+  noindex
+>
+  <section class="section">
+    <div class="wrap">
+      <div class="max-w-2xl">
+        <div class="flex items-baseline gap-3">
+          <span class="t-index">✓</span>
+          <span class="t-label">Conferma</span>
+        </div>
+
+        <h1 class="t-h1 mt-5">Richiesta inviata</h1>
+
+        <p class="t-lead mt-6">
+          Grazie: l'abbiamo ricevuta. Ti rispondiamo entro un giorno lavorativo
+          all'indirizzo che ci hai lasciato — se non vedi nulla, controlla anche
+          la cartella spam.
+        </p>
+
+        <p class="t-body mt-6">
+          Nel frattempo, se vuoi aggiungere qualcosa puoi scriverci direttamente a
+          <a href={`mailto:${SITE.email}`} class="link-underline">{SITE.email}</a>.
+        </p>
+
+        <div class="mt-10 flex flex-wrap gap-3">
+          <a href="/" class="btn btn-primary">
+            Torna alla home
+            <span class="arrow" aria-hidden="true">→</span>
+          </a>
+          <a href="/portfolio" class="btn btn-ghost">Guarda i progetti</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

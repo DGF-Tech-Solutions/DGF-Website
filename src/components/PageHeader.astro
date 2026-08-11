@@ -1,0 +1,41 @@
+---
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
+
+/*
+ * Testata delle pagine interne. Sempre la stessa struttura: briciole,
+ * indice, etichetta, titolo, occhiello. La ripetizione qui è una virtù —
+ * chi naviga impara dove guardare.
+ */
+interface Props {
+  index?: string;
+  label?: string;
+  title: string;
+  lead?: string;
+  crumbs: { label: string; href?: string }[];
+  /** Contenuto opzionale a destra (metadati, dati tecnici). */
+  class?: string;
+}
+
+const { index, label, title, lead, crumbs, class: className = "" } = Astro.props;
+---
+
+<section class:list={["grid-lines border-b border-[var(--color-hairline)]", className]}>
+  <div class="wrap pt-8 pb-12 sm:pt-10 sm:pb-16 lg:pb-20">
+    <Breadcrumbs items={crumbs} class="mb-8 sm:mb-12" />
+
+    {
+      (index || label) && (
+        <div class="flex items-baseline gap-3 pb-5">
+          {index && <span class="t-index">{index}</span>}
+          {label && <span class="t-label">{label}</span>}
+        </div>
+      )
+    }
+
+    <h1 class="t-h1 max-w-4xl anim-rise">{title}</h1>
+
+    {lead && <p class="t-lead mt-6 max-w-2xl anim-fade-rise delay-2">{lead}</p>}
+
+    <slot />
+  </div>
+</section>

@@ -1,0 +1,69 @@
+---
+import Legal from "@/layouts/Legal.astro";
+import { SITE } from "@/data/site";
+---
+
+<Legal
+  title="Cookie policy"
+  description="Quali cookie usa il sito di DGF Tech Solutions: nessuno di profilazione, nessun banner necessario."
+  canonical="/cookie"
+  updated="2026-08-11"
+>
+  <p>
+    Questo sito <strong>non usa cookie di profilazione, di analisi o pubblicitari</strong>.
+    Non c'è Google Analytics, non ci sono pixel di social network, non c'è alcun
+    sistema che segua la tua navigazione.
+  </p>
+  <p>
+    È il motivo per cui non trovi un banner che ti chiede di accettare i cookie:
+    non avendo strumenti che richiedono consenso, quel banner sarebbe soltanto un
+    fastidio senza scopo.
+  </p>
+
+  <h2>Cosa viene effettivamente salvato sul tuo dispositivo</h2>
+
+  <h3>Durante la normale navigazione</h3>
+  <p>
+    Nulla. Le pagine sono file statici serviti da GitHub Pages: non impostiamo
+    cookie né usiamo l'archiviazione locale del browser.
+  </p>
+
+  <h3>Se compili il modulo di contatto</h3>
+  <p>
+    Quando tocchi il primo campo del modulo viene caricata la verifica anti-bot
+    <strong>hCaptcha</strong>, fornita da Intuition Machines, Inc. Questo servizio
+    può impostare cookie tecnici o usare l'archiviazione locale del browser per
+    distinguere le persone dai programmi automatici e per evitare di ripetere la
+    verifica.
+  </p>
+  <p>
+    Si tratta di strumenti <strong>strettamente necessari</strong> a una funzionalità
+    che hai richiesto tu iniziando a compilare il modulo, e per questo non
+    richiedono consenso preventivo. Se non compili il modulo, hCaptcha non viene
+    nemmeno scaricato.
+  </p>
+  <p>
+    Informativa del fornitore:
+    <a href="https://www.hcaptcha.com/privacy" rel="noopener noreferrer" target="_blank">
+      hcaptcha.com/privacy</a>.
+  </p>
+
+  <h2>Come cancellare o bloccare i cookie</h2>
+  <p>
+    Puoi gestire e cancellare i cookie dalle impostazioni del tuo browser. Tieni
+    presente che bloccando quelli di hCaptcha il modulo di contatto potrebbe non
+    funzionare: in quel caso puoi sempre scriverci direttamente a
+    <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+  </p>
+
+  <h2>Aggiornamenti</h2>
+  <p>
+    Se in futuro introdurremo strumenti che richiedono consenso, aggiorneremo
+    questo documento e attiveremo un banner conforme prima di installarli.
+  </p>
+
+  <p>
+    Per il trattamento dei dati personali in generale, vedi la
+    <a href="/privacy">privacy policy</a>.
+  </p>
+</Legal>

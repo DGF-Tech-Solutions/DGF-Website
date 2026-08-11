@@ -1,0 +1,51 @@
+---
+import Base from "@/layouts/Base.astro";
+import PageHeader from "@/components/PageHeader.astro";
+
+/*
+ * Impaginazione comune ai documenti legali. Volutamente sobria: qui conta
+ * la leggibilità, non il design.
+ */
+interface Props {
+  title: string;
+  description: string;
+  canonical: string;
+  /** Data dell'ultimo aggiornamento del documento, in ISO. */
+  updated: string;
+}
+
+const { title, description, canonical, updated } = Astro.props;
+
+const updatedLabel = new Intl.DateTimeFormat("it-IT", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+}).format(new Date(updated));
+---
+
+<Base title={title} description={description} canonical={canonical} noindex>
+  <PageHeader
+    label="Documento legale"
+    title={title}
+    crumbs={[{ label: title }]}
+  />
+
+  <section class="section">
+    <div class="wrap">
+      <p class="t-small mb-10">
+        Ultimo aggiornamento: <time datetime={updated}>{updatedLabel}</time>
+      </p>
+
+      <div class="prose">
+        <slot />
+      </div>
+
+      <p class="t-small prose-measure mt-14 border-t border-[var(--color-hairline)] pt-6">
+        Questo documento è redatto secondo la prassi corrente per un sito
+        vetrina con modulo di contatto. Non sostituisce il parere di un
+        professionista: se tratti categorie particolari di dati o attivi nuovi
+        servizi, fallo verificare da un consulente.
+      </p>
+    </div>
+  </section>
+</Base>

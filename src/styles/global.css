@@ -1,0 +1,686 @@
+@import "tailwindcss";
+
+/* ============================================================================
+   DGF Tech Solutions — Design System
+   Direzione: Tecnico / Swiss (International Typographic Style)
+
+   Tre principi che governano ogni scelta:
+
+   1. LA STRUTTURA È VISIBILE. La griglia non è un'impalcatura nascosta: è
+      parte del linguaggio. Filetti, indici numerici e allineamenti dichiarati.
+   2. LA GERARCHIA NASCE DA SCALA E PESO, NON DAL COLORE. Il testo è quasi
+      sempre inchiostro su bianco. Un titolo si impone perché è grande, non
+      perché è colorato.
+   3. IL COLORE È UN SEGNALE, NON UNA DECORAZIONE. Il cyan compare solo dove
+      c'è azione o stato: link attivo, focus, indice della sezione corrente.
+      Se il cyan è ovunque, non significa più niente.
+   ========================================================================= */
+
+@theme {
+  /*
+   * Tailwind emette in :root TUTTE le variabili del suo tema di default —
+   * l'intera palette (red, lime, fuchsia…), che qui non usiamo mai perché
+   * lavoriamo con i token del brand. `initial` la cancella: sono ~25 kB di
+   * CSS che il browser non deve nemmeno leggere.
+   */
+  --color-*: initial;
+
+  /* ─── Brand (dal logo) ─────────────────────────────────────────────────
+     Tre gradini di blu. Il navy è la voce, il blue il collegamento,
+     il cyan l'accento raro. */
+  --color-navy: #054b77;
+  --color-blue: #1575a4;
+  --color-cyan: #3d9cc7;
+
+  /* Rampa derivata, per superfici e stati. */
+  --color-brand-50: #f2f7fb;
+  --color-brand-100: #e1eef6;
+  --color-brand-200: #c3dcec;
+  --color-brand-300: #98c4dd;
+  --color-brand-400: #5fa3c9;
+  --color-brand-500: #3585ad;
+  --color-brand-600: #246b91;
+  --color-brand-700: #1a5475;
+  --color-brand-800: #154360;
+  --color-brand-900: #10364e;
+  --color-brand-950: #0a2233;
+
+  /* ─── Inchiostro e carta ───────────────────────────────────────────────
+     Neutri tinti di blu, mai grigi puri: appartengono alla stessa famiglia
+     del brand anche quando non sembrano colorati. */
+  --color-ink: #0a1622;        /* testo primario                         */
+  --color-ink-2: #33465a;      /* testo secondario                       */
+  /* Terziario: scurito rispetto al #64768a iniziale, che su fondo
+     --color-paper-2 dava 4,42:1 — appena sotto la soglia AA di 4,5.
+     Questo vale 4,77:1 sul fondo chiaro e 5,03:1 sul bianco. */
+  --color-ink-3: #5f7183;      /* testo terziario, didascalie            */
+  --color-hairline: #e3e9ef;   /* filetti e bordi                        */
+  --color-hairline-2: #f0f4f7; /* filetti internissimi                   */
+  --color-paper: #ffffff;
+  --color-paper-2: #f7f9fb;    /* fasce alternate                        */
+
+  /* ─── Tipografia ───────────────────────────────────────────────────────
+     --font-sans e --font-mono arrivano da astro.config.mjs (Fonts API):
+     Inter e JetBrains Mono, self-hostati e sottoinsiemi a build time. */
+
+  /* ─── Misure ───────────────────────────────────────────────────────────
+     Una misura sola per il contenitore: la griglia è sempre la stessa,
+     e questo si vede. */
+  --measure-page: 78rem;   /* 1248px — contenitore principale */
+  --measure-text: 42rem;   /* 672px  — colonna di lettura     */
+
+  /* ─── Movimento ────────────────────────────────────────────────────────
+     Poche curve, usate con disciplina. */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --dur-fast: 150ms;
+  --dur: 260ms;
+  --dur-slow: 620ms;
+
+  /* ─── Elevazione ───────────────────────────────────────────────────────
+     Ombre tinte di navy, mai nero puro: il nero su bianco fa "sporco". */
+  --shadow-xs: 0 1px 2px -1px rgb(10 34 51 / 0.08);
+  --shadow-sm: 0 2px 10px -3px rgb(10 34 51 / 0.10);
+  --shadow-md: 0 12px 28px -12px rgb(10 34 51 / 0.16);
+  --shadow-lg: 0 28px 60px -24px rgb(10 34 51 / 0.20);
+}
+
+/* ============================================================================
+   BASE
+   ========================================================================= */
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    border-color: var(--color-hairline);
+    min-width: 0; /* impedisce agli elementi flex/grid di sfondare */
+  }
+
+  html {
+    color-scheme: light;
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    /* Le ancore non devono finire sotto la barra fissa. */
+    scroll-padding-top: 6rem;
+    /* `clip` blocca lo scroll orizzontale senza creare un contenitore di
+       scroll: a differenza di `hidden` non rompe `position: sticky`. */
+    overflow-x: clip;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+    font-feature-settings: "kern", "liga", "calt";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: clip;
+  }
+
+  h1, h2, h3, h4 {
+    margin: 0;
+    font-weight: 600;
+    letter-spacing: -0.028em;
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+
+  p { margin: 0; text-wrap: pretty; }
+
+  /* I numeri devono incolonnarsi: è un sito tecnico, le cifre sono dati. */
+  time, .tabular, [data-metric] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  img, svg, video { display: block; max-width: 100%; height: auto; }
+
+  /* Focus visibile solo da tastiera, ad alto contrasto (WCAG 2.4.7/2.4.11). */
+  :focus-visible {
+    outline: 2px solid var(--color-blue);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  [data-theme="dark"] :focus-visible,
+  .on-dark :focus-visible {
+    outline-color: var(--color-cyan);
+  }
+
+  ::selection {
+    background: var(--color-navy);
+    color: #fff;
+  }
+
+  /* Rispetto assoluto della preferenza di sistema: chi soffre di
+     motion sickness non deve subire nulla. */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ============================================================================
+   SCALA TIPOGRAFICA
+   Contrasti netti: fra il display e il corpo del testo c'è un salto vero.
+   È il contrasto di scala a creare gerarchia, non il colore.
+   ========================================================================= */
+
+/* Il massimo è 5rem e non di più: l'hero occupa 7 colonne su 12, e oltre
+   questa misura il titolo sfonda la colonna andando a capo in modo casuale. */
+.t-display {
+  font-size: clamp(2.5rem, 1.1rem + 5vw, 5rem);
+  line-height: 0.98;
+  letter-spacing: -0.038em;
+  font-weight: 600;
+}
+
+.t-h1 {
+  font-size: clamp(2.25rem, 1.3rem + 3.9vw, 4.25rem);
+  line-height: 1.0;
+  letter-spacing: -0.036em;
+  font-weight: 600;
+}
+
+.t-h2 {
+  font-size: clamp(1.75rem, 1.2rem + 2.2vw, 2.875rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+}
+
+.t-h3 {
+  font-size: clamp(1.1875rem, 1.05rem + 0.6vw, 1.5rem);
+  line-height: 1.24;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+.t-lead {
+  font-size: clamp(1.0625rem, 1rem + 0.42vw, 1.3125rem);
+  line-height: 1.58;
+  color: var(--color-ink-2);
+  letter-spacing: -0.011em;
+}
+
+.t-body { font-size: 1rem; line-height: 1.68; color: var(--color-ink-2); }
+.t-small { font-size: 0.875rem; line-height: 1.6; color: var(--color-ink-3); }
+
+/* Etichetta mono: la firma "da disegno tecnico" di tutto il sito. */
+.t-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--color-ink-3);
+}
+
+/* Indice numerico di sezione: 001, 002…
+   Il colore qui è informazione (marca una posizione), quindi è ammesso.
+   Ma a 11px il cyan del brand dà solo 3,09:1 sul bianco: sotto la soglia
+   AA. Usiamo il blu, che a parità di famiglia cromatica arriva a 5,11:1.
+   Il cyan resta per il fondo scuro, dove il rapporto è ampiamente
+   sufficiente, e per gli elementi non testuali. */
+.t-index {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--color-blue);
+  font-variant-numeric: tabular-nums;
+}
+.on-dark .t-index { color: var(--color-cyan); }
+
+/* ============================================================================
+   GRIGLIA E STRUTTURA
+   ========================================================================= */
+
+/* Contenitore unico. Ogni pagina si allinea a questo, sempre. */
+.wrap {
+  width: 100%;
+  max-width: var(--measure-page);
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+@media (min-width: 640px) { .wrap { padding-inline: 2rem; } }
+@media (min-width: 1024px) { .wrap { padding-inline: 2.5rem; } }
+
+/* Ritmo verticale delle sezioni. */
+.section { padding-block: clamp(3.5rem, 2rem + 6vw, 7.5rem); }
+.section-sm { padding-block: clamp(2.5rem, 1.5rem + 4vw, 4.5rem); }
+
+/* Filetto orizzontale: il separatore standard del sito. */
+.rule { height: 1px; background: var(--color-hairline); border: 0; }
+
+/*
+ * Griglia esposta: colonne verticali appena percettibili sullo sfondo.
+ * È il tratto distintivo della direzione Swiss — si vede l'impalcatura.
+ * Realizzata con un gradiente ripetuto: zero elementi DOM, zero costo.
+ */
+.grid-lines {
+  position: relative;
+  isolation: isolate;
+}
+.grid-lines::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  max-width: var(--measure-page);
+  margin-inline: auto;
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--color-hairline-2) 0 1px,
+    transparent 1px calc(100% / 4)
+  );
+  /* Su schermi stretti le colonne diventano rumore: le spegniamo. */
+  opacity: 0;
+}
+@media (min-width: 768px) {
+  .grid-lines::before { opacity: 1; }
+}
+@media (min-width: 1280px) {
+  .grid-lines::before {
+    background-image: repeating-linear-gradient(
+      to right,
+      var(--color-hairline-2) 0 1px,
+      transparent 1px calc(100% / 6)
+    );
+  }
+}
+
+/* Colonna di lettura: la misura ottimale per il testo lungo (~68 caratteri). */
+.prose-measure { max-width: var(--measure-text); }
+
+/* ============================================================================
+   COMPONENTI
+   ========================================================================= */
+
+/*
+ * Superficie: la "scheda" del sito. Niente ombre pesanti né angoli molli —
+ * un filetto netto e un raggio piccolo. Swiss vuole bordi, non nuvole.
+ */
+.surface {
+  background: var(--color-paper);
+  border: 1px solid var(--color-hairline);
+  border-radius: 4px;
+}
+
+.surface-hover {
+  transition:
+    border-color var(--dur) var(--ease-out-quart),
+    box-shadow var(--dur) var(--ease-out-quart),
+    transform var(--dur) var(--ease-out-quart);
+}
+@media (hover: hover) {
+  .surface-hover:hover {
+    border-color: var(--color-brand-300);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+}
+
+/*
+ * Bottone primario. Il riempimento navy è l'unico blocco di colore pieno
+ * concesso in pagina: per questo funziona come richiamo all'azione.
+ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8125rem 1.375rem;
+  border-radius: 3px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: -0.008em;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    background-color var(--dur) var(--ease-out-quart),
+    border-color var(--dur) var(--ease-out-quart),
+    color var(--dur) var(--ease-out-quart);
+}
+
+.btn-primary {
+  background: var(--color-navy);
+  color: #fff;
+  border-color: var(--color-navy);
+}
+@media (hover: hover) {
+  .btn-primary:hover { background: var(--color-blue); border-color: var(--color-blue); }
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--color-ink);
+  border-color: var(--color-hairline);
+}
+@media (hover: hover) {
+  .btn-ghost:hover { border-color: var(--color-ink); }
+}
+
+.btn-on-dark {
+  background: #fff;
+  color: var(--color-navy);
+  border-color: #fff;
+}
+@media (hover: hover) {
+  .btn-on-dark:hover { background: var(--color-brand-100); border-color: var(--color-brand-100); }
+}
+
+/* La freccia avanza di 2px all'hover: micro-conferma che è un'azione. */
+.btn .arrow {
+  transition: transform var(--dur) var(--ease-out-quart);
+}
+@media (hover: hover) {
+  .btn:hover .arrow { transform: translateX(3px); }
+}
+
+/*
+ * Link testuale con sottolineatura che cresce da sinistra.
+ * L'unico "effetto" concesso ai link: rivela che è cliccabile senza urlare.
+ */
+.link-underline {
+  position: relative;
+  display: inline-block;
+  color: var(--color-navy);
+  font-weight: 500;
+}
+.link-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur) var(--ease-out-quart);
+}
+@media (hover: hover) {
+  .link-underline:hover::after { transform: scaleX(1); }
+}
+
+/* Riga di elenco tecnico: indice + contenuto, separati da un filetto. */
+.row-tech {
+  display: grid;
+  gap: 0.75rem 1.5rem;
+  padding-block: 1.5rem;
+  border-top: 1px solid var(--color-hairline);
+  align-items: start;
+}
+@media (min-width: 768px) {
+  .row-tech { grid-template-columns: 4rem 1fr; padding-block: 2rem; }
+}
+
+/* ============================================================================
+   FASCE SCURE
+   Usate con parsimonia: una o due per pagina, per cambiare respiro.
+   ========================================================================= */
+
+.on-dark {
+  background: var(--color-brand-950);
+  color: #fff;
+  --color-hairline: rgb(255 255 255 / 0.12);
+  --color-hairline-2: rgb(255 255 255 / 0.06);
+  --color-ink: #ffffff;
+  --color-ink-2: rgb(255 255 255 / 0.72);
+  --color-ink-3: rgb(255 255 255 / 0.52);
+  --color-paper: var(--color-brand-950);
+}
+.on-dark .surface {
+  background: rgb(255 255 255 / 0.03);
+  border-color: rgb(255 255 255 / 0.12);
+}
+@media (hover: hover) {
+  .on-dark .surface-hover:hover {
+    border-color: rgb(255 255 255 / 0.28);
+    box-shadow: none;
+  }
+}
+.on-dark .link-underline { color: var(--color-cyan); }
+
+/* ============================================================================
+   MOVIMENTO
+
+   Regola d'oro per le performance: l'elemento LCP (il titolo dell'hero) NON
+   parte mai da opacity 0, altrimenti il browser considera "dipinto" solo il
+   fotogramma finale e l'LCP slitta di tutta la durata dell'animazione.
+   Al titolo diamo quindi solo `transform`, che non ritarda la misurazione.
+   ========================================================================= */
+
+@keyframes rise {
+  from { transform: translate3d(0, 1.25rem, 0); }
+  to   { transform: translate3d(0, 0, 0); }
+}
+
+@keyframes fade-rise {
+  from { opacity: 0; transform: translate3d(0, 0.75rem, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@keyframes draw-x {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Solo transform → nessun costo sull'LCP. Riservato al titolo dell'hero. */
+.anim-rise {
+  animation: rise var(--dur-slow) var(--ease-out-expo) both;
+}
+
+/* Per elementi che NON sono candidati LCP (etichette, filetti, decori). */
+.anim-fade-rise { animation: fade-rise 700ms var(--ease-out-expo) both; }
+.anim-draw-x { animation: draw-x 900ms var(--ease-out-expo) both; transform-origin: left; }
+.anim-fade { animation: fade-in 800ms var(--ease-out-quart) both; }
+
+.delay-1 { animation-delay: 80ms; }
+.delay-2 { animation-delay: 160ms; }
+.delay-3 { animation-delay: 240ms; }
+.delay-4 { animation-delay: 340ms; }
+.delay-5 { animation-delay: 440ms; }
+.delay-6 { animation-delay: 560ms; }
+
+/*
+ * Rivelazione allo scroll, senza una riga di JavaScript.
+ * `animation-timeline: view()` è nativa nei browser moderni; dove non c'è,
+ * il blocco @supports non si applica e il contenuto resta semplicemente
+ * visibile. Nessun fallback JS, nessun IntersectionObserver, zero kB.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: fade-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 5% cover 22%;
+    }
+  }
+}
+
+/* ============================================================================
+   INTRO
+   Sostituisce il canvas da 4,2 secondi del vecchio sito.
+   Qui non c'è overlay che copre la pagina: il contenuto è dipinto subito e
+   sono gli elementi di struttura ad "assemblarsi". Durata totale ~1,2s,
+   costo 0 kB di JavaScript, nessun impatto su LCP.
+   ========================================================================= */
+
+@keyframes intro-sweep {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+.intro-bar {
+  transform-origin: left;
+  animation: intro-sweep 1s var(--ease-out-expo) both;
+}
+
+/* ============================================================================
+   UTILITÀ
+   ========================================================================= */
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip-link: invisibile finché non riceve il focus da tastiera. */
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -100%;
+  z-index: 200;
+  padding: 0.75rem 1.25rem;
+  background: var(--color-navy);
+  color: #fff;
+  border-radius: 3px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: top var(--dur) var(--ease-out-quart);
+}
+.skip-link:focus-visible { top: 1rem; }
+
+/* Altezza viewport affidabile su mobile (barra indirizzi iOS). */
+.min-h-hero { min-height: 88vh; min-height: 88svh; }
+
+/* Rapporto d'aspetto per i mockup, così non c'è mai salto di layout. */
+.ratio-16-10 { aspect-ratio: 16 / 10; }
+
+/* ============================================================================
+   PROSA
+   Stile del contenuto markdown (articoli del blog, corpo dei case study).
+   Colonna stretta e ritmo verticale generoso: un testo lungo si legge se
+   la riga non supera i ~70 caratteri.
+   ========================================================================= */
+
+.prose {
+  max-width: var(--measure-text);
+  font-size: 1.0625rem;
+  line-height: 1.72;
+  color: var(--color-ink-2);
+}
+
+.prose > * + * { margin-top: 1.5rem; }
+
+.prose h2 {
+  margin-top: 3.25rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--color-hairline);
+  font-size: clamp(1.375rem, 1.2rem + 0.8vw, 1.75rem);
+  line-height: 1.18;
+  color: var(--color-ink);
+}
+
+.prose h3 {
+  margin-top: 2.5rem;
+  font-size: 1.1875rem;
+  color: var(--color-ink);
+}
+
+.prose strong { color: var(--color-ink); font-weight: 600; }
+
+.prose a {
+  color: var(--color-navy);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--color-brand-300);
+  transition: text-decoration-color var(--dur) var(--ease-out-quart);
+}
+@media (hover: hover) {
+  .prose a:hover { text-decoration-color: var(--color-navy); }
+}
+
+.prose ul,
+.prose ol { padding-left: 1.25rem; }
+.prose li + li { margin-top: 0.625rem; }
+.prose ul { list-style: none; padding-left: 0; }
+.prose ul > li {
+  position: relative;
+  padding-left: 1.5rem;
+}
+/* Trattino invece del pallino: più coerente con un disegno tecnico. */
+.prose ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.85em;
+  width: 0.6rem;
+  height: 1px;
+  background: var(--color-brand-400);
+}
+.prose ol { list-style: decimal; }
+.prose ol > li::marker {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  color: var(--color-ink-3);
+}
+
+/* Citazione: filetto a sinistra, testo più grande, nessuna virgoletta finta. */
+.prose blockquote {
+  margin-block: 2.5rem;
+  padding-left: 1.5rem;
+  border-left: 2px solid var(--color-cyan);
+  font-size: clamp(1.125rem, 1.05rem + 0.4vw, 1.3125rem);
+  line-height: 1.5;
+  color: var(--color-ink);
+  letter-spacing: -0.014em;
+}
+.prose blockquote p { margin: 0; }
+
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: var(--color-paper-2);
+  border: 1px solid var(--color-hairline);
+  border-radius: 2px;
+  padding: 0.1em 0.35em;
+}
+
+.prose pre {
+  overflow-x: auto;
+  padding: 1.25rem;
+  background: var(--color-brand-950);
+  border-radius: 4px;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.prose pre code { background: none; border: 0; padding: 0; color: #e6edf3; }
+
+.prose img {
+  border-radius: 4px;
+  border: 1px solid var(--color-hairline);
+}
+
+.prose hr {
+  margin-block: 3rem;
+  height: 1px;
+  background: var(--color-hairline);
+  border: 0;
+}

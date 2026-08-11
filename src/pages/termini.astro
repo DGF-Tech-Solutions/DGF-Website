@@ -1,0 +1,80 @@
+---
+import Legal from "@/layouts/Legal.astro";
+import { SITE } from "@/data/site";
+---
+
+<Legal
+  title="Termini di utilizzo"
+  description="Condizioni di utilizzo del sito di DGF Tech Solutions."
+  canonical="/termini"
+  updated="2026-08-11"
+>
+  <p>
+    Il sito <strong>{SITE.url.replace("https://", "")}</strong> è gestito da
+    <strong>{SITE.legalName}</strong>, con sede a {SITE.city} ({SITE.region}),
+    {SITE.countryName} — P. IVA {SITE.vatId}. Navigando sul sito accetti le
+    condizioni descritte qui sotto.
+  </p>
+
+  <h2>Natura dei contenuti</h2>
+  <p>
+    Il sito ha finalità informativa e di presentazione dei nostri servizi. Le
+    descrizioni, i tempi e le indicazioni di costo pubblicati
+    <strong>non costituiscono un'offerta contrattuale</strong> ai sensi
+    dell'art. 1336 del codice civile: ogni rapporto nasce da una proposta scritta
+    e specifica, concordata caso per caso.
+  </p>
+
+  <h2>Progetti mostrati nel portfolio</h2>
+  <p>
+    I progetti contrassegnati come <em>dimostrativi</em> sono studi realizzati
+    internamente per illustrare metodo e capacità tecniche. Non sono lavori
+    eseguiti su commessa, i committenti indicati sono di fantasia e i dati
+    riportati sono obiettivi progettuali, non risultati commerciali misurati su
+    traffico reale.
+  </p>
+
+  <h2>Proprietà intellettuale</h2>
+  <p>
+    Testi, grafica, marchi, logo e codice di questo sito sono di proprietà di
+    {SITE.legalName}, salvo dove diversamente indicato. Puoi consultarli e
+    citarli indicando la fonte; non puoi riprodurli integralmente per scopi
+    commerciali senza autorizzazione scritta.
+  </p>
+
+  <h2>Collegamenti a siti esterni</h2>
+  <p>
+    Il sito può contenere collegamenti verso risorse di terzi. Non abbiamo
+    controllo su quei contenuti e non rispondiamo della loro disponibilità o
+    correttezza.
+  </p>
+
+  <h2>Limitazione di responsabilità</h2>
+  <p>
+    Curiamo l'accuratezza delle informazioni pubblicate, ma non garantiamo che
+    siano sempre complete o aggiornate. Nei limiti consentiti dalla legge non
+    rispondiamo di danni derivanti dall'uso o dall'impossibilità di usare il
+    sito. Nulla in questa clausola limita i diritti che la legge riconosce ai
+    consumatori.
+  </p>
+
+  <h2>Disponibilità del servizio</h2>
+  <p>
+    Il sito è ospitato su GitHub Pages. Pur puntando alla continuità del
+    servizio, non garantiamo l'assenza di interruzioni dovute a manutenzione o a
+    cause non dipendenti da noi.
+  </p>
+
+  <h2>Legge applicabile e foro competente</h2>
+  <p>
+    Questi termini sono regolati dalla legge italiana. Per le controversie è
+    competente il Foro di Messina, salvo il foro inderogabile del consumatore
+    previsto dall'art. 66-bis del Codice del Consumo quando applicabile.
+  </p>
+
+  <h2>Contatti</h2>
+  <p>
+    Per qualsiasi richiesta relativa a questi termini scrivi a
+    <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+  </p>
+</Legal>

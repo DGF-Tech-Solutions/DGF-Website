@@ -1,0 +1,50 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { formatDate, isoDate } from "@/lib/format";
+import Arrow from "@/components/Arrow.astro";
+
+interface Props {
+  entry: CollectionEntry<"blog">;
+  index?: number;
+  /**
+   * Livello del titolo. Dopo un h1 (pagina hub) serve h2; dentro una sezione
+   * che ha già il suo h2 serve h3. Saltare un livello è un errore di
+   * accessibilità: chi naviga con lo screen reader usa i titoli come indice.
+   */
+  as?: "h2" | "h3";
+}
+const { entry, index, as: Heading = "h3" } = Astro.props;
+const d = entry.data;
+---
+
+<article class="article-row">
+  <a href={`/blog/${entry.id}`} class="group block py-7 sm:py-8">
+    <div class="grid gap-4 md:grid-cols-12 md:gap-8">
+      <div class="md:col-span-3">
+        <div class="flex items-baseline gap-3">
+          {index !== undefined && <span class="t-index">{String(index + 1).padStart(3, "0")}</span>}
+          <span class="t-label">{d.category}</span>
+        </div>
+        <time datetime={isoDate(d.date)} class="t-small mt-2 block">
+          {formatDate(d.date)}
+        </time>
+      </div>
+
+      <div class="md:col-span-9">
+        <Heading class="t-h3 transition-colors group-hover:text-[var(--color-navy)]">
+          {d.title}
+        </Heading>
+        <p class="t-body mt-2 max-w-2xl text-[0.9375rem]">{d.excerpt}</p>
+        <p class="t-label mt-4 flex items-center gap-2">
+          {d.readingTime ? `${d.readingTime} min di lettura` : "Leggi"}
+          <Arrow size="sm" class="text-[var(--color-blue)]" />
+        </p>
+      </div>
+    </div>
+  </a>
+</article>
+
+<style>
+  .article-row { border-top: 1px solid var(--color-hairline); }
+  .article-row:last-child { border-bottom: 1px solid var(--color-hairline); }
+</style>

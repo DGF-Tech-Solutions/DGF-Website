@@ -1,0 +1,94 @@
+---
+import Base from "@/layouts/Base.astro";
+import PageHeader from "@/components/PageHeader.astro";
+import Arrow from "@/components/Arrow.astro";
+import { SERVICES } from "@/data/services";
+import { SITE } from "@/data/site";
+
+const schema = {
+  "@type": "ItemList",
+  name: "Servizi di DGF Tech Solutions",
+  itemListElement: SERVICES.map((s, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    name: s.title,
+    description: s.summary,
+    url: `${SITE.url}/servizi/${s.slug}`,
+  })),
+};
+---
+
+<Base
+  title="Servizi"
+  description="Siti web, e-commerce, app, software su misura e intelligenza artificiale. Cinque servizi, con i criteri onesti per capire quale ti serve davvero."
+  canonical="/servizi"
+  schema={schema}
+>
+  <PageHeader
+    index="001"
+    label="Servizi"
+    title="Cinque cose, fatte bene"
+    lead="Non facciamo tutto. Per ognuno di questi servizi sappiamo dirti anche quando non ti serve — e succede più spesso di quanto immagini."
+    crumbs={[{ label: "Servizi" }]}
+  />
+
+  <section class="section">
+    <div class="wrap">
+      <div class="grid gap-px border border-[var(--color-hairline)] bg-[var(--color-hairline)] md:grid-cols-2">
+        {
+          SERVICES.map((s) => (
+            <a href={`/servizi/${s.slug}`} class="group flex flex-col bg-[var(--color-paper)] p-7 transition-colors hover:bg-[var(--color-paper-2)] lg:p-9">
+              <div class="flex items-baseline gap-3">
+                <span class="t-index">{s.index}</span>
+                <span class="t-label">{s.timeline}</span>
+              </div>
+
+              <h2 class="t-h2 mt-4 transition-colors group-hover:text-[var(--color-navy)]">
+                {s.title}
+              </h2>
+
+              <p class="t-body mt-4 flex-1">{s.summary}</p>
+
+              <ul class="mt-6 flex flex-wrap gap-2">
+                {s.stack.slice(0, 4).map((t) => (
+                  <li class="chip">{t}</li>
+                ))}
+              </ul>
+
+              <span class="t-label mt-7 inline-flex items-center gap-2 text-[var(--color-blue)]">
+                Approfondisci
+                <Arrow size="sm" />
+              </span>
+            </a>
+          ))
+        }
+
+        <!-- Cella finale: chiude la griglia e porta al contatto -->
+        <div class="flex flex-col justify-center bg-[var(--color-paper-2)] p-7 lg:p-9">
+          <h2 class="t-h3">Non sai quale ti serve?</h2>
+          <p class="t-body mt-3">
+            È la situazione più comune. Raccontaci il problema e ti diciamo noi
+            da dove conviene partire — anche se la risposta è "per ora, da niente".
+          </p>
+          <a href="/contatti" class="btn btn-primary mt-6 self-start">
+            Scrivici
+            <span class="arrow" aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .chip {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+    border: 1px solid var(--color-hairline);
+    border-radius: 2px;
+    padding: 0.25rem 0.5rem;
+  }
+</style>

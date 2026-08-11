@@ -1,0 +1,166 @@
+---
+import { Image } from "astro:assets";
+import { NAV, NAV_CTA, SITE } from "@/data/site";
+import logo from "@/assets/logo-dgf.png";
+
+/*
+ * Barra di navigazione — zero JavaScript.
+ *
+ * Il menu mobile usa <details>/<summary>: apertura, chiusura, tastiera e
+ * semantica ARIA sono native del browser. E poiché il sito è multipagina
+ * vero (nessuna SPA), cliccando una voce si naviga e il menu si richiude
+ * da solo con il caricamento della pagina. Nessuno script da spedire.
+ */
+
+// Percorso corrente normalizzato (senza slash finale) per marcare la voce attiva.
+const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const isActive = (href: string) =>
+  href === "/" ? path === "/" : path === href || path.startsWith(href + "/");
+---
+
+<header class="sticky top-0 z-50 border-b border-[var(--color-hairline)] bg-[var(--color-paper)]/92 backdrop-blur-md">
+  <div class="wrap flex h-16 items-center justify-between gap-6">
+    <a href="/" aria-label={`${SITE.name} — home`} class="flex shrink-0 items-center">
+      {/* 82×40 conserva il rapporto reale del file (939×458 = 2,05).
+          Dichiararne uno diverso faceva ritagliare il logo. */}
+      <Image
+        src={logo}
+        alt={SITE.name}
+        width={82}
+        height={40}
+        densities={[1, 2]}
+        loading="eager"
+        fetchpriority="high"
+        class="h-7 w-auto sm:h-8"
+      />
+    </a>
+
+    <!-- Navigazione desktop -->
+    <nav aria-label="Navigazione principale" class="hidden items-center gap-8 md:flex">
+      {
+        NAV.map((link) => (
+          <a
+            href={link.href}
+            aria-current={isActive(link.href) ? "page" : undefined}
+            class="nav-link text-[0.9375rem] font-medium"
+          >
+            {link.label}
+          </a>
+        ))
+      }
+      <a href={NAV_CTA.href} class="btn btn-primary !py-2 !text-[0.875rem]">
+        {NAV_CTA.label}
+      </a>
+    </nav>
+
+    <!-- Navigazione mobile: <details> nativo, nessuno script -->
+    <details class="mobile-menu md:hidden">
+      <summary aria-label="Apri il menu di navigazione">
+        <span class="bar" aria-hidden="true"></span>
+        <span class="bar" aria-hidden="true"></span>
+      </summary>
+
+      <nav aria-label="Navigazione principale" class="mobile-panel">
+        <div class="wrap flex flex-col py-3">
+          {
+            NAV.map((link, i) => (
+              <a
+                href={link.href}
+                aria-current={isActive(link.href) ? "page" : undefined}
+                class="mobile-link"
+              >
+                <span class="t-index">{String(i + 1).padStart(3, "0")}</span>
+                <span>{link.label}</span>
+              </a>
+            ))
+          }
+          <a href={NAV_CTA.href} class="btn btn-primary mt-4 justify-center">
+            {NAV_CTA.label}
+            <span class="arrow" aria-hidden="true">→</span>
+          </a>
+        </div>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<style>
+  /* ── Voce di navigazione desktop ──────────────────────────────────────
+     Il filetto sotto cresce all'hover e resta fisso sulla pagina corrente:
+     lo stato attivo è informazione, quindi merita il cyan. */
+  .nav-link {
+    position: relative;
+    padding-block: 0.25rem;
+    color: var(--color-ink-2);
+    transition: color var(--dur) var(--ease-out-quart);
+  }
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: -0.125rem;
+    height: 1.5px;
+    background: var(--color-cyan);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur) var(--ease-out-quart);
+  }
+  @media (hover: hover) {
+    .nav-link:hover { color: var(--color-ink); }
+    .nav-link:hover::after { transform: scaleX(1); }
+  }
+  .nav-link[aria-current="page"] {
+    color: var(--color-ink);
+  }
+  .nav-link[aria-current="page"]::after { transform: scaleX(1); }
+
+  /* ── Menu mobile ──────────────────────────────────────────────────── */
+  .mobile-menu summary {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 2.75rem;
+    height: 2.75rem;      /* area di tocco 44×44, minimo WCAG 2.5.8 */
+    margin-right: -0.5rem;
+    cursor: pointer;
+    list-style: none;
+  }
+  .mobile-menu summary::-webkit-details-marker { display: none; }
+
+  .mobile-menu .bar {
+    display: block;
+    width: 1.25rem;
+    height: 1.5px;
+    margin-inline: auto;
+    background: var(--color-ink);
+    transition: transform var(--dur) var(--ease-out-quart);
+  }
+  /* Aperto: le due barre diventano una X. */
+  .mobile-menu[open] .bar:first-of-type { transform: translateY(3.25px) rotate(45deg); }
+  .mobile-menu[open] .bar:last-of-type { transform: translateY(-3.25px) rotate(-45deg); }
+
+  .mobile-panel {
+    position: absolute;
+    inset-inline: 0;
+    top: 100%;
+    background: var(--color-paper);
+    border-bottom: 1px solid var(--color-hairline);
+    box-shadow: var(--shadow-md);
+  }
+
+  .mobile-link {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding-block: 0.875rem;
+    border-bottom: 1px solid var(--color-hairline-2);
+    font-size: 1.0625rem;
+    font-weight: 500;
+  }
+  .mobile-link[aria-current="page"] { color: var(--color-navy); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .mobile-panel { animation: fade-rise 220ms var(--ease-out-quart) both; }
+  }
+</style>

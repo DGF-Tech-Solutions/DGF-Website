@@ -1,0 +1,327 @@
+---
+import { getCollection } from "astro:content";
+import Base from "@/layouts/Base.astro";
+import Globe from "@/components/Globe.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+import CaseCard from "@/components/CaseCard.astro";
+import ArticleCard from "@/components/ArticleCard.astro";
+import Arrow from "@/components/Arrow.astro";
+import { SITE } from "@/data/site";
+import { SERVICES } from "@/data/services";
+import { idx } from "@/lib/format";
+
+const projects = (await getCollection("portfolio"))
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
+
+const articles = (await getCollection("blog", ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 2);
+
+/* Come lavoriamo — quattro fasi, dette senza gergo. */
+const PHASES = [
+  {
+    title: "Ascolto",
+    text: "Capiamo il problema prima di parlare di soluzioni. Spesso quello che serve è diverso da quello che si era immaginato — e dirlo è parte del lavoro.",
+  },
+  {
+    title: "Proposta",
+    text: "Ambito, tempi e costo messi per iscritto prima di iniziare. Nessuna voce a sorpresa a metà progetto.",
+  },
+  {
+    title: "Costruzione",
+    text: "Ti mostriamo il lavoro mentre procede, non alla fine. Se qualcosa non convince si corregge quando costa poco.",
+  },
+  {
+    title: "Consegna",
+    text: "Il progetto è tuo: codice, dominio, accessi. Ti spieghiamo come funziona e restiamo raggiungibili.",
+  },
+];
+
+/* Impegni concreti, verificabili. Niente promesse generiche. */
+const COMMITMENTS = [
+  {
+    title: "Parli con chi scrive il codice",
+    text: "Nessun passaggio di consegne fra commerciale e tecnico. Chi ti risponde è chi il lavoro lo fa.",
+  },
+  {
+    title: "Il progetto è tuo, per intero",
+    text: "Codice sorgente, dominio e accessi restano di tua proprietà. Nessun vincolo che ti obblighi a restare.",
+  },
+  {
+    title: "Preventivo scritto prima",
+    text: "Ambito e costo definiti in partenza. Se serve una modifica fuori perimetro, la quantifichiamo prima di farla.",
+  },
+  {
+    title: "Ti diciamo anche di no",
+    text: "Se pensiamo che ti serva qualcosa di più semplice — o niente affatto — te lo diciamo, anche quando significa fatturare meno.",
+  },
+];
+---
+
+<Base
+  title={SITE.name}
+  description={SITE.description}
+  canonical="/"
+>
+  <!-- ══════════════════════════════════════════════════════════════════
+       HERO — 000
+       Il titolo è l'elemento LCP: nessuna animazione di opacità su di esso,
+       solo `transform`, così il browser lo considera dipinto immediatamente.
+       ══════════════════════════════════════════════════════════════════ -->
+  <section class="grid-lines border-b border-[var(--color-hairline)]">
+    <div class="wrap">
+      <div class="grid items-center gap-10 py-14 sm:py-20 lg:grid-cols-12 lg:gap-12 lg:py-24">
+        <div class="lg:col-span-7">
+          <div class="flex items-baseline gap-3">
+            <span class="t-index">000</span>
+            <span class="t-label">Software house · {SITE.city}, {SITE.countryName}</span>
+          </div>
+
+          <div class="mt-5 h-px w-full origin-left bg-[var(--color-hairline)] intro-bar"></div>
+
+          {/*
+            Niente <br /> forzati: a viewport diverse spezzerebbero il titolo
+            in punti sbagliati. `text-wrap: balance` (in globals) distribuisce
+            le righe da solo, e il max-width in caratteri tiene la misura.
+          */}
+          <h1 class="t-display mt-7 max-w-[15ch] anim-rise">
+            Dall'idea al lancio, parli sempre con chi scrive il codice.
+          </h1>
+
+          <p class="t-lead mt-7 max-w-xl anim-fade-rise delay-3">
+            Siti, e-commerce, app e software su misura per aziende italiane.
+            Progetti costruiti su misura, consegnati per intero, senza vincoli
+            che ti leghino a noi.
+          </p>
+
+          <div class="mt-9 flex flex-wrap items-center gap-3 anim-fade-rise delay-4">
+            <a href="/contatti" class="btn btn-primary">
+              Parliamo del tuo progetto
+              <span class="arrow" aria-hidden="true">→</span>
+            </a>
+            <a href="/portfolio" class="btn btn-ghost">Guarda i progetti</a>
+          </div>
+        </div>
+
+        <div class="lg:col-span-5">
+          <div class="mx-auto max-w-[22rem] anim-fade delay-3 lg:max-w-none">
+            <Globe />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Striscia servizi: la mappa del sito, subito sotto la piega -->
+  <section class="border-b border-[var(--color-hairline)] bg-[var(--color-paper-2)]">
+    <div class="wrap">
+      <ul class="grid sm:grid-cols-2 lg:grid-cols-5">
+        {
+          SERVICES.map((s) => (
+            <li class="service-strip">
+              <a href={`/servizi/${s.slug}`} class="group block py-6">
+                <span class="t-index">{s.index}</span>
+                <span class="t-h3 mt-2 block transition-colors group-hover:text-[var(--color-navy)]">
+                  {s.title}
+                </span>
+                <Arrow class="mt-4 text-[var(--color-blue)]" />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       001 — COSA FACCIAMO
+       ══════════════════════════════════════════════════════════════════ -->
+  <section class="section" aria-labelledby="servizi-h">
+    <div class="wrap">
+      <SectionHeading
+        index="001"
+        label="Servizi"
+        title="Cinque cose, fatte bene"
+        lead="Non facciamo tutto. Facciamo queste cinque, e per ciascuna sappiamo dirti anche quando non ti serve."
+      />
+
+      <div class="mt-12">
+        {
+          SERVICES.map((s) => (
+            <a href={`/servizi/${s.slug}`} class="row-tech group reveal">
+              <span class="t-index pt-1">{s.index}</span>
+              <span class="grid gap-3 md:grid-cols-12 md:gap-8">
+                <span class="md:col-span-4">
+                  <span class="t-h3 block transition-colors group-hover:text-[var(--color-navy)]">
+                    {s.title}
+                  </span>
+                </span>
+                <span class="t-body md:col-span-7">{s.summary}</span>
+                <span class="hidden text-[var(--color-blue)] md:col-span-1 md:block md:text-right">
+                  <Arrow size="sm" />
+                </span>
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       002 — COME LAVORIAMO
+       ══════════════════════════════════════════════════════════════════ -->
+  <section class="section border-t border-[var(--color-hairline)] bg-[var(--color-paper-2)]">
+    <div class="wrap">
+      <SectionHeading
+        index="002"
+        label="Metodo"
+        title="Quattro passaggi, nessuna sorpresa"
+        lead="Lo stesso percorso su ogni progetto, dal sito vetrina al gestionale. Sapere cosa succede dopo è metà della tranquillità."
+      />
+
+      <ol class="mt-12 grid gap-px border border-[var(--color-hairline)] bg-[var(--color-hairline)] sm:grid-cols-2 lg:grid-cols-4">
+        {
+          PHASES.map((p, i) => (
+            <li class="bg-[var(--color-paper)] p-6 lg:p-7">
+              <span class="t-index">{idx(i + 1)}</span>
+              <h3 class="t-h3 mt-3">{p.title}</h3>
+              <p class="t-body mt-3 text-[0.9375rem]">{p.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       003 — PROGETTI
+       ══════════════════════════════════════════════════════════════════ -->
+  <section class="section" aria-labelledby="progetti-h">
+    <div class="wrap">
+      <div class="flex flex-wrap items-end justify-between gap-6">
+        <SectionHeading
+          index="003"
+          label="Progetti"
+          title="Cosa sappiamo costruire"
+          lead="Progetti dimostrativi che mostrano come affrontiamo problemi reali: architettura, scelte e risultato."
+        />
+        <a href="/portfolio" class="link-underline shrink-0 pb-2">
+          Tutti i progetti →
+        </a>
+      </div>
+
+      <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {/*
+          Nessuna immagine in `eager`: in home i progetti stanno molto sotto
+          la piega, e caricarli subito significa rubare banda al percorso
+          critico senza che l'utente veda nulla prima.
+        */}
+        {projects.map((entry) => <CaseCard entry={entry} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       004 — IMPEGNI (fascia scura)
+       ══════════════════════════════════════════════════════════════════ -->
+  <section class="on-dark section">
+    <div class="wrap">
+      <SectionHeading
+        index="004"
+        label="Impegni"
+        title="Quattro cose che mettiamo per iscritto"
+        lead="Non sono slogan: sono condizioni che trovi nel preventivo e che puoi contestarci se non le rispettiamo."
+      />
+
+      <div class="mt-12 grid gap-px bg-[rgb(255_255_255/0.12)] sm:grid-cols-2">
+        {
+          COMMITMENTS.map((c, i) => (
+            <div class="bg-[var(--color-brand-950)] p-7 lg:p-9">
+              <span class="t-index">{idx(i + 1)}</span>
+              <h3 class="t-h3 mt-3">{c.title}</h3>
+              <p class="t-body mt-3">{c.text}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       005 — DAL BLOG
+       ══════════════════════════════════════════════════════════════════ -->
+  {
+    articles.length > 0 && (
+      <section class="section">
+        <div class="wrap">
+          <div class="flex flex-wrap items-end justify-between gap-6">
+            <SectionHeading
+              index="005"
+              label="Scritti"
+              title="Quello che spieghiamo ai clienti"
+              lead="Le domande che ci fanno più spesso, con la risposta lunga che in una chiamata non c'è tempo di dare."
+            />
+            <a href="/blog" class="link-underline shrink-0 pb-2">
+              Tutti gli articoli →
+            </a>
+          </div>
+
+          <div class="mt-10">
+            {articles.map((entry, i) => (
+              <ArticleCard entry={entry} index={i} />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       CHIUSURA
+       ══════════════════════════════════════════════════════════════════ -->
+  <section class="section-sm border-t border-[var(--color-hairline)] bg-[var(--color-paper-2)]">
+    <div class="wrap">
+      <div class="flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
+        <div>
+          <h2 class="t-h2 max-w-xl">Hai un progetto, o solo un dubbio?</h2>
+          <p class="t-lead mt-4 max-w-xl">
+            Scrivici cosa ti serve. Se possiamo aiutarti te lo diciamo, e se non
+            possiamo ti indirizziamo altrove.
+          </p>
+        </div>
+        <a href="/contatti" class="btn btn-primary shrink-0">
+          Scrivici
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* Filetti di separazione fra le voci della striscia servizi, senza
+     doppioni ai bordi: la griglia si legge come una tabella tecnica. */
+  .service-strip { border-top: 1px solid var(--color-hairline); }
+  .service-strip:first-child { border-top: 0; }
+
+  @media (min-width: 640px) {
+    .service-strip:nth-child(-n + 2) { border-top: 0; }
+    .service-strip:nth-child(odd) { padding-right: 1.5rem; }
+    .service-strip:nth-child(even) {
+      padding-left: 1.5rem;
+      border-left: 1px solid var(--color-hairline);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .service-strip { border-top: 0; padding-inline: 1.25rem; }
+    .service-strip:first-child { padding-left: 0; }
+    .service-strip:last-child { padding-right: 0; }
+    .service-strip + .service-strip { border-left: 1px solid var(--color-hairline); }
+    .service-strip:nth-child(odd),
+    .service-strip:nth-child(even) { padding-inline: 1.25rem; }
+    .service-strip:first-child { padding-left: 0; }
+  }
+</style>

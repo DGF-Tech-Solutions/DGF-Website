@@ -1,0 +1,158 @@
+---
+import { Font } from "astro:assets";
+import { SITE } from "@/data/site";
+import Nav from "@/components/Nav.astro";
+import Footer from "@/components/Footer.astro";
+import "@/styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+  /** Percorso canonico senza dominio, es. "/servizi". Default: URL corrente. */
+  canonical?: string;
+  /** Immagine social specifica della pagina. */
+  ogImage?: string;
+  /** "article" per gli articoli del blog. */
+  ogType?: "website" | "article";
+  /** Esclude la pagina dall'indicizzazione (pagine legali, utility). */
+  noindex?: boolean;
+  /** Dati strutturati aggiuntivi, specifici della pagina. */
+  schema?: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage = SITE.ogImage,
+  ogType = "website",
+  noindex = false,
+  schema,
+} = Astro.props;
+
+const canonicalURL = new URL(canonical ?? Astro.url.pathname, Astro.site);
+const ogImageURL = new URL(ogImage, Astro.site);
+
+// Il title della home resta pieno; le altre pagine prendono il suffisso.
+const fullTitle =
+  title === SITE.name ? title : `${title} | ${SITE.name}`;
+
+/*
+ * Dati strutturati globali. Servono a Google per identificare DGF Tech
+ * Solutions come entità precisa: la P.IVA italiana è l'identificatore che
+ * la distingue dalle aziende omonime estere (DGF Group, DGF Technologies).
+ */
+const organizationSchema = {
+  "@type": "Organization",
+  "@id": `${SITE.url}/#organization`,
+  name: SITE.name,
+  legalName: SITE.legalName,
+  url: SITE.url,
+  logo: new URL(SITE.logo, SITE.url).href,
+  image: ogImageURL.href,
+  description: SITE.description,
+  slogan: SITE.tagline,
+  email: SITE.email,
+  vatID: SITE.vatId,
+  taxID: SITE.taxId,
+  foundingLocation: { "@type": "Place", name: `${SITE.city}, ${SITE.countryName}` },
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: SITE.city,
+    addressRegion: SITE.region,
+    addressCountry: SITE.country,
+  },
+  areaServed: { "@type": "Country", name: SITE.countryName },
+  contactPoint: {
+    "@type": "ContactPoint",
+    email: SITE.email,
+    contactType: "customer support",
+    areaServed: SITE.country,
+    availableLanguage: ["Italian"],
+  },
+  knowsAbout: [
+    "Sviluppo software",
+    "Sviluppo siti web",
+    "E-commerce",
+    "Sviluppo app mobile",
+    "Intelligenza artificiale",
+    "Automazione",
+    "UI/UX design",
+  ],
+};
+
+const websiteSchema = {
+  "@type": "WebSite",
+  "@id": `${SITE.url}/#website`,
+  url: SITE.url,
+  name: SITE.name,
+  description: SITE.description,
+  publisher: { "@id": `${SITE.url}/#organization` },
+  inLanguage: "it-IT",
+};
+
+const extra = schema ? (Array.isArray(schema) ? schema : [schema]) : [];
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [organizationSchema, websiteSchema, ...extra],
+};
+---
+
+<!doctype html>
+<html lang={SITE.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL.href} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+
+    <meta name="theme-color" content={SITE.themeColor} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:locale" content={SITE.locale} />
+    <meta property="og:url" content={canonicalURL.href} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageURL.href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${SITE.name} — ${SITE.tagline}`} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageURL.href} />
+
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!--
+      Font self-hostati e sottoinsiemi da Astro a build time.
+      Solo il sans è in preload: è quello che dipinge il titolo dell'hero.
+      Il mono serve alle etichette e può arrivare un attimo dopo — i fallback
+      metrics generati da Astro fanno sì che lo scambio non muova nulla (CLS 0).
+    -->
+    <Font cssVariable="--font-sans" preload />
+    <Font cssVariable="--font-mono" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Salta al contenuto</a>
+    <Nav />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

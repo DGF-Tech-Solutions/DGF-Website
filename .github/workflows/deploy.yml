@@ -1,7 +1,9 @@
 name: Deploy sito su GitHub Pages
 
 # Si avvia a ogni push sul branch principale, oppure manualmente dalla
-# tab "Actions" del repo.
+# tab "Actions" del repo. Il pannello di redazione (Sveltia CMS) committa
+# su main: quindi salvare un articolo fa partire automaticamente questo
+# workflow e il sito si aggiorna da solo in circa un minuto.
 on:
   push:
     branches: [main]
@@ -34,19 +36,23 @@ jobs:
       - name: Installa le dipendenze
         run: npm ci
 
-      - name: Build (export statico in ./out)
+      - name: Build (export statico in ./dist)
         run: npm run build
 
-      - name: Verifica artefatto (dominio custom + bypass Jekyll)
+      - name: Verifica artefatto
         run: |
-          test -f out/CNAME || { echo "::error::out/CNAME mancante: il dominio custom andrebbe perso"; exit 1; }
-          test -f out/.nojekyll || { echo "::error::out/.nojekyll mancante: GitHub Pages applicherebbe Jekyll"; exit 1; }
-          test -f out/index.html || { echo "::error::out/index.html mancante: export non riuscito"; exit 1; }
+          test -f dist/CNAME     || { echo "::error::dist/CNAME mancante: il dominio custom andrebbe perso"; exit 1; }
+          test -f dist/.nojekyll || { echo "::error::dist/.nojekyll mancante: GitHub Pages applicherebbe Jekyll"; exit 1; }
+          test -f dist/index.html || { echo "::error::dist/index.html mancante: export non riuscito"; exit 1; }
+          test -f dist/404.html  || { echo "::error::dist/404.html mancante: le pagine inesistenti non mostrerebbero la nostra 404"; exit 1; }
+          test -f dist/sitemap-index.xml || { echo "::error::sitemap mancante"; exit 1; }
+          test -f dist/admin/index.html || { echo "::error::pannello di redazione mancante"; exit 1; }
+          echo "Artefatto verificato: $(find dist -name '*.html' | wc -l) pagine HTML."
 
       - name: Prepara l'artefatto per Pages
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./out
+          path: ./dist
 
   deploy:
     needs: build

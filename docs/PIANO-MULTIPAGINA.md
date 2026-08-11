@@ -1,57 +1,137 @@
-# Piano: da one-page a sito multipagina premium
+# Architettura informativa
 
-> Metodo per DGF Tech Solutions. Stack: Next.js 15 App Router, `output: "export"` (statico, GitHub Pages + dominio custom), Tailwind v4, framer-motion. Brand navy `#054b77` / blue `#1575a4` / cyan `#3d9cc7`. Ricerca tecnica verificata su fonti primarie (Next.js docs, Google Search Central).
+Come è organizzato il sito e perché. Per le scelte tecniche vedi
+[ARCHITETTURA.md](ARCHITETTURA.md); per il linguaggio visivo
+[DESIGN-SYSTEM.md](DESIGN-SYSTEM.md).
 
-## 1. Architettura informativa
+---
 
-Con l'App Router le cartelle definiscono gli URL. Mappa delle rotte:
+## Il principio: due livelli, mai di più
 
 ```
-/                      Home (one-page esistente)
-/portfolio             Hub progetti
-/portfolio/[slug]      Dettaglio case study   (statica via generateStaticParams)
-/chi-siamo             Studio, valori, team
-/blog                  Hub articoli
-/blog/[slug]           Articolo               (statica via generateStaticParams)
+/                          home breve — presenta e smista
+│
+├── /servizi               hub
+│   ├── /servizi/siti-web
+│   ├── /servizi/ecommerce
+│   ├── /servizi/app
+│   ├── /servizi/software-su-misura
+│   └── /servizi/intelligenza-artificiale
+│
+├── /portfolio             hub
+│   └── /portfolio/[slug]  dettaglio progetto
+│
+├── /chi-siamo
+│
+├── /blog                  hub
+│   └── /blog/[slug]       articolo
+│
+├── /contatti
+│   └── /contatti/inviato  conferma (raggiunta solo senza JavaScript)
+│
+└── /privacy  /cookie  /termini
 ```
 
-URL: minuscole + trattini, mai underscore (GitHub Pages è case-sensitive). Pagine entro 3-4 click dalla home. Niente soglie di lunghezza URL o pillar-cluster (miti smentiti dalla ricerca).
+Nessuna pagina è a più di due click dalla home. Ogni hub elenca i suoi figli,
+ogni figlio rimanda all'hub e ai fratelli.
 
-## 2. Vincoli static export (governano tutto)
+---
 
-`output: "export"` disabilita: ISR, Server Actions, Route Handler con Request, cookies, redirects/headers, middleware, image optimization on-the-fly. Quindi:
-- Form contatto → client-side (Web3Forms, già conforme).
-- Rotte dinamiche → `generateStaticParams()` enumera tutti gli slug a build time + `export const dynamicParams = false`.
-- Next 15: `params` è una `Promise` → `await params`.
-- Immagini → pre-ottimizzate WebP (pipeline sharp già in repo); `next/image` resta utile per CLS + lazy-load anche con `images.unoptimized`.
+## Da one-page a multipagina: cosa è cambiato
 
-## 3. Content layer
+Prima la home conteneva nove sezioni e tutto il contenuto del sito. Adesso è
+**una vetrina breve**: presenta, dà le prove, e smista.
 
-- **Portfolio/Case study**: dati TypeScript tipizzati (`src/lib/case-studies.ts`), come `SERVICES`/`MOCKUPS`. Type-safe, zero dipendenze.
-- **Blog**: contenuto strutturato tipizzato (`src/lib/blog.ts`) con blocchi (paragrafi, heading, liste, quote). MDX è un upgrade opzionale futuro (`@next/mdx` + `gray-matter`).
+| Sezione | Prima | Adesso |
+|---|---|---|
+| Servizi | Sezione della home | 5 pagine + hub |
+| Processo | Sezione della home | Quattro fasi in home, dettagli nelle pagine servizio |
+| Portfolio | Sezione della home | Hub + dettaglio |
+| Garanzie | Sezione della home | "Impegni" in home, fascia scura |
+| Contatti | Sezione della home | Pagina dedicata |
+| Legali | Assenti | Tre pagine |
 
-## 4. SEO per-pagina
+### Perché conviene
 
-- `metadata` statico sulle pagine semplici, `generateMetadata` async sulle dinamiche (title/description/openGraph/canonical unici, cotti nell'HTML).
-- `alternates.canonical` (richiede `metadataBase`, già presente).
-- JSON-LD: `BreadcrumbList` (≥2 item) su tutte le dinamiche, `CreativeWork` sui case study, `BlogPosting` sugli articoli, `Organization` globale.
-- Sitemap multi-URL via `app/sitemap.ts`. Internal linking hub→dettaglio + correlati.
+**SEO.** Una pagina che parla solo di e-commerce compete per "sviluppo
+e-commerce" molto meglio di una sezione dentro una home che parla di cinque
+cose. Cinque pagine servizio sono cinque porte d'ingresso invece di una.
 
-## 5. Design system premium (evoluzione del brand)
+**Chiarezza.** Chi arriva dal passaparola cerca conferme, non tutto il
+catalogo. Una home breve che rimanda è più rispettosa di una che chiede di
+scorrere per nove schermate.
 
-- Token semantici in `globals.css @theme`; tipografia Space Grotesk display + scala fluida `clamp()`; spacing `py-24→py-40`.
-- Componenti condivisi: `SectionHeading` (eyebrow + h2), `Card` double-bezel, `CTAButton` button-in-button, `Breadcrumbs`, `PageHeader`, `Tag`, `MetricStat`, `ArticleCard`, `CaseStudyCard`, `TeamCard`.
-- Layout asimmetrici/bento (no 3 card uguali). Motion solo `transform`/`opacity`, reveal `whileInView`.
-- Performance: `next/font` self-hosted, immagini WebP pre-ottimizzate, niente animazioni di layout.
+**Manutenzione.** Aggiungere un servizio è aggiungere una voce in
+`src/data/services.ts`: hub, pagina, footer, sitemap, 404 e `llms.txt` si
+aggiornano da soli.
 
-## 6. Roadmap a fasi
+---
 
-- **Fase 0** — Fondamenta: token, componenti condivisi, helper SEO, Nav multipagina.
-- **Fase 1** — Portfolio: dati + hub + dettaglio + metadata + JSON-LD.
-- **Fase 2** — Chi siamo / Team.
-- **Fase 3** — Blog: dati + hub + articolo + BlogPosting.
-- **Fase 4** — Sitemap multi-URL, breadcrumb, internal linking, footer, audit.
+## Struttura di una pagina
 
-## Note
+Ricorrente e volutamente prevedibile: chi naviga impara dove guardare.
 
-Struttura interna delle case study (problema-soluzione-risultato-metriche) = best practice di settore, non verificata su fonti primarie. Il core tecnico è invece da documentazione ufficiale (Next.js, Google).
+```
+briciole di pane
+indice numerico + etichetta mono
+TITOLO
+occhiello
+[scheda tecnica: tempi, tecnologie, dati]
+───────────────────────────────────────
+A · sezione
+B · sezione
+C · domande frequenti
+───────────────────────────────────────
+chiusura scura + rimando ai fratelli
+```
+
+---
+
+## Contenuti
+
+| Cosa | Dove | Chi lo modifica |
+|---|---|---|
+| Articoli del blog | `src/content/blog/*.md` | Dal pannello `/admin` |
+| Progetti | `src/content/portfolio/*.md` | Dal pannello `/admin` |
+| I cinque servizi | `src/data/services.ts` | Nel codice |
+| Contatti, menu, P.IVA | `src/data/site.ts` | Nel codice |
+| Testi delle pagine fisse | I rispettivi `.astro` | Nel codice |
+
+La divisione non è arbitraria: dal pannello si modifica ciò che cambia spesso e
+il cui errore è circoscritto. Un refuso in un articolo si corregge; un refuso
+nella home lo vedono tutti subito.
+
+---
+
+## Trasparenza sul portfolio
+
+I progetti hanno un campo `kind`:
+
+| Valore | Effetto in pagina |
+|---|---|
+| `dimostrativo` | Nota di trasparenza, e i numeri sono presentati come **obiettivi di progetto** |
+| `cliente` | Nessuna nota, i numeri sono presentati come **risultati** |
+
+Sull'hub compare una nota generale quando c'è almeno un progetto dimostrativo.
+
+Non è scrupolo eccessivo. Presentare un concept come lavoro su commessa regge
+finché il primo cliente non chiede una referenza, e a quel punto il danno alla
+credibilità è molto più grande del vantaggio.
+
+---
+
+## SEO per pagina
+
+Ogni pagina dichiara `title`, `description` e canonical propri, più lo schema
+JSON-LD adatto:
+
+| Pagina | Schema |
+|---|---|
+| Ovunque | `Organization` + `WebSite` (grafo globale) |
+| Servizio | `Service` + `FAQPage` |
+| Progetto | `CreativeWork` |
+| Articolo | `BlogPosting` |
+| Hub | `ItemList` / `CollectionPage` / `Blog` |
+| Interne | `BreadcrumbList` |
+
+Le pagine legali sono `noindex`: servono agli utenti, non ai motori.

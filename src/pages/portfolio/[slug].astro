@@ -1,0 +1,246 @@
+---
+import { getCollection, render } from "astro:content";
+import { Image } from "astro:assets";
+import Base from "@/layouts/Base.astro";
+import PageHeader from "@/components/PageHeader.astro";
+import CaseCard from "@/components/CaseCard.astro";
+import { SITE } from "@/data/site";
+import { idx } from "@/lib/format";
+
+export async function getStaticPaths() {
+  const projects = await getCollection("portfolio");
+  return projects.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+
+const related = (await getCollection("portfolio"))
+  .filter((p) => p.id !== entry.id)
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
+
+const isDemo = d.kind === "dimostrativo";
+
+/*
+ * Le "metriche" di un progetto dimostrativo non sono risultati misurati:
+ * sono obiettivi progettuali. Il titolo della sezione cambia di conseguenza,
+ * perché chiamarli "risultati" sarebbe falso.
+ */
+const metricsTitle = isDemo ? "Obiettivi di progetto" : "Risultati";
+
+const schema = {
+  "@type": "CreativeWork",
+  name: d.title,
+  abstract: d.summary,
+  url: `${SITE.url}/portfolio/${entry.id}`,
+  creator: { "@id": `${SITE.url}/#organization` },
+  dateCreated: d.year,
+  genre: d.category,
+  keywords: [...d.services, ...d.stack].join(", "),
+};
+---
+
+<Base
+  title={d.title}
+  description={d.summary}
+  canonical={`/portfolio/${entry.id}`}
+  schema={schema}
+>
+  <PageHeader
+    index={d.year}
+    label={d.category}
+    title={d.title}
+    lead={d.summary}
+    crumbs={[{ label: "Progetti", href: "/portfolio" }, { label: d.client }]}
+  >
+    {
+      isDemo && (
+        <p class="notice mt-8">
+          <strong>Progetto dimostrativo.</strong> Studio realizzato internamente
+          per mostrare metodo e capacità tecniche. Il committente è di fantasia e
+          i dati riportati sono obiettivi progettuali, non risultati commerciali
+          misurati.
+        </p>
+      )
+    }
+
+    <!-- Scheda tecnica -->
+    <dl class="mt-10 grid gap-px border border-[var(--color-hairline)] bg-[var(--color-hairline)] sm:grid-cols-3">
+      <div class="bg-[var(--color-paper)] p-5">
+        <dt class="t-label">Committente</dt>
+        <dd class="t-h3 mt-2">{d.client}</dd>
+      </div>
+      <div class="bg-[var(--color-paper)] p-5">
+        <dt class="t-label">Servizi</dt>
+        <dd class="t-body mt-2 text-[0.9375rem]">{d.services.join(", ")}</dd>
+      </div>
+      <div class="bg-[var(--color-paper)] p-5">
+        <dt class="t-label">Tecnologie</dt>
+        <dd class="mt-2 flex flex-wrap gap-2">
+          {d.stack.map((t) => <span class="chip">{t}</span>)}
+        </dd>
+      </div>
+    </dl>
+  </PageHeader>
+
+  <!-- Immagine principale -->
+  <section class="border-b border-[var(--color-hairline)] bg-[var(--color-paper-2)]">
+    <div class="wrap py-10 sm:py-14">
+      <div class="surface overflow-hidden">
+        {/*
+          Caricamento pigro, anche se l'immagine è "importante": su mobile la
+          testata (briciole, titolo, occhiello, nota, scheda tecnica) riempie
+          tutto il primo schermo, quindi questa immagine è sotto la piega.
+          Marcarla prioritaria le farebbe rubare banda al testo che l'utente
+          sta effettivamente leggendo.
+        */}
+        <Image
+          src={d.coverFull ?? d.cover}
+          alt={`Interfaccia del progetto ${d.client}`}
+          widths={[420, 640, 840, 1100, 1400]}
+          sizes="(min-width: 1280px) 1160px, 94vw"
+          loading="lazy"
+          class="w-full"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Problema / approccio / soluzione -->
+  <section class="section">
+    <div class="wrap">
+      <div class="grid gap-12 lg:grid-cols-12 lg:gap-16">
+        <div class="lg:col-span-7">
+          <div class="flex items-baseline gap-3">
+            <span class="t-index">001</span>
+            <span class="t-label">Il problema</span>
+          </div>
+          <p class="t-lead mt-5 !text-[var(--color-ink)]">{d.challenge}</p>
+
+          <div class="mt-14 flex items-baseline gap-3">
+            <span class="t-index">002</span>
+            <span class="t-label">L'approccio</span>
+          </div>
+          <ul class="mt-5">
+            {
+              d.approach.map((step, i) => (
+                <li class="row-tech reveal">
+                  <span class="t-index pt-1">{idx(i + 1)}</span>
+                  <span class="t-body">{step}</span>
+                </li>
+              ))
+            }
+          </ul>
+
+          <div class="mt-14 flex items-baseline gap-3">
+            <span class="t-index">003</span>
+            <span class="t-label">La soluzione</span>
+          </div>
+          <p class="t-lead mt-5 !text-[var(--color-ink)]">{d.solution}</p>
+        </div>
+
+        <!-- Colonna laterale: obiettivi/risultati -->
+        {
+          d.metrics.length > 0 && (
+            <aside class="lg:col-span-5">
+              <div class="surface p-7 lg:sticky lg:top-24">
+                <h2 class="t-label">{metricsTitle}</h2>
+                <dl class="mt-6 space-y-6">
+                  {d.metrics.map((m) => (
+                    <div class="border-t border-[var(--color-hairline)] pt-4 first:border-0 first:pt-0">
+                      <dt class="t-h2 tabular" data-metric>
+                        {m.value}
+                      </dt>
+                      <dd class="t-small mt-1">{m.label}</dd>
+                    </div>
+                  ))}
+                </dl>
+                {isDemo && (
+                  <p class="t-small mt-6 border-t border-[var(--color-hairline)] pt-4">
+                    Obiettivi definiti in fase di progetto, non misurazioni su
+                    traffico reale.
+                  </p>
+                )}
+              </div>
+            </aside>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Approfondimento (markdown) -->
+  <section class="section border-t border-[var(--color-hairline)] bg-[var(--color-paper-2)]">
+    <div class="wrap">
+      <div class="flex items-baseline gap-3">
+        <span class="t-index">004</span>
+        <span class="t-label">In dettaglio</span>
+      </div>
+      <div class="prose mt-8">
+        <Content />
+      </div>
+    </div>
+  </section>
+
+  <!-- Correlati -->
+  {
+    related.length > 0 && (
+      <section class="section">
+        <div class="wrap">
+          <div class="flex flex-wrap items-end justify-between gap-6">
+            <h2 class="t-h2">Altri progetti</h2>
+            <a href="/portfolio" class="link-underline pb-2">
+              Tutti i progetti →
+            </a>
+          </div>
+          <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {related.map((p) => (
+              <CaseCard entry={p} />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="on-dark section-sm">
+    <div class="wrap flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+      <h2 class="t-h2 max-w-xl">Un progetto simile in mente?</h2>
+      <a href="/contatti" class="btn btn-on-dark shrink-0">
+        Parliamone
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .chip {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+    border: 1px solid var(--color-hairline);
+    border-radius: 2px;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .notice {
+    max-width: 44rem;
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--color-hairline);
+    border-left: 2px solid var(--color-cyan);
+    border-radius: 3px;
+    background: var(--color-paper-2);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--color-ink-2);
+  }
+  .notice strong { color: var(--color-ink); font-weight: 600; }
+</style>

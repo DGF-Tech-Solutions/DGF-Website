@@ -1,0 +1,68 @@
+---
+import Base from "@/layouts/Base.astro";
+import { NAV } from "@/data/site";
+import { SERVICES } from "@/data/services";
+---
+
+<Base
+  title="Pagina non trovata"
+  description="La pagina che cercavi non esiste o è stata spostata."
+  canonical="/404"
+  noindex
+>
+  <section class="section">
+    <div class="wrap">
+      <div class="max-w-2xl">
+        <div class="flex items-baseline gap-3">
+          <span class="t-index tabular">404</span>
+          <span class="t-label">Errore</span>
+        </div>
+
+        <h1 class="t-h1 mt-5">Questa pagina non c'è</h1>
+
+        <p class="t-lead mt-6">
+          L'indirizzo è sbagliato, oppure la pagina è stata spostata. Qui sotto
+          trovi le sezioni principali del sito.
+        </p>
+
+        <a href="/" class="btn btn-primary mt-8">
+          Torna alla home
+          <span class="arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+
+      <div class="mt-16 grid gap-10 border-t border-[var(--color-hairline)] pt-10 sm:grid-cols-2">
+        <div>
+          <h2 class="t-label">Sezioni</h2>
+          <ul class="mt-4 space-y-2.5">
+            {
+              NAV.map((l) => (
+                <li>
+                  <a href={l.href} class="link-underline text-[0.9375rem]">
+                    {l.label}
+                  </a>
+                </li>
+              ))
+            }
+            <li><a href="/contatti" class="link-underline text-[0.9375rem]">Contatti</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 class="t-label">Servizi</h2>
+          <ul class="mt-4 space-y-2.5">
+            {
+              SERVICES.map((s) => (
+                <li>
+                  <a href={`/servizi/${s.slug}`} class="link-underline text-[0.9375rem]">
+                    {s.title}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>

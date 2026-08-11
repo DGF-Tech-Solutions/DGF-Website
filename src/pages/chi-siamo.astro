@@ -1,0 +1,218 @@
+---
+import Base from "@/layouts/Base.astro";
+import PageHeader from "@/components/PageHeader.astro";
+import { SITE } from "@/data/site";
+import { idx } from "@/lib/format";
+
+const TEAM = [
+  { name: "Francesco Riccardo Giannetto", role: "Co-fondatore" },
+  { name: "David Moonsmee", role: "Co-fondatore" },
+  { name: "Giacomo Lanza", role: "Co-fondatore" },
+];
+
+const PRINCIPLES = [
+  {
+    title: "Parli con chi scrive il codice",
+    text: "Nessuna catena di intermediari. Dal primo confronto al lancio segui sempre le stesse persone: quelle che progettano e sviluppano davvero il prodotto.",
+  },
+  {
+    title: "Trasparenza prima di tutto",
+    text: "Tempi, costi e scelte tecniche messi per iscritto prima di iniziare. Nessuna voce a sorpresa in corso d'opera, nessun preventivo generato da un modulo.",
+  },
+  {
+    title: "Codice che dura",
+    text: "Scriviamo software manutenibile, veloce e sicuro. Quello che costruiamo deve reggere fra tre anni, non solo il giorno della consegna.",
+  },
+  {
+    title: "Dall'idea al lancio",
+    text: "Strategia, design, sviluppo e messa online: un unico interlocutore per tutto il percorso, e reperibilità anche dopo la consegna.",
+  },
+];
+
+/** Iniziali: prima lettera del nome + prima lettera del cognome. */
+function initials(name: string): string {
+  const parts = name.split(" ").filter(Boolean);
+  if (parts.length === 0) return "";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+}
+
+const schema = {
+  "@type": "AboutPage",
+  name: `Chi siamo — ${SITE.name}`,
+  url: `${SITE.url}/chi-siamo`,
+  mainEntity: { "@id": `${SITE.url}/#organization` },
+};
+---
+
+<Base
+  title="Chi siamo"
+  description="DGF Tech Solutions è una software house a Messina, attiva in tutta Italia. Niente intermediari: dall'idea al lancio lavori con chi progetta e sviluppa il prodotto."
+  canonical="/chi-siamo"
+  schema={schema}
+>
+  <PageHeader
+    index="004"
+    label="Chi siamo"
+    title="Una software house dove non ti perdi mai per strada"
+    lead="Un piccolo team con base a Messina, al lavoro con clienti in tutta Italia. Costruiamo prodotti digitali su misura restando vicini a chi li userà."
+    crumbs={[{ label: "Chi siamo" }]}
+  />
+
+  <!-- Storia -->
+  <section class="section">
+    <div class="wrap">
+      <div class="grid gap-10 lg:grid-cols-12 lg:gap-16">
+        <div class="lg:col-span-4">
+          <div class="flex items-baseline gap-3">
+            <span class="t-index">001</span>
+            <span class="t-label">Origine</span>
+          </div>
+          <h2 class="t-h2 mt-4">Nati per fare le cose sul serio</h2>
+        </div>
+
+        <div class="prose lg:col-span-8">
+          <p>
+            DGF Tech Solutions nasce da un'idea semplice: il software fatto bene non
+            dovrebbe essere un privilegio delle grandi aziende. Troppe realtà si
+            ritrovano con siti lenti, gestionali improvvisati e — soprattutto —
+            nessuno a cui chiedere aiuto quando qualcosa smette di funzionare.
+          </p>
+          <p>
+            Facciamo il contrario: poche persone, molto coinvolte, che seguono ogni
+            progetto dalla prima riga di codice fino al lancio e oltre. Niente reparti
+            che si rimbalzano le richieste, niente preventivi generati automaticamente.
+            Quando ci scrivi rispondiamo noi, le stesse persone che poi costruiranno
+            il tuo prodotto.
+          </p>
+          <p>
+            Lavoriamo con strumenti moderni e una regola sola: ogni scelta tecnica deve
+            avere una ragione che sappiamo spiegarti in parole comprensibili. Se non
+            riusciamo a spiegarla, probabilmente è la scelta sbagliata.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Principi -->
+  <section class="section border-t border-[var(--color-hairline)] bg-[var(--color-paper-2)]">
+    <div class="wrap">
+      <div class="flex items-baseline gap-3">
+        <span class="t-index">002</span>
+        <span class="t-label">Metodo</span>
+      </div>
+      <h2 class="t-h2 mt-4 max-w-2xl">Quattro principi, zero compromessi</h2>
+
+      <div class="mt-12 grid gap-px border border-[var(--color-hairline)] bg-[var(--color-hairline)] md:grid-cols-2">
+        {
+          PRINCIPLES.map((p, i) => (
+            <div class="bg-[var(--color-paper)] p-7 lg:p-9">
+              <span class="t-index">{idx(i + 1)}</span>
+              <h3 class="t-h3 mt-3">{p.title}</h3>
+              <p class="t-body mt-3">{p.text}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Team -->
+  <section class="section">
+    <div class="wrap">
+      <div class="flex items-baseline gap-3">
+        <span class="t-index">003</span>
+        <span class="t-label">Team</span>
+      </div>
+      <h2 class="t-h2 mt-4 max-w-2xl">Le persone con cui parlerai</h2>
+      <p class="t-lead mt-5 max-w-2xl">
+        Siamo in tre. Significa che non c'è nessuno a cui passare la palla — e che
+        chi ti risponde è chi il lavoro lo fa.
+      </p>
+
+      <ul class="mt-12 grid gap-px border border-[var(--color-hairline)] bg-[var(--color-hairline)] sm:grid-cols-3">
+        {
+          TEAM.map((member) => (
+            <li class="bg-[var(--color-paper)] p-7">
+              <span class="monogram" aria-hidden="true">
+                {initials(member.name)}
+              </span>
+              <h3 class="t-h3 mt-5">{member.name}</h3>
+              <p class="t-label mt-2">{member.role}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Dati aziendali: la credibilità passa anche da qui -->
+  <section class="section border-t border-[var(--color-hairline)]">
+    <div class="wrap">
+      <div class="flex items-baseline gap-3">
+        <span class="t-index">004</span>
+        <span class="t-label">Dati</span>
+      </div>
+      <h2 class="t-h2 mt-4">Chi siamo, per l'anagrafe</h2>
+
+      <dl class="mt-10 grid gap-px border border-[var(--color-hairline)] bg-[var(--color-hairline)] sm:grid-cols-2 lg:grid-cols-4">
+        <div class="bg-[var(--color-paper)] p-5">
+          <dt class="t-label">Ragione sociale</dt>
+          <dd class="t-body mt-2 text-[0.9375rem] text-[var(--color-ink)]">{SITE.legalName}</dd>
+        </div>
+        <div class="bg-[var(--color-paper)] p-5">
+          <dt class="t-label">Partita IVA</dt>
+          <dd class="t-body mt-2 text-[0.9375rem] tabular text-[var(--color-ink)]">{SITE.vatId}</dd>
+        </div>
+        <div class="bg-[var(--color-paper)] p-5">
+          <dt class="t-label">Sede</dt>
+          <dd class="t-body mt-2 text-[0.9375rem] text-[var(--color-ink)]">
+            {SITE.city} ({SITE.region}), {SITE.countryName}
+          </dd>
+        </div>
+        <div class="bg-[var(--color-paper)] p-5">
+          <dt class="t-label">Contatto</dt>
+          <dd class="mt-2">
+            <a href={`mailto:${SITE.email}`} class="link-underline text-[0.9375rem] break-all">
+              {SITE.email}
+            </a>
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="on-dark section-sm">
+    <div class="wrap flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+      <div>
+        <h2 class="t-h2 max-w-xl">Lavoriamo insieme?</h2>
+        <p class="t-lead mt-3 max-w-xl">
+          Raccontaci il problema. La prima risposta arriva entro un giorno lavorativo.
+        </p>
+      </div>
+      <a href="/contatti" class="btn btn-on-dark shrink-0">
+        Scrivici
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* Monogramma: un quadrato navy con le iniziali. Niente foto stock,
+     niente avatar generati — se non ci sono ritratti veri, meglio un segno. */
+  .monogram {
+    display: grid;
+    place-items: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    border-radius: 3px;
+    background: var(--color-navy);
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+</style>

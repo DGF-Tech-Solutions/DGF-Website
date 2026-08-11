@@ -1,0 +1,59 @@
+---
+import { SITE } from "@/data/site";
+
+/*
+ * Briciole di pane, con i dati strutturati BreadcrumbList annessi.
+ * Google le usa per mostrare il percorso al posto dell'URL nudo nei risultati.
+ */
+interface Crumb {
+  label: string;
+  href?: string;
+}
+interface Props {
+  items: Crumb[];
+  class?: string;
+}
+
+const { items, class: className = "" } = Astro.props;
+
+// L'ultimo elemento è la pagina corrente e non è un link.
+const all: Crumb[] = [{ label: "Home", href: "/" }, ...items];
+
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: all.map((c, i) => ({
+    "@type": "ListItem",
+    position: i + 1,
+    name: c.label,
+    ...(c.href ? { item: new URL(c.href, SITE.url).href } : {}),
+  })),
+};
+---
+
+<nav aria-label="Percorso di navigazione" class={className}>
+  <ol class="flex flex-wrap items-center gap-x-2 gap-y-1">
+    {
+      all.map((c, i) => (
+        <li class="flex items-center gap-2">
+          {i > 0 && (
+            <span class="t-small select-none" aria-hidden="true">
+              /
+            </span>
+          )}
+          {c.href && i < all.length - 1 ? (
+            <a href={c.href} class="t-small hover:text-[var(--color-navy)] transition-colors">
+              {c.label}
+            </a>
+          ) : (
+            <span class="t-small text-[var(--color-ink-2)]" aria-current="page">
+              {c.label}
+            </span>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</nav>
+
+<script type="application/ld+json" set:html={JSON.stringify(schema)} is:inline />
