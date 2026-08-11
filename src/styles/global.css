@@ -439,6 +439,15 @@
   to   { opacity: 1; }
 }
 
+/*
+ * ATTENZIONE alle classi `.reveal*`: vanno usate SOLO su contenuto che sta
+ * sotto la piega. Su un elemento visibile al caricamento partono da opacità
+ * zero, e questo produce due danni insieme: l'LCP slitta di tutta la durata
+ * dell'animazione, e Lighthouse misura il contrasto del testo a metà
+ * dissolvenza trovandolo insufficiente. È già successo sul banner di
+ * /portfolio.
+ */
+
 /* Solo transform → nessun costo sull'LCP. Riservata all'hero. */
 .anim-rise { animation: rise var(--dur-slow) var(--ease-out-expo) both; }
 .anim-fade-rise { animation: fade-rise 700ms var(--ease-out-expo) both; }

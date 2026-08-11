@@ -48,12 +48,19 @@ const schema = {
 
   <section class="section">
     <div class="wrap">
+      <!--
+        Il banner NON ha la classe `reveal`, e non è una dimenticanza: sta
+        sopra la piega ed è un blocco di testo grande, quindi è candidato a
+        essere l'elemento LCP. Una dissolvenza d'ingresso ritarderebbe la
+        metrica di tutta la sua durata, e Lighthouse misurerebbe il contrasto
+        del testo a metà animazione trovandolo insufficiente.
+      -->
       {
         onlyDemos && (
           <Banner
             icon="shield"
             title="Siamo agli inizi, e preferiamo dirlo."
-            class="mx-auto max-w-4xl reveal"
+            class="mx-auto max-w-4xl"
           >
             <p>
               <strong>
@@ -75,14 +82,16 @@ const schema = {
       }
 
       {/*
-        La PRIMA scheda carica in `eager`: su mobile entra nel primo schermo
-        e la sua immagine è l'elemento LCP. Le altre restano pigre.
+        Nessuna immagine in `eager`: con il banner in mezzo, su mobile le
+        schede sono sotto la piega. L'unica immagine prioritaria della pagina
+        resta quella della testata — due immagini prioritarie si
+        contenderebbero la banda e ritarderebbero entrambe.
       */}
       <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {
           projects.map((entry, i) => (
             <div class="reveal" style={`--i:${i}`}>
-              <CaseCard entry={entry} as="h2" eager={i === 0} />
+              <CaseCard entry={entry} as="h2" />
             </div>
           ))
         }
