@@ -184,9 +184,12 @@
   font-weight: 700;
 }
 
-/* Metà titolo in grigio chiaro: il modo in cui Nexia crea contrasto dentro
-   una stessa frase, senza aggiungere colori. */
-.t-dim { color: #94a3b8; }
+/* Metà titolo in grigio: il modo in cui Nexia crea contrasto dentro una
+   stessa frase, senza aggiungere colori.
+   Nexia usa slate-400 (#94a3b8), che però su bianco dà 2,56:1 — sotto il
+   3:1 richiesto anche per il testo grande. Qui si usa un gradino più scuro:
+   4,76:1 su bianco e 4,51:1 sul fondo tenue, e l'effetto "smorzato" resta. */
+.t-dim { color: #64748b; }
 
 .t-lead {
   font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.1875rem);

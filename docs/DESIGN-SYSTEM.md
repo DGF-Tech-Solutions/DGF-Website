@@ -1,106 +1,79 @@
-# Design system — Tecnico / Swiss
+# Design system
 
-Direzione visiva del sito, derivata dallo *International Typographic Style*.
-Tutto vive in [`src/styles/global.css`](../src/styles/global.css).
+Direzione: **"light institutional trust"** — la stessa della landing di Nexia,
+adattata al brand DGF. Tutto vive in
+[`src/styles/global.css`](../src/styles/global.css).
+
+> Nota storica: la prima versione di questo sito seguiva una direzione
+> Swiss/tecnica (griglia esposta, bianco dominante, colore rarissimo).
+> Corretta ma fredda: su un sito che deve dare fiducia a chi ti sta valutando
+> comunicava "documentazione tecnica" invece che "azienda affidabile". È stata
+> sostituita, non ritoccata.
 
 ---
 
 ## I tre principi
 
-Ogni scelta discende da questi. Se una proposta li contraddice, di norma è la
-proposta a essere sbagliata.
+### 1. Bianco e azzurro chiaro si alternano
 
-### 1. La struttura è visibile
+Ogni sezione cambia fondo rispetto alla precedente: `--color-paper` e
+`.band-soft`. **Una sola fascia scura per pagina** (`.on-dark`), mai due.
 
-La griglia non è un'impalcatura da nascondere: è parte del linguaggio. Filetti,
-indici numerici (`001`, `002`…) e allineamenti dichiarati apertamente.
+### 2. Ogni concetto ha un segno
 
-L'utilità `.grid-lines` disegna colonne verticali appena percettibili sullo
-sfondo, con un gradiente ripetuto: zero elementi nel DOM, zero costo. Si
-spengono sotto i 768 px, dove diventerebbero rumore.
+Un'icona dentro un riquadro azzurro, o un'illustrazione. Il testo da solo non
+fa capire in fretta, e questo è un sito che viene scansionato, non letto.
 
-### 2. La gerarchia nasce da scala e peso, non dal colore
+### 3. Angoli morbidi, ombre leggere
 
-Il testo è quasi sempre inchiostro su bianco. Un titolo si impone perché è
-grande, non perché è colorato. Il salto fra `.t-display` e `.t-body` è netto e
-voluto.
-
-### 3. Il colore è un segnale, non una decorazione
-
-Il cyan compare solo dove c'è azione o stato: link attivo, focus, indice della
-sezione corrente. **Se il cyan è ovunque, non significa più niente.**
+Niente bordi taglienti, niente ombre nere: tutte tinte di navy. È la
+differenza fra un sito "caldo" e uno "tecnico".
 
 ---
 
 ## Colore
 
-### Brand
-
 | Token | Valore | Uso |
 |---|---|---|
-| `--color-navy` | `#054b77` | Voce principale, riempimento dei bottoni |
-| `--color-blue` | `#1575a4` | Collegamenti, indici, accenti su testo piccolo |
-| `--color-cyan` | `#3d9cc7` | Accento raro: stato attivo, equatore del globo, fondi scuri |
+| `--color-navy` | `#054b77` | Voce principale, bottoni, icone |
+| `--color-navy-deep` | `#0a2233` | Unica fascia scura + footer |
+| `--color-blue` | `#1575a4` | Collegamenti, stati |
+| `--color-cyan` | `#3d9cc7` | Accento su fondo scuro, dettagli |
+| `--color-soft` | `#e8f1f8` | Riquadri icona, badge, superfici tenui |
+| `--color-soft-2` | `#d4e6f2` | Stessa cosa, un gradino più marcato |
+| `--color-ink` | `#0f172a` | Titoli |
+| `--color-ink-2` | `#334155` | Testo corrente |
+| `--color-ink-3` | `#526074` | Testo secondario — **verificato 6,4:1 su bianco** |
+| `--color-line` | `#e2e8f0` | Bordi |
+| `--color-paper-2` | `#f8fafc` | Fasce alternate |
 
-### Inchiostro e carta
-
-| Token | Valore | Uso |
-|---|---|---|
-| `--color-ink` | `#0a1622` | Testo primario |
-| `--color-ink-2` | `#33465a` | Testo secondario |
-| `--color-ink-3` | `#5f7183` | Didascalie, etichette |
-| `--color-hairline` | `#e3e9ef` | Filetti e bordi |
-| `--color-paper` | `#ffffff` | Fondo principale |
-| `--color-paper-2` | `#f7f9fb` | Fasce alternate |
-
-I neutri sono tinti di blu, mai grigi puri: appartengono alla stessa famiglia
-del brand anche quando non sembrano colorati.
-
-### Regola di contrasto
-
-**Minimo 4,5:1 sul testo.** Verificata, non stimata:
-
-- il cyan su bianco a 11px dà **3,09:1** → non si usa sul testo piccolo
-- `--color-ink-3` è stato scurito da `#64768a` (4,42:1) a `#5f7183` (4,77:1)
-
-Sul fondo scuro (`.on-dark`) i token vengono ridefiniti in blocco e il cyan
-torna ammissibile, perché lì il rapporto è ampio.
+Corrispondenza con Nexia: il loro `#24438f` diventa il nostro `#054b77`, il
+loro `#eaf0fb` diventa `#e8f1f8`. Neutri, fasce e bordi sono identici.
 
 ---
 
 ## Tipografia
 
-**Inter** per tutto, **JetBrains Mono** per etichette, indici e dati.
-Due famiglie sole, self-hostate e sottoinsiemi da Astro a build time.
+**Inter**, self-hostato e sottoinsieme da Astro, pesi 400–800. Titoli grassi
+(700–800), non semibold: devono "atterrare".
 
-| Classe | Dimensione | Uso |
-|---|---|---|
-| `.t-display` | `clamp(2.75rem → 6.5rem)` | Titolo dell'hero, una volta per pagina |
-| `.t-h1` | `clamp(2.25rem → 4.25rem)` | Titolo delle pagine interne |
-| `.t-h2` | `clamp(1.75rem → 2.875rem)` | Titolo di sezione |
-| `.t-h3` | `clamp(1.19rem → 1.5rem)` | Titolo di scheda |
-| `.t-lead` | `clamp(1.06rem → 1.31rem)` | Occhiello sotto il titolo |
-| `.t-body` | `1rem` | Testo corrente |
-| `.t-small` | `0.875rem` | Note, didascalie |
-| `.t-label` | `0.6875rem` mono, maiuscoletto, `letter-spacing 0.16em` | Etichetta di sezione |
-| `.t-index` | `0.6875rem` mono, blu | Indice numerico |
-
-Le cifre usano `font-variant-numeric: tabular-nums`: è un sito tecnico, i numeri
-si incolonnano.
-
----
-
-## Struttura
-
-| Utilità | Cosa fa |
+| Classe | Uso |
 |---|---|
-| `.wrap` | Contenitore, max `78rem`, padding responsivo. **Ogni pagina si allinea a questo.** |
-| `.section` | Ritmo verticale, `clamp(3.5rem → 7.5rem)` |
-| `.section-sm` | Versione ridotta, per le chiusure |
-| `.grid-lines` | Colonne verticali di sfondo |
-| `.prose-measure` | Colonna di lettura, max `42rem` (~68 caratteri) |
-| `.rule` | Filetto orizzontale standard |
-| `.row-tech` | Riga indice + contenuto, separata da un filetto |
+| `.t-display` | Titolo dell'hero, una volta per pagina |
+| `.t-h1` | Titolo delle pagine interne |
+| `.t-h2` | Titolo di sezione |
+| `.t-h3` | Titolo di scheda |
+| `.t-lead` | Occhiello sotto il titolo |
+| `.t-body` / `.t-small` | Testo e note |
+| `.t-eyebrow` | `11px` grassetto maiuscolo spaziato, in navy |
+| `.t-dim` | Seconda metà del titolo in grigio chiaro |
+
+`.t-dim` è la firma tipografica presa da Nexia: crea contrasto **dentro la
+stessa frase**, senza aggiungere un colore.
+
+```html
+<h2 class="t-h2">Cinque cose, <span class="t-dim">fatte bene.</span></h2>
+```
 
 ---
 
@@ -108,15 +81,16 @@ si incolonnano.
 
 | Classe | Note |
 |---|---|
-| `.surface` | Scheda: filetto netto, raggio 4px. **Bordi, non nuvole.** |
-| `.surface-hover` | Solleva di 2px all'hover — solo su dispositivi con puntatore |
-| `.btn-primary` | Riempimento navy: l'unico blocco di colore pieno in pagina |
-| `.btn-ghost` | Bordo, nessun riempimento |
-| `.btn-on-dark` | Bianco pieno, per le fasce scure |
-| `.link-underline` | Sottolineatura che cresce da sinistra |
-| `.on-dark` | Ridefinisce i token per le fasce scure. Una o due per pagina, non di più |
+| `.card` | Il mattone: bordo tenue, `radius-lg`, ombra appena accennata. All'hover si alza di 3px |
+| `.icon-tile` | Riquadro azzurro dell'icona. Dentro un `.group` si riempie di navy all'hover |
+| `.btn-primary` | Pillola navy. `.btn-ghost`, `.btn-soft`, `.btn-on-dark` le varianti |
+| `.chip` | Badge azzurro. `.chip-line` la versione con solo bordo |
+| `.link-arrow` | Link con freccia che avanza |
+| `.band-soft` | Fascia alternata |
+| `.on-dark` | Ridefinisce i token: ogni componente si adatta da solo |
+| `.glow-bg` | Aloni azzurri sfocati dietro gli hero, senza immagini |
 
-Gli effetti hover stanno tutti dentro `@media (hover: hover)`: su touch un hover
+Gli hover stanno tutti dentro `@media (hover: hover)`: su touch un hover
 "appiccicato" è un difetto, non un effetto.
 
 ---
@@ -125,38 +99,48 @@ Gli effetti hover stanno tutti dentro `@media (hover: hover)`: su touch un hover
 
 ### La regola che vale più di tutte
 
-**L'elemento LCP non parte mai da `opacity: 0`.**
+**L'elemento LCP non parte mai da `opacity: 0`.** Chrome non conteggia per
+l'LCP un elemento a opacità zero, quindi ogni dissolvenza d'ingresso
+posticipa la metrica di tutta la sua durata. Nell'hero si anima solo
+`transform` (`.anim-rise`).
 
-Il titolo dell'hero usa `.anim-rise`, che anima solo `transform`. Un `opacity: 0`
-iniziale farebbe considerare al browser "dipinto" solo il fotogramma finale, e
-l'LCP slitterebbe di tutta la durata dell'animazione.
+È la stessa regola scritta nel CSS marketing di Nexia, arrivata per la stessa
+strada.
 
-| Classe | Anima | Per |
-|---|---|---|
-| `.anim-rise` | solo `transform` | **Titolo dell'hero** (candidato LCP) |
-| `.anim-fade-rise` | `opacity` + `transform` | Elementi non LCP |
-| `.anim-draw-x` | `scaleX` | Filetti che si disegnano |
-| `.anim-fade` | `opacity` | Decorazioni |
-| `.reveal` | `animation-timeline: view()` | Rivelazione allo scroll, **senza JS** |
+### Scroll-driven animations
 
-Ritardi in cascata: `.delay-1` … `.delay-6` (80 ms → 560 ms).
+Tutto il movimento legato allo scroll usa `animation-timeline`, nativa del
+CSS: nessun JavaScript, nessun listener, tutto sul thread di composizione.
+Dove non è supportata il blocco `@supports` non si applica e gli elementi
+restano visibili e fermi — nessun fallback da scrivere.
 
-Si animano solo `transform` e `opacity`, mai proprietà che ricalcolano il
-layout.
+| Classe | Effetto |
+|---|---|
+| `.reveal` / `.reveal-left` / `.reveal-right` / `.reveal-zoom` | Entrata quando l'elemento arriva in vista |
+| `.parallax-slow` / `.parallax-fast` / `.parallax-drift` | Parallasse |
+| `.read-progress` | Barra di avanzamento lettura (articoli) |
+| `.float` / `.float-slow` / `.float-fast` | Oscillazione dei cartellini sull'hero |
 
-### Reduced motion
+Cascata: si imposta `--i` (0, 1, 2…) sull'elemento e le tessere entrano una
+dopo l'altra.
 
-`@media (prefers-reduced-motion: reduce)` azzera tutte le durate. Il globo si
-ferma in posa. Non è un ripiego: chi soffre di motion sickness non deve subire
-nulla.
+```html
+<div class="card reveal" style="--i:2">…</div>
+```
+
+La parallasse è **spenta sotto i 768px**: su mobile lo spazio verticale è poco
+e il movimento diventa fastidioso invece che elegante. E tutto si spegne con
+`prefers-reduced-motion`.
 
 ---
 
-## Fasce scure
+## Illustrazioni
 
-`.on-dark` ridefinisce i token invece di sovrascrivere le regole. Significa che
-qualsiasi componente ci finisca dentro si adatta da solo, senza varianti
-dedicate.
+Generate con ComfyUI, stessa pipeline degli "omini" di Nexia ma con soggetti
+diversi: **scene e oggetti, mai persone**. La scelta è deliberata — persone
+generate dall'AI su un sito aziendale vengono lette come il team o come
+clienti, ed è una bugia difficile da smentire.
 
-Vanno usate con parsimonia: una o due per pagina, per cambiare respiro. Il sito
-è a dominanza bianca — è una scelta, non un default.
+Vivono in `src/assets/illustrazioni/`. Vedi
+[ARCHITETTURA.md](ARCHITETTURA.md#illustrazioni) per la generazione e per il
+ritaglio dello sfondo, che ha una storia sua.

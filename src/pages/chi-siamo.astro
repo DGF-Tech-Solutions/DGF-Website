@@ -1,4 +1,5 @@
 ---
+import { Image } from "astro:assets";
 import Base from "@/layouts/Base.astro";
 import PageHeader from "@/components/PageHeader.astro";
 import Banner from "@/components/Banner.astro";
@@ -195,14 +196,17 @@ const schema = {
           </div>
         </div>
 
+        {/* `<Image>` e non `<img>`: così Astro la converte e la ridimensiona.
+            Con il tag grezzo veniva servito il PNG originale da mezzo mega,
+            ed era il motivo per cui questa pagina pesava il quadruplo delle
+            altre. */}
         <div class="parallax-slow mx-auto w-full max-w-[22rem] lg:max-w-none">
-          <img
-            src={scenaProcesso.src}
-            width={scenaProcesso.width}
-            height={scenaProcesso.height}
+          <Image
+            src={scenaProcesso}
             alt="Illustrazione: percorso di progetto con quattro tappe"
+            widths={[320, 460, 620]}
+            sizes="(min-width: 1024px) 420px, 300px"
             loading="lazy"
-            decoding="async"
             class="w-full"
           />
         </div>

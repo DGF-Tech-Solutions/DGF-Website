@@ -152,6 +152,71 @@ la conferma in linea. Se lo script non parte, il modulo funziona lo stesso.
 
 ---
 
+## Illustrazioni
+
+Generate in locale con **ComfyUI** (Z-Image Turbo + Qwen CLIP), la stessa
+pipeline con cui sono stati creati gli "omini" del sito Nexia — così i due
+siti parlano la stessa lingua visiva.
+
+```bash
+python scripts/gen-illustrazioni.py --set scena
+python scripts/ritaglia.py                     # ritaglio dello sfondo
+```
+
+### Soggetti: scene, non persone
+
+La prima serie erano figure di professionisti in stile corporate-memphis.
+Sostituite da oggetti e scene. Il motivo non è estetico: persone generate
+dall'AI su un sito aziendale vengono lette dal visitatore come il team o come
+clienti, ed è una bugia più difficile da smentire di un progetto finto.
+
+### Il ritaglio dello sfondo
+
+`rembg`, usato dalla skill, è addestrato su **fotografie**: su un'illustrazione
+piatta segmenta male e lascia un alone. Sull'immagine del monitor l'alone era
+un'ombra grigio-azzurra su tutto il perimetro, inutilizzabile.
+
+`scripts/ritaglia.py` la sostituisce con un **riempimento a partire dai bordi**:
+si parte dai pixel del perimetro e ci si espande finché il colore cambia poco
+da un pixel al successivo. Due proprietà che servono entrambe:
+
+- **segue le sfumature**, perché il confronto è col pixel vicino e non con un
+  colore di riferimento fisso;
+- **non tocca i bianchi interni** (lo schermo di un monitor, un foglio), perché
+  non sono collegati al bordo. È esattamente il caso in cui il `white_key`
+  della skill bucava l'illustrazione.
+
+La tolleranza (`TOLL = 10`) ha un margine stretto: a 20 il riempimento saltava
+dentro gli elementi chiari e si mangiava una scheda accanto al monitor. Se una
+nuova immagine mostra un alone, conviene ritoccare il prompt invece di alzare
+quel numero.
+
+Gli originali restano su ComfyUI: `ritaglia.py` li ripesca dalla cronologia
+associandoli al soggetto, quindi si può riprocessare tutto senza rigenerare.
+
+### Soggetti che non funzionano
+
+Servono forme con **massa**. Il primo tentativo per l'AI era "rete di nodi
+collegati da linee sottili": le linee erano troppo fini, il ritaglio se le è
+mangiate e in pagina è rimasto un cerchio blu solo. Sostituito con un chip
+dai contorni spessi.
+
+## Il mega-menu
+
+La prima versione era CSS puro (`:hover` sul contenitore) e aveva un difetto
+che si vedeva subito: fra la voce e il pannello c'è uno stacco visivo, e
+attraversandolo col mouse il `:hover` si perdeva — il pannello si chiudeva
+mentre ci si stava andando.
+
+La soluzione è quella di Nexia: **chiusura ritardata di 160 ms**, che copre il
+tragitto, più i gestori del mouse anche sul pannello (che, essendo in
+posizione assoluta, esce dal flusso del genitore). In più qui il varco è
+coperto da un ponte invisibile, così nella maggior parte dei casi il ritardo
+non serve nemmeno.
+
+Resta usabile senza JavaScript: `:focus-within` apre il pannello da tastiera,
+e la voce "Servizi" è comunque un link alla pagina indice.
+
 ## Contenuti
 
 `src/content.config.ts` definisce lo schema con Zod. Due conseguenze:
