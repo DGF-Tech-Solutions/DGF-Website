@@ -50,7 +50,7 @@ export const SERVICES: readonly Service[] = [
     summary:
       "Vetrine aziendali e siti istituzionali costruiti per essere veloci, leggibili e trovabili.",
     intro:
-      "Un sito vetrina ha un compito preciso: far capire in pochi secondi cosa fai, per chi, e perché dovrebbero scegliere te. Tutto il resto — animazioni, effetti, sezioni infinite — o serve a quell'obiettivo o è peso morto.",
+      "Un sito vetrina ha un compito preciso: far capire in pochi secondi cosa fai, per chi, e perché dovrebbero scegliere te. Tutto il resto, dalle animazioni alle sezioni infinite, o serve a quell'obiettivo o è peso morto.",
     bestFor: [
       "Attività che vogliono essere trovate e contattate, non vendere online",
       "Studi professionali, artigiani, aziende di servizi",
@@ -109,7 +109,7 @@ export const SERVICES: readonly Service[] = [
     summary:
       "Cataloghi, pagamenti e spedizioni: un negozio che il cliente gestisce da solo e che converte da telefono.",
     intro:
-      "Un e-commerce non è un sito con un carrello attaccato. È un sistema che deve reggere catalogo, magazzino, pagamenti, spedizioni e resi — e restare semplice per chi lo usa ogni giorno.",
+      "Un e-commerce non è un sito con un carrello attaccato. È un sistema che deve reggere catalogo, magazzino, pagamenti, spedizioni e resi, e restare semplice per chi lo usa ogni giorno.",
     bestFor: [
       "Chi ha prodotti standardizzati pronti alla spedizione",
       "Chi vende già offline e vuole aprire un canale diretto",

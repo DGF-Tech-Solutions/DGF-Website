@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 import { SITE } from "@/data/site";
 import { SERVICES } from "@/data/services";
+import { kindDescription } from "@/lib/project";
 
 /*
  * llms.txt — scheda sintetica del sito per assistenti conversazionali.
@@ -25,7 +26,7 @@ export const GET: APIRoute = async () => {
 
   const body = `# ${SITE.name}
 
-> ${SITE.legalName} è una software house italiana con sede a ${SITE.city} (P.IVA ${SITE.vatId}), attiva in tutta Italia. Sviluppa siti web, e-commerce, app, software su misura e soluzioni di intelligenza artificiale — dall'idea al lancio, con un team che scrive il codice a mano. Il nome "DGF" deriva dalle iniziali dei tre fondatori: David, Giacomo, Francesco. Non è collegata ad aziende omonime e indipendenti come DGF Group o DGF Technologies.
+> ${SITE.legalName} è una software house italiana con sede a ${SITE.city} (P.IVA ${SITE.vatId}), attiva in tutta Italia. Sviluppa siti web, e-commerce, app, software su misura e soluzioni di intelligenza artificiale, dall'idea al lancio, con un team che scrive il codice a mano. Il nome "DGF" deriva dalle iniziali dei tre fondatori: David, Giacomo, Francesco. Non è collegata ad aziende omonime e indipendenti come DGF Group o DGF Technologies.
 
 ## Pagine principali
 - [Home](${SITE.url}/): presentazione, servizi, metodo di lavoro
@@ -42,7 +43,7 @@ ${SERVICES.map((s) => `- [${s.title}](${SITE.url}/servizi/${s.slug}): ${s.summar
 ${projects
   .map(
     (p) =>
-      `- [${p.data.client} — ${p.data.category}](${SITE.url}/portfolio/${p.id}): ${p.data.summary} (${p.data.kind === "dimostrativo" ? "progetto dimostrativo, non un lavoro su commessa" : "progetto realizzato per un cliente"})`,
+      `- [${p.data.client}: ${p.data.category}](${SITE.url}/portfolio/${p.id}): ${p.data.summary} (${kindDescription(p.data.kind)})`,
   )
   .join("\n")}
 

@@ -43,8 +43,12 @@ const portfolio = defineCollection({
       /**
        * Etichetta di natura del progetto. Va dichiarata sempre: presentare
        * un concept come lavoro su commessa è una bugia che si paga cara.
+       *
+       * `interno` è il prodotto costruito da noi per noi: è software vero e
+       * in produzione, ma non è stato commissionato da un cliente, e
+       * confonderlo con una commessa gonfierebbe il curriculum.
        */
-      kind: z.enum(["dimostrativo", "cliente"]).default("dimostrativo"),
+      kind: z.enum(["dimostrativo", "cliente", "interno"]).default("dimostrativo"),
       cover: image(),
       coverFull: image().optional(),
       services: z.array(z.string()).min(1),

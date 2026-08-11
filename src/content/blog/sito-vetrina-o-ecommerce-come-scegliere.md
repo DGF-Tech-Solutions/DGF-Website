@@ -7,7 +7,7 @@ author: DGF Tech Solutions
 readingTime: 5
 ---
 
-Molte attività ci chiedono direttamente un e-commerce, convinte che "vendere online" sia sempre il passo giusto. A volte lo è davvero. Più spesso conviene partire da una vetrina solida e costruire le vendite per gradi — e il motivo non è il costo, è il tempo che serve a far arrivare le persone.
+Molte attività ci chiedono direttamente un e-commerce, convinte che "vendere online" sia sempre il passo giusto. A volte lo è davvero. Più spesso conviene partire da una vetrina solida e costruire le vendite per gradi. Il motivo non è il costo, è il tempo che serve a far arrivare le persone.
 
 ## Quando basta una vetrina
 
@@ -25,7 +25,7 @@ Il negozio online si giustifica quando ricorrono queste condizioni:
 
 - Hai un catalogo di prodotti **standardizzati e pronti alla spedizione**.
 - Vuoi vendere **24 ore su 24** senza passare dal contatto diretto.
-- Hai — o stai attivamente costruendo — **un pubblico che cerca di comprare**, non solo di informarsi.
+- Hai già, o stai attivamente costruendo, **un pubblico che cerca di comprare**, non solo di informarsi.
 
 Manca l'ultima condizione? Allora il negozio esisterà, funzionerà tecnicamente, e resterà vuoto. Non è un problema di software: è che aprire un negozio non genera domanda.
 
@@ -41,4 +41,4 @@ Una vetrina, al confronto, chiede pochissimo: si aggiorna quando cambia qualcosa
 
 Il bello è che non serve rifare tutto da capo quando crescerai. Se il sito nasce su basi solide, aggiungere il carrello in un secondo momento è un'estensione, non una ripartenza.
 
-È così che lavoriamo: prima il passo che conta oggi, ma costruito in modo che quello di domani sia possibile. Se non sai in quale dei due casi ti trovi, [parliamone](/contatti) — di solito bastano dieci minuti per capirlo.
+È così che lavoriamo: prima il passo che conta oggi, ma costruito in modo che quello di domani sia possibile. Se non sai in quale dei due casi ti trovi, [parliamone](/contatti): di solito bastano dieci minuti per capirlo.

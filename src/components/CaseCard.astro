@@ -2,29 +2,41 @@
 import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
 import Icon from "@/components/Icon.astro";
+import { kindLabel } from "@/lib/project";
 
 /*
  * Scheda progetto, sorella di ArticleCard: stessa impaginazione interna
  * (riga categoria + metadato, titolo, riassunto, invito in fondo) con in più
- * l'anteprima del lavoro in cima, che qui è l'informazione che convince.
+ * l'anteprima del lavoro e l'elenco completo dei tag.
+ *
+ * Due forme, stesso contenuto:
+ *
+ *   verticale  immagine sopra, testo sotto. Serve nelle griglie a due o tre
+ *              colonne (home, progetti correlati), dove la colonna è stretta.
+ *   larga      immagine a sinistra, testo a destra. Serve nell'elenco dei
+ *              progetti, dove la scheda occupa tutta la riga: il riassunto ha
+ *              spazio per respirare invece di incolonnarsi verso il basso, e
+ *              i tag stanno su una riga sola.
  *
  * In fondo, a sinistra, l'etichetta sulla natura del progetto: dichiarare che
- * un lavoro è dimostrativo costa poco e vale molto, e va detto sulla scheda —
- * non solo dentro al caso.
+ * un lavoro è dimostrativo, o che è il nostro prodotto e non una commessa,
+ * costa poco e vale molto, e va detto sulla scheda, non solo dentro al caso.
  */
 interface Props {
   entry: CollectionEntry<"portfolio">;
   /** Carica l'immagine subito. Solo se la scheda è sopra la piega. */
   eager?: boolean;
+  /** Forma larga: immagine a sinistra, testo a destra. */
+  wide?: boolean;
   /**
    * Livello del titolo: dopo un h1 (pagine hub) serve h2, dentro una sezione
    * che ha già il suo h2 serve h3. Saltare un livello è un errore di
-   * accessibilità — chi usa lo screen reader naviga per titoli.
+   * accessibilità: chi usa lo screen reader naviga per titoli.
    */
   as?: "h2" | "h3";
 }
 
-const { entry, eager = false, as: Heading = "h3" } = Astro.props;
+const { entry, eager = false, wide = false, as: Heading = "h3" } = Astro.props;
 const d = entry.data;
 
 /* Testo su cui lavora la ricerca dell'Explorer. Comprende anche servizi e
@@ -34,42 +46,72 @@ const haystack = `${d.client} ${d.title} ${d.summary} ${d.category} ${d.services
   .toLowerCase()
   .normalize("NFD")
   .replace(/[̀-ͯ]/g, "");
+
+/* Nella forma verticale la colonna è stretta: oltre una certa quantità i tag
+   diventano un muro e coprono il riassunto, quindi si mostrano i primi e si
+   conta il resto. Nella forma larga ci stanno tutti. */
+const TAG_LIMIT = wide ? Infinity : 4;
+const allTags = [...d.services, ...d.stack];
+const shownTags = allTags.slice(0, TAG_LIMIT);
+const hiddenTags = allTags.length - shownTags.length;
 ---
 
 <a
   href={`/portfolio/${entry.id}`}
-  class="card group flex flex-col overflow-hidden"
+  class:list={["card group overflow-hidden", wide ? "case-wide" : "flex flex-col"]}
   data-search={haystack}
   data-cat={d.category}
 >
-  <div class="ratio-16-10 overflow-hidden border-b border-[var(--color-line)] bg-[var(--color-paper-2)]">
+  <div
+    class:list={[
+      "overflow-hidden bg-[var(--color-paper-2)]",
+      wide ? "case-media" : "ratio-16-10 border-b border-[var(--color-line)]",
+    ]}
+  >
     <Image
       src={d.cover}
       alt={`Anteprima del progetto ${d.client}`}
       widths={[340, 460, 620, 780]}
-      sizes="(min-width: 1024px) 32vw, (min-width: 640px) 48vw, 90vw"
+      sizes={wide
+        ? "(min-width: 1024px) 24rem, (min-width: 768px) 40vw, 92vw"
+        : "(min-width: 1024px) 32vw, (min-width: 640px) 48vw, 90vw"}
       quality={74}
       loading={eager ? "eager" : "lazy"}
       class="h-full w-full object-cover object-top transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-[1.04]"
     />
   </div>
 
-  <div class="flex flex-1 flex-col p-5 sm:p-6">
+  <div class:list={["flex flex-1 flex-col", wide ? "p-6 sm:p-8" : "p-5 sm:p-6"]}>
     <div class="flex items-center justify-between gap-3">
       <span class="tag">{d.category}</span>
       <span class="meta tabular">{d.year}</span>
     </div>
 
-    <Heading class="t-h3 mt-4 transition-colors group-hover:text-[var(--color-navy)]">
+    <Heading
+      class:list={[
+        "mt-4 transition-colors group-hover:text-[var(--color-navy)]",
+        wide ? "t-h2 !text-[1.5rem] sm:!text-[1.75rem]" : "t-h3",
+      ]}
+    >
       {d.title}
     </Heading>
 
-    <p class="t-body mt-3 flex-1 text-[0.875rem]">{d.summary}</p>
+    <p class:list={["t-body mt-3", wide ? "max-w-2xl" : "flex-1 text-[0.875rem]"]}>
+      {d.summary}
+    </p>
 
-    <div class="mt-6 flex items-center justify-between gap-3">
-      <span class="meta">
-        {d.kind === "dimostrativo" ? "Progetto dimostrativo" : "Progetto cliente"}
-      </span>
+    <!-- Servizi e tecnologie: i primi pieni, le seconde a filo. Sono due tipi
+         di informazione diversi e distinguerli evita di leggerli come un
+         elenco unico e indistinto. -->
+    <ul class:list={["tag-row", wide ? "mt-6" : "mt-5"]}>
+      {shownTags.map((t, i) => (
+        <li class:list={["tag-sm", i >= d.services.length && "tag-line"]}>{t}</li>
+      ))}
+      {hiddenTags > 0 && <li class="tag-sm tag-more">+{hiddenTags}</li>}
+    </ul>
+
+    <div class:list={["flex items-center justify-between gap-3", wide ? "mt-7" : "mt-6"]}>
+      <span class="meta">{kindLabel(d.kind, d.client)}</span>
       <span class="read-more">
         Vedi il progetto
         <Icon name="arrow-right" size={15} />
@@ -79,6 +121,29 @@ const haystack = `${d.client} ${d.title} ${d.summary} ${d.category} ${d.services
 </a>
 
 <style>
+  /*
+   * Forma larga. Sotto i 768 px resta impilata: una miniatura affiancata a un
+   * testo su uno schermo da telefono lascerebbe a entrambi una colonna
+   * inutilizzabile.
+   */
+  @media (min-width: 768px) {
+    .case-wide {
+      display: grid;
+      grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+    }
+    .case-media {
+      border-right: 1px solid var(--color-line);
+      /* L'immagine riempie l'altezza decisa dal testo accanto. */
+      min-height: 100%;
+    }
+  }
+  @media (max-width: 767px) {
+    .case-media {
+      aspect-ratio: 16 / 10;
+      border-bottom: 1px solid var(--color-line);
+    }
+  }
+
   /* Chip di categoria: maiuscoletto piccolo su fondo azzurro. */
   .tag {
     display: inline-flex;
@@ -92,6 +157,44 @@ const haystack = `${d.client} ${d.title} ${d.summary} ${d.category} ${d.services
     text-transform: uppercase;
     letter-spacing: 0.09em;
     white-space: nowrap;
+  }
+
+  .tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .tag-sm {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5625rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    background: var(--color-soft);
+    color: var(--color-navy);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    white-space: nowrap;
+  }
+
+  /* Le tecnologie: stesso ingombro, peso visivo minore. */
+  .tag-line {
+    background: transparent;
+    border-color: var(--color-line);
+    color: var(--color-ink-3);
+    font-weight: 500;
+  }
+
+  .tag-more {
+    background: transparent;
+    border-color: var(--color-line);
+    color: var(--color-ink-3);
+    font-variant-numeric: tabular-nums;
   }
 
   .meta {

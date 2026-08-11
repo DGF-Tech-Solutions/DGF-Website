@@ -26,6 +26,7 @@ const related = (await getCollection("portfolio"))
   .slice(0, 3);
 
 const isDemo = d.kind === "dimostrativo";
+const isInternal = d.kind === "interno";
 
 /*
  * Le "metriche" di un progetto dimostrativo non sono risultati misurati ma
@@ -77,6 +78,22 @@ const schema = {
               Studio realizzato internamente per mostrare metodo e capacità
               tecniche. Il committente è di fantasia e i dati riportati sono
               obiettivi progettuali, non risultati commerciali misurati.
+            </span>
+          </p>
+        )
+      }
+
+      <!-- Un prodotto nostro non è una commessa, e non vogliamo che sembri
+           tale: i numeri qui sotto sono veri, ma il committente siamo noi. -->
+      {
+        isInternal && (
+          <p class="notice mt-7">
+            <Icon name="shield" size={17} class="mt-0.5 shrink-0 text-[var(--color-navy)]" />
+            <span>
+              <strong class="font-semibold text-[var(--color-ink)]">Progetto interno.</strong>{" "}
+              {d.client} è un prodotto di DGF: l'abbiamo pensato, costruito e lo
+              manteniamo noi. È software in produzione, non un esercizio, ma non
+              nasce da una commessa di un cliente e preferiamo dirlo.
             </span>
           </p>
         )

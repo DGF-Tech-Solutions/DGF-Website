@@ -251,7 +251,7 @@ import { CONTACT } from "@/data/site";
       const fullName = `${get("nome")} ${get("cognome")}`.trim();
       const payload: Record<string, string> = {
         access_key: get("access_key"),
-        subject: `${get("subject")} — ${fullName}`,
+        subject: `${get("subject")}: ${fullName}`,
         from_name: get("from_name"),
         replyto: get("email"), // "Rispondi" nella mail va dritto al visitatore
         name: fullName,
@@ -286,7 +286,7 @@ import { CONTACT } from "@/data/site";
         form.reset();
         show(
           "success",
-          "Richiesta inviata. Ti rispondiamo entro un giorno lavorativo — controlla anche lo spam.",
+          "Richiesta inviata. Ti rispondiamo entro un giorno lavorativo. Controlla anche lo spam.",
         );
       } catch (error) {
         const detail = error instanceof Error ? error.message : "Errore sconosciuto";

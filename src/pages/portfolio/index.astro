@@ -4,7 +4,7 @@ import Base from "@/layouts/Base.astro";
 import HeroBand from "@/components/HeroBand.astro";
 import CaseCard from "@/components/CaseCard.astro";
 import Explorer from "@/components/Explorer.astro";
-import Icon from "@/components/Icon.astro";
+import CtaBand from "@/components/CtaBand.astro";
 import { SITE } from "@/data/site";
 import illustration from "@/assets/illustrazioni/scena-progetti.png";
 
@@ -26,7 +26,7 @@ const totalLabel = `${projects.length} ${projects.length === 1 ? "progetto" : "p
 
 const schema = {
   "@type": "CollectionPage",
-  name: "Progetti — DGF Tech Solutions",
+  name: "Progetti | DGF Tech Solutions",
   url: `${SITE.url}/portfolio`,
   hasPart: projects.map((p) => ({
     "@type": "CreativeWork",
@@ -39,7 +39,7 @@ const schema = {
 
 <Base
   title="Progetti"
-  description="I progetti di DGF Tech Solutions, a partire da Nexia Home, il gestionale per amministratori di condominio che sviluppiamo e manteniamo. Problema, approccio e soluzione di ciascuno."
+  description="I progetti di DGF Tech Solutions. Oggi trovi Nexia Home, il gestionale per amministratori di condominio che abbiamo costruito e che manteniamo: problema di partenza, scelte tecniche e cosa è andato in produzione."
   canonical="/portfolio"
   schema={schema}
 >
@@ -47,7 +47,7 @@ const schema = {
     badge="Progetti"
     badgeIcon="layers"
     title='Cosa sappiamo <span class="t-dim">costruire.</span>'
-    lead="Ogni scheda racconta un problema reale, le scelte fatte per risolverlo e come si è tradotto in software."
+    lead="Ogni scheda parte dal problema di chi userà il software, spiega le scelte tecniche fatte per risolverlo e mostra cosa è andato davvero in produzione. Preferiamo poche schede raccontate per intero a un elenco lungo che non dice niente."
     crumbs={[{ label: "Progetti" }]}
     illustration={illustration}
     illustrationAlt="Illustrazione: un monitor con il layout di un sito"
@@ -69,13 +69,17 @@ const schema = {
                 totale) perché il filtro ha già il suo messaggio di elenco vuoto. */}
             <p class="t-small mb-5">{totalLabel}</p>
 
-            {/* Nessuna immagine in `eager`: su mobile la testata riempie il
+            {/* Schede larghe in colonna singola: qui la scheda ha tutta la
+                riga, quindi il riassunto si distende invece di incolonnarsi e
+                servizi e tecnologie stanno su una riga sola.
+
+                Nessuna immagine in `eager`: su mobile la testata riempie il
                 primo schermo e le schede restano sotto la piega. L'unica
-                immagine prioritaria della pagina è quella della testata — due
+                immagine prioritaria della pagina è quella della testata, e due
                 immagini prioritarie si contenderebbero la banda. */}
-            <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="grid gap-5">
               {projects.map((entry) => (
-                <CaseCard entry={entry} as="h2" />
+                <CaseCard entry={entry} as="h2" wide />
               ))}
             </div>
           </Explorer>
@@ -84,20 +88,12 @@ const schema = {
         )
       }
 
-      <div class="card mt-16 flex flex-col items-center gap-5 bg-[var(--color-soft)] px-6 py-12 text-center">
-        <span class="icon-tile bg-white"><Icon name="message" size={22} /></span>
-        <h2 class="t-h2 max-w-xl !text-[1.75rem]">
-          Vuoi vedere qualcosa <span class="t-dim">simile al tuo caso?</span>
-        </h2>
-        <p class="t-body max-w-xl">
-          Scrivici il settore e il problema: ti mostriamo come lo affronteremmo,
-          senza impegno e senza raccontarti storie.
-        </p>
-        <a href="/contatti" class="btn btn-primary btn-lg">
-          Scrivici
-          <Icon name="arrow-right" size={17} />
-        </a>
-      </div>
     </div>
   </section>
+
+  <CtaBand
+    badge="Il tuo caso"
+    title='Vuoi vedere qualcosa <span class="t-dim">simile al tuo caso?</span>'
+    lead="Scrivici il settore e il problema: ti mostriamo come lo affronteremmo, senza impegno e senza raccontarti storie."
+  />
 </Base>
