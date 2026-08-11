@@ -2,6 +2,8 @@
 import { defineConfig, fontProviders } from "astro/config";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
+import { satteri } from "@astrojs/markdown-satteri";
+import satteriCallout from "./src/lib/satteri-callout.mjs";
 
 /*
  * DGF Tech Solutions — configurazione Astro.
@@ -76,6 +78,21 @@ export default defineConfig({
       fallbacks: ["ui-monospace", "monospace"],
     },
   ],
+
+  markdown: {
+    /*
+     * Le citazioni con marcatore `> [!ATTENZIONE]` diventano riquadri colorati.
+     * Sta qui e non in un componente perché il corpo dei contenuti è markdown
+     * puro: chi scrive dal pannello /admin non deve conoscere altro che il
+     * markdown, e il marcatore è la stessa convenzione degli avvisi di GitHub.
+     *
+     * Si aggancia al processore Sätteri, che in Astro 7 è quello di serie.
+     * La strada alternativa (`markdown.rehypePlugins`) obbligherebbe a
+     * installare la vecchia catena unified: una dipendenza in più e un build
+     * più lento per ottenere esattamente la stessa cosa.
+     */
+    processor: satteri({ hastPlugins: [satteriCallout()] }),
+  },
 
   integrations: [
     sitemap({

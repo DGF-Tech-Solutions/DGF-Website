@@ -168,11 +168,14 @@ collections:
         options:
           - { label: "Dimostrativo (concept interno)", value: dimostrativo }
           - { label: "Cliente reale (lavoro su commessa)", value: cliente }
+          - { label: "Prodotto nostro (es. Nexia Home)", value: interno }
         default: dimostrativo
         hint: >-
           IMPORTANTE. "Dimostrativo" mostra in pagina una nota di trasparenza e
-          presenta i numeri come obiettivi di progetto. Scegli "Cliente reale"
-          solo per lavori realmente commissionati.
+          presenta i numeri come obiettivi di progetto. "Prodotto nostro" è
+          software vero in produzione ma non commissionato da un cliente, e la
+          pagina lo dichiara. Scegli "Cliente reale" solo per lavori realmente
+          commissionati.
 
       - label: Immagine di anteprima
         name: cover
@@ -221,6 +224,18 @@ collections:
         name: solution
         widget: text
 
+      - label: Domande frequenti
+        name: faq
+        widget: list
+        required: false
+        summary: "{{fields.q}}"
+        hint: >-
+          Facoltative. Se le lasci vuote la sezione non compare. Tre o quattro
+          bastano: sono le domande che ti fanno davvero, non quelle comode.
+        fields:
+          - { label: Domanda, name: q, widget: string }
+          - { label: Risposta, name: a, widget: text }
+
       - label: In evidenza
         name: featured
         widget: boolean
@@ -236,4 +251,9 @@ collections:
       - label: Approfondimento
         name: body
         widget: markdown
-        hint: Il testo lungo in fondo alla pagina del progetto.
+        hint: >-
+          Il testo lungo della pagina. Ogni titolo di secondo livello finisce
+          da solo nell'indice in cima. Un elenco numerato diventa una sequenza
+          di passi: metti in grassetto le prime parole e diventano il titolo
+          del passo. Per i riquadri colorati apri una citazione e scrivi sulla
+          prima riga [!ATTENZIONE], [!BUONA PRATICA] oppure [!NOTA].

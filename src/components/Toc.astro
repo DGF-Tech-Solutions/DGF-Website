@@ -1,0 +1,82 @@
+---
+/*
+ * Indice interno della pagina, ricalcato su "In questa guida" di Nexia.
+ *
+ * Le voci arrivano dai titoli reali della pagina, non da un elenco scritto a
+ * mano: chi aggiunge una sezione dal pannello /admin se la ritrova qui senza
+ * doversi ricordare di aggiornare due posti. Astro assegna già un `id` a ogni
+ * titolo del markdown, quindi le ancore esistono senza fare nulla.
+ *
+ * Sotto le tre voci l'indice non compare: un elenco di due righe sopra un
+ * testo di due schermate non aiuta nessuno a orientarsi, aggiunge solo un
+ * blocco da saltare.
+ */
+interface Props {
+  /** Titolo mostrato sopra l'elenco. */
+  eyebrow?: string;
+  items: { slug: string; text: string }[];
+  class?: string;
+}
+
+const { eyebrow = "In questa scheda", items, class: className = "" } = Astro.props;
+const show = items.length >= 3;
+---
+
+{
+  show && (
+    <nav class:list={["toc", className]} aria-label={eyebrow}>
+      <p class="t-eyebrow">{eyebrow}</p>
+      <ol class="toc-list">
+        {items.map((item) => (
+          <li>
+            <a href={`#${item.slug}`}>{item.text}</a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}
+
+<style>
+  .toc {
+    padding: 1.5rem 1.75rem;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-xl);
+    background: var(--color-paper-2);
+  }
+
+  .toc-list {
+    counter-reset: voce;
+    margin-top: 1.125rem;
+    list-style: none;
+    padding: 0;
+  }
+  .toc-list li { counter-increment: voce; }
+  .toc-list li + li { margin-top: 0.625rem; }
+
+  .toc-list a {
+    display: flex;
+    gap: 0.75rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--color-ink-2);
+    text-decoration: none;
+    transition: color var(--dur) var(--ease-out-quart);
+  }
+  /* Il numero non sta nel testo del link: chi usa uno screen reader sentirebbe
+     "zero uno" prima di ogni voce senza ricavarne niente. */
+  .toc-list a::before {
+    content: counter(voce, decimal-leading-zero);
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-ink-3);
+    padding-top: 0.15em;
+  }
+  @media (hover: hover) {
+    .toc-list a:hover { color: var(--color-navy); }
+    .toc-list a:hover::before { color: var(--color-navy); }
+  }
+</style>

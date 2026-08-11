@@ -48,11 +48,34 @@ approach:
     fiscali, riparti pesanti, invii massivi. Così l'interfaccia non si blocca
     mai ad aspettare.
 solution: Un'applicazione web multi-tenant e multi-condominio con contabilità, fiscalità, assemblee, lavori straordinari, servizi a consumo, archivio documentale e portale per i residenti con pagamento delle rate online. Un solo posto per lo studio, un solo posto per il condomino.
+faq:
+  - q: Posso vedere Nexia Home dal vivo?
+    a: >-
+      Sì. Il prodotto ha un sito suo, nexiahome.it, con le schermate reali dei
+      moduli e la prova gratuita. Quello che vedi in questa pagina è il dietro
+      le quinte tecnico, non la vetrina commerciale.
+  - q: Potete costruire un gestionale così anche per il mio settore?
+    a: >-
+      Sì, ed è il motivo per cui questa scheda esiste. Il dominio cambia, il
+      metodo no. Prima di preventivare vogliamo capire quale parte del tuo
+      lavoro è davvero ripetitiva, perché spesso conviene automatizzarne una
+      sola e farla bene invece di rifare tutto.
+  - q: Se commissiono un software a voi, il codice resta mio?
+    a: >-
+      Sì. Nexia Home è un'eccezione perché è un prodotto nostro, che vendiamo
+      noi. Sui lavori su commessa il codice sorgente, il dominio e gli accessi
+      restano di chi paga, e li consegniamo alla fine del progetto.
+  - q: Perché due linguaggi, Python e TypeScript?
+    a: >-
+      Perché fanno due mestieri diversi. I calcoli contabili stanno in Python
+      con aritmetica decimale, dove un centesimo di differenza non esiste;
+      l'interfaccia sta in TypeScript perché deve girare nel browser. Un solo
+      linguaggio ovunque avrebbe significato rinunciare a una delle due cose.
 featured: true
 order: 1
 ---
 
-## Il problema che risolve
+## Perché un altro gestionale
 
 Un amministratore di condominio non ha un lavoro solo: fa il contabile, il fiscalista, il segretario d'assemblea, il direttore lavori e il centralino. Ogni condominio che gestisce moltiplica tutto: piano dei conti, esercizio, tabelle millesimali, scadenze, fornitori, verbali.
 
@@ -76,6 +99,21 @@ Il frontend è un'unica applicazione Next.js che serve tre pubblici diversi con 
 
 **Stato nell'URL.** Filtri, ordinamento e pagina vivono nella barra degli indirizzi. Una lista filtrata si può salvare nei preferiti e mandare a un collega: dettaglio piccolo che in un gestionale usato otto ore al giorno si sente.
 
+> [!ATTENZIONE]
+> La virgola mobile in contabilità è la trappola più costosa del settore. Non sbaglia il totale di poco: lo sbaglia in modo diverso a ogni ricalcolo, quindi il rendiconto non torna mai due volte allo stesso modo e nessuno riesce a capire dove sia l'errore.
+
+## Come si registra una fattura
+
+È il percorso che un amministratore ripete decine di volte al mese, ed è il primo che abbiamo reso indolore.
+
+1. **Si importa il documento.** Dal cassetto fiscale o caricando il file XML della fattura elettronica. I dati si leggono da soli, senza ridigitare partita IVA, importi e scadenze.
+2. **Il fornitore si riconosce da solo.** Se la partita IVA è già in anagrafica il collegamento è automatico; se è nuova si crea al volo senza uscire dalla schermata.
+3. **Si sceglie la tabella di riparto.** L'importo si divide fra i condòmini secondo la tabella giusta per quel tipo di spesa, con i millesimi presi dall'anagrafica e non riscritti a mano.
+4. **Le quote finiscono nelle rate.** Da lì entrano nella situazione contabile di ogni condomino e compaiono nel suo portale, senza un solo passaggio manuale.
+
 ## Cosa vede il condomino
 
 Il portale non è un contentino. Da lì un residente vede la propria situazione contabile, paga la rata con carta tramite Stripe, scarica bilanci e verbali, apre una segnalazione con la foto del guasto, prenota la sala comune, inserisce l'autolettura del contatore e consulta le convocazioni d'assemblea. Ogni cosa che il condomino fa da solo è una telefonata in meno allo studio.
+
+> [!BUONA PRATICA]
+> Il modo più rapido per capire se un gestionale è fatto bene è guardare cosa succede quando l'utente sbaglia. Noi abbiamo messo la validazione due volte, davanti e dietro: davanti perché l'errore vada corretto subito, dietro perché il dato sporco non entri mai nel database.

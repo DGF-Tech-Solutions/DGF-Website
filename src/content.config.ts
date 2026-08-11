@@ -60,6 +60,11 @@ const portfolio = defineCollection({
       challenge: z.string(),
       approach: z.array(z.string()).min(1),
       solution: z.string(),
+      /**
+       * Domande frequenti sul progetto. Facoltative: se mancano, la sezione
+       * non compare invece di restare vuota.
+       */
+      faq: z.array(z.object({ q: z.string(), a: z.string() })).default([]),
       featured: z.boolean().default(false),
       order: z.number().int().default(99),
     }),

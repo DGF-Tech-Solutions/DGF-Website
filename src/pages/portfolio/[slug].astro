@@ -5,8 +5,12 @@ import Base from "@/layouts/Base.astro";
 import Breadcrumbs from "@/components/Breadcrumbs.astro";
 import CaseCard from "@/components/CaseCard.astro";
 import CtaBand from "@/components/CtaBand.astro";
+import Faq from "@/components/Faq.astro";
 import Icon from "@/components/Icon.astro";
+import Toc from "@/components/Toc.astro";
 import { SITE } from "@/data/site";
+import { readingMinutes } from "@/lib/format";
+import { kindLabel } from "@/lib/project";
 
 export async function getStaticPaths() {
   const projects = await getCollection("portfolio");
@@ -18,7 +22,7 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const d = entry.data;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
 
 const related = (await getCollection("portfolio"))
   .filter((p) => p.id !== entry.id)
@@ -33,7 +37,24 @@ const isInternal = d.kind === "interno";
  * obiettivi progettuali: il titolo della sezione cambia di conseguenza,
  * perché chiamarli "risultati" sarebbe falso.
  */
-const metricsTitle = isDemo ? "Obiettivi di progetto" : "Risultati";
+const metricsTitle = isDemo ? "Obiettivi di progetto" : "Il progetto in numeri";
+
+const minutes = readingMinutes(
+  `${d.challenge} ${d.approach.join(" ")} ${d.solution} ${entry.body ?? ""}`,
+);
+
+/*
+ * Indice: le tre sezioni fisse più i titoli del markdown, più le domande se
+ * ci sono. Gli `id` dei titoli del markdown li assegna Astro da sé; quelli
+ * delle sezioni fisse sono scritti qui sotto e devono restare uguali.
+ */
+const tocItems = [
+  { slug: "problema", text: "Il problema" },
+  { slug: "approccio", text: "L'approccio" },
+  { slug: "soluzione", text: "La soluzione" },
+  ...headings.filter((h) => h.depth === 2).map((h) => ({ slug: h.slug, text: h.text })),
+  ...(d.faq.length > 0 ? [{ slug: "domande", text: "Domande frequenti" }] : []),
+];
 
 const schema = {
   "@type": "CreativeWork",
@@ -53,7 +74,9 @@ const schema = {
   canonical={`/portfolio/${entry.id}`}
   schema={schema}
 >
-  <!-- Testata -->
+  <!-- ══════════════════════════════════════════════════════════════════
+       TESTATA
+       ══════════════════════════════════════════════════════════════════ -->
   <section class="glow-bg overflow-hidden border-b border-[var(--color-line)]">
     <div class="wrap pt-6 pb-12 sm:pt-8 sm:pb-14">
       <Breadcrumbs
@@ -61,9 +84,15 @@ const schema = {
         class="mb-8"
       />
 
-      <div class="flex flex-wrap items-center gap-3">
+      <!-- Riga metadati: categoria, anno, tempo di lettura. La stessa che sta
+           in cima alle guide di Nexia: dice subito quanto costa leggere. -->
+      <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
         <span class="chip">{d.category}</span>
         <span class="t-small tabular">{d.year}</span>
+        <span class="t-small" aria-hidden="true">·</span>
+        <span class="t-small">{minutes} min di lettura</span>
+        <span class="t-small" aria-hidden="true">·</span>
+        <span class="t-small">{kindLabel(d.kind, d.client)}</span>
       </div>
 
       <h1 class="t-h1 mt-4 max-w-4xl anim-rise">{d.title}</h1>
@@ -98,28 +127,12 @@ const schema = {
           </p>
         )
       }
-
-      <!-- Scheda tecnica -->
-      <dl class="mt-9 grid gap-4 sm:grid-cols-3">
-        <div class="card p-5">
-          <dt class="t-eyebrow">Committente</dt>
-          <dd class="t-h3 mt-2">{d.client}</dd>
-        </div>
-        <div class="card p-5">
-          <dt class="t-eyebrow">Servizi</dt>
-          <dd class="t-body mt-2 text-[0.875rem]">{d.services.join(", ")}</dd>
-        </div>
-        <div class="card p-5">
-          <dt class="t-eyebrow">Tecnologie</dt>
-          <dd class="mt-2 flex flex-wrap gap-1.5">
-            {d.stack.map((t) => <span class="chip chip-line !text-[0.6875rem]">{t}</span>)}
-          </dd>
-        </div>
-      </dl>
     </div>
   </section>
 
-  <!-- Immagine principale -->
+  <!-- ══════════════════════════════════════════════════════════════════
+       IMMAGINE PRINCIPALE
+       ══════════════════════════════════════════════════════════════════ -->
   <section class="band-soft">
     <div class="wrap py-10 sm:py-14">
       {/*
@@ -137,77 +150,90 @@ const schema = {
           class="w-full"
         />
       </div>
+
+      <!-- Numeri in fascia sotto l'immagine, non in una colonna laterale: la
+           pagina resta a lettura singola dall'inizio alla fine. -->
+      {
+        d.metrics.length > 0 && (
+          <div class="mt-10">
+            <h2 class="t-eyebrow text-center">{metricsTitle}</h2>
+            <dl class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {d.metrics.map((m) => (
+                <div class="card p-6 text-center reveal">
+                  <dt class="t-h2 tabular !text-[2rem]">{m.value}</dt>
+                  <dd class="t-small mt-2">{m.label}</dd>
+                </div>
+              ))}
+            </dl>
+            {isDemo && (
+              <p class="t-small mt-5 text-center">
+                Obiettivi definiti in fase di progetto, non misurazioni su
+                traffico reale.
+              </p>
+            )}
+          </div>
+        )
+      }
     </div>
   </section>
 
-  <!-- Problema / approccio / soluzione -->
+  <!-- ══════════════════════════════════════════════════════════════════
+       CORPO — colonna unica, come le guide
+       ══════════════════════════════════════════════════════════════════ -->
   <section class="section">
     <div class="wrap">
-      <div class="grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
-        <div>
-          <span class="t-eyebrow">Il problema</span>
-          <p class="t-lead mt-3 !text-[var(--color-ink)]">{d.challenge}</p>
+      <div class="case-body">
+        <Toc items={tocItems} />
 
-          <div class="mt-12">
-            <span class="t-eyebrow">L'approccio</span>
-            <ol class="mt-5 space-y-3">
-              {
-                d.approach.map((step, i) => (
-                  <li class="card group flex items-start gap-4 p-5 reveal">
-                    <span class="icon-tile icon-tile-sm !text-[0.8125rem] font-bold">
-                      {i + 1}
-                    </span>
-                    <span class="t-body pt-1">{step}</span>
-                  </li>
-                ))
-              }
-            </ol>
-          </div>
+        <div class="prose !max-w-none">
+          <h2 id="problema">Il problema</h2>
+          <p>{d.challenge}</p>
 
-          <div class="mt-12">
-            <span class="t-eyebrow">La soluzione</span>
-            <p class="t-lead mt-3 !text-[var(--color-ink)]">{d.solution}</p>
-          </div>
+          <h2 id="approccio">L'approccio</h2>
+          {/* Elenco numerato: lo stile a schede con il tondo numerato arriva
+              da `.prose ol`, lo stesso che ottiene chi scrive "1." nel corpo
+              del testo dal pannello. Una regola sola, due usi. */}
+          <ol>
+            {d.approach.map((step) => <li>{step}</li>)}
+          </ol>
+
+          <h2 id="soluzione">La soluzione</h2>
+          <p>{d.solution}</p>
+
+          <Content />
         </div>
-
-        {
-          d.metrics.length > 0 && (
-            <aside>
-              <div class="card bg-[var(--color-soft)] p-7 lg:sticky lg:top-24">
-                <h2 class="t-eyebrow">{metricsTitle}</h2>
-                <dl class="mt-6 space-y-5">
-                  {d.metrics.map((m) => (
-                    <div class="border-t border-[color-mix(in_srgb,var(--color-navy)_15%,transparent)] pt-4 first:border-0 first:pt-0">
-                      <dt class="t-h2 tabular !text-[1.75rem]">{m.value}</dt>
-                      <dd class="t-small mt-1">{m.label}</dd>
-                    </div>
-                  ))}
-                </dl>
-                {isDemo && (
-                  <p class="t-small mt-6 border-t border-[color-mix(in_srgb,var(--color-navy)_15%,transparent)] pt-4">
-                    Obiettivi definiti in fase di progetto, non misurazioni su
-                    traffico reale.
-                  </p>
-                )}
-              </div>
-            </aside>
-          )
-        }
       </div>
     </div>
   </section>
 
-  <!-- Approfondimento -->
-  <section class="band-soft section">
-    <div class="wrap">
-      <span class="t-eyebrow">In dettaglio</span>
-      <div class="prose mt-6">
-        <Content />
-      </div>
-    </div>
-  </section>
+  <!-- ══════════════════════════════════════════════════════════════════
+       DOMANDE FREQUENTI
+       ══════════════════════════════════════════════════════════════════ -->
+  {
+    d.faq.length > 0 && (
+      <section id="domande" class="band-soft section">
+        <div class="wrap">
+          <div class="mx-auto max-w-2xl text-center">
+            <span class="t-eyebrow">Domande frequenti</span>
+            <h2 class="t-h2 mt-3">
+              Tutto quello che <span class="t-dim">vuoi sapere.</span>
+            </h2>
+          </div>
+          <div class="mx-auto mt-12 max-w-3xl">
+            <Faq items={d.faq} />
+          </div>
+          <p class="t-small mx-auto mt-8 max-w-md text-center">
+            Non trovi la risposta? Ti rispondiamo di persona, di solito entro un
+            giorno lavorativo.
+          </p>
+        </div>
+      </section>
+    )
+  }
 
-  <!-- Correlati -->
+  <!-- ══════════════════════════════════════════════════════════════════
+       CORRELATI
+       ══════════════════════════════════════════════════════════════════ -->
   {
     related.length > 0 && (
       <section class="section">
@@ -251,4 +277,16 @@ const schema = {
     line-height: 1.6;
     color: var(--color-ink-3);
   }
+
+  /* Colonna di lettura centrata e più larga della misura di default: qui
+     dentro ci sono anche schede e riquadri, non solo paragrafi, e una misura
+     da romanzo li stringerebbe troppo. */
+  .case-body {
+    max-width: 46rem;
+    margin-inline: auto;
+  }
+  .case-body > :global(.prose) { margin-top: 3rem; }
+
+  /* L'ancora dell'indice non deve finire sotto la barra in alto. */
+  .case-body :global(h2) { scroll-margin-top: 6rem; }
 </style>
