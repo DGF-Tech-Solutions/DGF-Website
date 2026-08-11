@@ -27,8 +27,13 @@ backend:
 
 # Cartella di default per i caricamenti (usata dalle collezioni che non
 # definiscono la propria).
-media_folder: src/assets/uploads
-public_folder: ../../assets/uploads
+#
+# Entrambi i percorsi sono ASSOLUTI dalla radice del repository: Sveltia
+# rifiuta i percorsi relativi, e Astro risolve comunque "/src/..." grazie a
+# Vite. Verificato: le immagini referenziate così vengono ottimizzate
+# regolarmente in fase di build.
+media_folder: /src/assets/uploads
+public_folder: /src/assets/uploads
 
 # Interfaccia in italiano.
 locale: it
@@ -125,10 +130,10 @@ collections:
     extension: md
     format: frontmatter
     # Le immagini dei progetti stanno insieme agli altri asset ottimizzati
-    # da Astro. `public_folder` scrive nel frontmatter il percorso relativo
-    # che le content collections si aspettano.
+    # da Astro. Percorso assoluto dalla radice del repository: è la forma
+    # che accettano sia Sveltia sia le content collections di Astro.
     media_folder: /src/assets/mockups
-    public_folder: ../../assets/mockups
+    public_folder: /src/assets/mockups
     sortable_fields: [order, year, client]
     fields:
       - label: Nome committente

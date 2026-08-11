@@ -5,8 +5,8 @@ summary: Sito per un ristorante d'autore con menù digitale, racconto della cuci
 category: Sito + prenotazioni
 year: "2024"
 kind: dimostrativo
-cover: ../../assets/mockups/ristorazione.webp
-coverFull: ../../assets/mockups/ristorazione-full.webp
+cover: /src/assets/mockups/ristorazione.webp
+coverFull: /src/assets/mockups/ristorazione-full.webp
 services:
   - Sito web
   - UI/UX Design

@@ -5,8 +5,8 @@ summary: Vetrina immobiliare di alto profilo con ricerca avanzata, gallerie imme
 category: Sito immobiliare
 year: "2024"
 kind: dimostrativo
-cover: ../../assets/mockups/immobiliare.webp
-coverFull: ../../assets/mockups/immobiliare-full.webp
+cover: /src/assets/mockups/immobiliare.webp
+coverFull: /src/assets/mockups/immobiliare-full.webp
 services:
   - Sito web
   - UI/UX Design

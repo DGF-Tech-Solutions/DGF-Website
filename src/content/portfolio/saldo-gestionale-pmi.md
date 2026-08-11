@@ -5,8 +5,8 @@ summary: Piattaforma per clienti, fatture e scadenze di una PMI di servizi — u
 category: Software gestionale
 year: "2025"
 kind: dimostrativo
-cover: ../../assets/mockups/gestionale.webp
-coverFull: ../../assets/mockups/gestionale-full.webp
+cover: /src/assets/mockups/gestionale.webp
+coverFull: /src/assets/mockups/gestionale-full.webp
 services:
   - Software su misura
   - UI/UX Design

@@ -5,8 +5,8 @@ summary: Negozio online per un vivaio urbano — catalogo curato, checkout in tr
 category: E-commerce
 year: "2025"
 kind: dimostrativo
-cover: ../../assets/mockups/ecommerce.webp
-coverFull: ../../assets/mockups/ecommerce-full.webp
+cover: /src/assets/mockups/ecommerce.webp
+coverFull: /src/assets/mockups/ecommerce-full.webp
 services:
   - E-commerce
   - UI/UX Design
