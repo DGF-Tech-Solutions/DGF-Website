@@ -1,0 +1,16 @@
+# Tutto ciò che non deve entrare nell'immagine: la build dentro il container
+# si fa da zero, e copiare queste cartelle la rallenterebbe soltanto.
+node_modules
+dist
+.astro
+.git
+.github
+.vscode
+.idea
+docs
+*.log
+.env
+.env.*
+Dockerfile
+docker-compose.yml
+.dockerignore

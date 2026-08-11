@@ -1,0 +1,52 @@
+# ============================================================================
+# Ambienti di test locali del sito DGF.
+#
+#   docker compose up dev       ->  http://localhost:4321   sviluppo, si
+#                                   aggiorna da solo quando salvi un file
+#
+#   docker compose up preview   ->  http://localhost:8080   il sito COMPILATO,
+#                                   servito come farà GitHub Pages
+#
+# Quale usare:
+#   - "dev"     mentre lavori ai contenuti o alla grafica
+#   - "preview" prima di pubblicare, per vedere il sito com'è davvero:
+#               indirizzi risolti come su Pages (/admin funziona), gzip
+#               attivo, pagina 404 vera, immagini ottimizzate
+# ============================================================================
+
+services:
+  # ── Sviluppo, con ricaricamento automatico ────────────────────────────────
+  dev:
+    image: node:22-bookworm-slim
+    container_name: dgf-dev
+    working_dir: /app
+    # `--host 0.0.0.0` è indispensabile: senza, il server ascolta solo dentro
+    # il container e dal browser di Windows non lo raggiungi.
+    command: sh -c "npm ci && npx astro dev --host 0.0.0.0 --ignore-lock"
+    ports:
+      - "4321:4321"
+    volumes:
+      - .:/app
+      # node_modules resta DENTRO il container: quelli installati su Windows
+      # contengono binari per Windows (sharp) che su Linux non funzionano.
+      - dgf_node_modules:/app/node_modules
+    environment:
+      # Su volumi montati da Windows gli eventi del filesystem non arrivano:
+      # senza polling il ricaricamento automatico non scatta.
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    stdin_open: true
+    tty: true
+
+  # ── Anteprima di produzione ───────────────────────────────────────────────
+  preview:
+    build:
+      context: .
+      target: preview
+    container_name: dgf-preview
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
+volumes:
+  dgf_node_modules:

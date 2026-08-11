@@ -7,6 +7,27 @@ Sito vetrina di [DGF Tech Solutions](https://dgftechsolutions.com).
 
 ## Comandi
 
+### Con Docker (consigliato)
+
+```bash
+docker compose up dev       # http://localhost:4321  sviluppo, si ricarica da solo
+docker compose up preview   # http://localhost:8080  il sito COMPILATO, come sarà online
+```
+
+**Usa `preview` prima di ogni pubblicazione.** Non è la stessa cosa del dev
+server: `preview` compila il sito e lo serve con nginx configurato come
+GitHub Pages, quindi vedi il comportamento reale — indirizzi risolti come su
+Pages (`/admin` funziona, sul dev server dà 404), gzip attivo, pagina 404
+vera, immagini ottimizzate.
+
+Verificare che la build passerà su GitHub Actions, prima di fare push:
+
+```bash
+docker run --rm -v "${PWD}:/src:ro" node:22-bookworm-slim sh /src/scripts/ci-check.sh
+```
+
+### Senza Docker
+
 ```bash
 npm install      # una volta
 npm run dev      # sviluppo su http://localhost:4321
@@ -15,7 +36,8 @@ npm run preview  # anteprima locale della build
 npm run check    # controllo dei tipi e dei contenuti
 ```
 
-Node 20 o successivo (vedi `.nvmrc`).
+Node 22 (vedi `.nvmrc`). Attenzione: il dev server **non** replica il
+comportamento di GitHub Pages sugli indirizzi di cartella.
 
 ---
 
@@ -106,6 +128,18 @@ Sono le scelte che tengono il sito veloce. Se le si perde, si perdono i punteggi
    stabile (og-image, favicon, CNAME).
 5. **Contrasto minimo 4,5:1 sul testo.** Il cyan del brand a 11px non lo
    raggiunge: per il testo piccolo si usa il blu.
+6. **Il `package-lock.json` va rigenerato su Linux, mai su Windows.**
+   Un lock generato su Windows contiene solo i binari nativi Windows di
+   `sharp` e del bundler, e `npm ci` su Linux — cioè su GitHub Actions e nel
+   container — fallisce con *"Missing: … from lock file"*. Quando cambi le
+   dipendenze:
+
+   ```bash
+   docker run --rm -v "${PWD}:/app" -w /app node:22-bookworm-slim sh scripts/regen-lock.sh
+   ```
+
+   Lo script stampa i binari inclusi: devono comparire sia `linux-x64` sia
+   `win32-x64`.
 
 ---
 
