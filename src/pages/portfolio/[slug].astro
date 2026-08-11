@@ -30,7 +30,6 @@ const related = (await getCollection("portfolio"))
   .slice(0, 3);
 
 const isDemo = d.kind === "dimostrativo";
-const isInternal = d.kind === "interno";
 
 /*
  * Le "metriche" di un progetto dimostrativo non sono risultati misurati ma
@@ -73,11 +72,12 @@ const schema = {
   description={d.summary}
   canonical={`/portfolio/${entry.id}`}
   schema={schema}
+  navSolid
 >
   <!-- ══════════════════════════════════════════════════════════════════
        TESTATA
        ══════════════════════════════════════════════════════════════════ -->
-  <section class="band-brand">
+  <section class="band-brand under-nav">
     <div class="wrap relative z-10 pt-6 pb-12 sm:pt-8 sm:pb-16">
       <Breadcrumbs
         items={[{ label: "Progetti", href: "/portfolio" }, { label: d.client }]}
@@ -141,21 +141,6 @@ const schema = {
             )
           }
 
-          <!-- Un prodotto nostro non è una commessa, e non vogliamo che sembri
-               tale: i numeri più avanti sono veri, ma il committente siamo noi. -->
-          {
-            isInternal && (
-              <p class="notice mt-7">
-                <Icon name="shield" size={17} class="mt-0.5 shrink-0 text-[var(--color-cyan)]" />
-                <span>
-                  <strong class="font-semibold text-[var(--color-ink)]">Progetto interno.</strong>{" "}
-                  {d.client} è un prodotto di DGF: l'abbiamo pensato, costruito e
-                  lo manteniamo noi. È software in produzione, non un esercizio,
-                  ma non nasce da una commessa di un cliente e preferiamo dirlo.
-                </span>
-              </p>
-            )
-          }
         </div>
 
         <!--
@@ -216,11 +201,11 @@ const schema = {
   }
 
   <!-- ══════════════════════════════════════════════════════════════════
-       CORPO — colonna unica, come le guide
+       CORPO — colonna unica, larga quanto il resto della pagina
        ══════════════════════════════════════════════════════════════════ -->
   <section class="section">
     <div class="wrap">
-      <div class="case-body reading">
+      <div class="case-body">
         <Toc items={tocItems} />
 
         <div class="prose !max-w-none">
@@ -342,9 +327,10 @@ const schema = {
     box-shadow: var(--shadow-lg);
   }
 
-  /* La larghezza la dà `.reading` (global.css), condivisa con gli articoli
-     del blog: paragrafi, schede e riquadri stanno tutti sulla stessa
-     larghezza, ed è ciò che fa sembrare la pagina una cosa sola. */
+  /* Nessun limite di larghezza: indice e testo arrivano ai bordi del
+     contenitore, gli stessi delle schede dei numeri qui sopra. Prima erano
+     una colonna da 42rem centrata, che lasciava due fasce vuote ai lati e non
+     allineava i propri bordi con nessun altro elemento della pagina. */
   .case-body > :global(.prose) { margin-top: 3rem; }
 
   /* L'ancora dell'indice non deve finire sotto la barra in alto. */

@@ -6,7 +6,7 @@ import ArticleCard from "@/components/ArticleCard.astro";
 import Explorer from "@/components/Explorer.astro";
 import CtaBand from "@/components/CtaBand.astro";
 import { SITE } from "@/data/site";
-import illustration from "@/assets/illustrazioni/scena-blog.png";
+import illustration from "@/assets/foto/blog.webp";
 
 const articles = (await getCollection("blog", ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime(),
@@ -44,6 +44,7 @@ const schema = {
   description="Guide e ragionamenti su siti web, e-commerce, software e intelligenza artificiale. Le domande che ci fanno più spesso, con la risposta lunga."
   canonical="/blog"
   schema={schema}
+  navSolid
 >
   <HeroBand
     badge="Blog"
@@ -52,7 +53,8 @@ const schema = {
     lead="Le domande che ci arrivano più spesso, con la risposta estesa che in una chiamata non c'è tempo di dare."
     crumbs={[{ label: "Blog" }]}
     illustration={illustration}
-    illustrationAlt="Illustrazione: scrivania con laptop, appunti e una tazza di caffè"
+    illustrationAlt="Una mano scrive su un taccuino accanto a un portatile e una tazza"
+    illustrationAi
     cta={{ label: "Parliamo del tuo progetto", href: "/contatti" }}
   />
 

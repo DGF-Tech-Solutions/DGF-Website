@@ -37,7 +37,7 @@ export const GET: APIRoute = async () => {
 - [Contatti](${SITE.url}/contatti): modulo di contatto
 
 ## Servizi
-${SERVICES.map((s) => `- [${s.title}](${SITE.url}/servizi/${s.slug}): ${s.summary} Tempi indicativi: ${s.timeline}.`).join("\n")}
+${SERVICES.map((s) => `- [${s.title}](${SITE.url}/servizi/${s.slug}): ${s.summary}`).join("\n")}
 
 ## Progetti
 ${projects

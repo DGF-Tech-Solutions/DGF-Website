@@ -6,7 +6,7 @@ import CaseCard from "@/components/CaseCard.astro";
 import Explorer from "@/components/Explorer.astro";
 import CtaBand from "@/components/CtaBand.astro";
 import { SITE } from "@/data/site";
-import illustration from "@/assets/illustrazioni/scena-progetti.png";
+import illustration from "@/assets/foto/progetti.webp";
 
 const projects = (await getCollection("portfolio")).sort(
   (a, b) => a.data.order - b.data.order,
@@ -55,6 +55,7 @@ const schema = {
   description="I progetti di DGF Tech Solutions. Oggi trovi Nexia Home, il gestionale per amministratori di condominio che abbiamo costruito e che manteniamo: problema di partenza, scelte tecniche e cosa è andato in produzione."
   canonical="/portfolio"
   schema={schema}
+  navSolid
 >
   <HeroBand
     badge="Progetti"
@@ -63,7 +64,8 @@ const schema = {
     lead="Ogni scheda parte dal problema di chi userà il software, spiega le scelte tecniche fatte per risolverlo e mostra cosa è andato davvero in produzione. Preferiamo poche schede raccontate per intero a un elenco lungo che non dice niente."
     crumbs={[{ label: "Progetti" }]}
     illustration={illustration}
-    illustrationAlt="Illustrazione: un monitor con il layout di un sito"
+    illustrationAlt="Due persone davanti a schemi di interfaccia stampati su un tavolo"
+    illustrationAi
     cta={{ label: "Parliamo del tuo progetto", href: "/contatti" }}
   />
 

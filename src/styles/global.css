@@ -68,6 +68,11 @@
   --measure-page: 75rem;   /* 1200px */
   --measure-text: 42rem;
 
+  /* Altezza della barra in alto. Sta qui e non in Nav.astro perché serve
+     anche a `main`, che deve lasciarle lo spazio: la barra è fissa e non
+     occupa più una riga sua nel flusso. */
+  --nav-h: 3.5rem;
+
   /* ─── Movimento ────────────────────────────────────────────────────── */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
@@ -237,6 +242,30 @@
 .reading {
   max-width: var(--measure-text);
   margin-inline: auto;
+}
+
+/* ----------------------------------------------------------------------------
+   Spazio per la barra in alto.
+
+   La barra è `position: fixed`: non occupa una riga sua nel flusso, quindi il
+   contenuto le finirebbe sotto. `main` le lascia il posto.
+   ------------------------------------------------------------------------- */
+main { padding-top: var(--nav-h); }
+@media (min-width: 1024px) { :root { --nav-h: 4rem; } }
+
+/*
+ * Prima sezione che deve passare SOTTO la barra invece di cominciare dopo.
+ *
+ * Serve dove la sezione in cima ha un fondo suo — la fascia blu di un caso,
+ * l'alone colorato di una testata: senza, resta una striscia di bianco fra il
+ * bordo della finestra e l'inizio del colore, e la pagina sembra cominciare
+ * due volte. Con questa classe il fondo arriva fino in cima e la barra ci
+ * galleggia sopra; il padding rimette il contenuto sotto la barra, così non
+ * ci finisce nascosto dietro.
+ */
+.under-nav {
+  margin-top: calc(-1 * var(--nav-h));
+  padding-top: var(--nav-h);
 }
 
 /* Fascia alternata: si usa a sezioni alterne, mai due di fila. */
@@ -653,8 +682,13 @@
       height: 3px;
       transform-origin: left;
       background: linear-gradient(90deg, var(--color-navy), var(--color-cyan));
+      /* La variabile serve: il minificatore accorpa `animation-timeline`
+         dentro la scorciatoia `animation`, che non ammette una timeline, e il
+         browser scarta la dichiarazione intera. Succedeva davvero: la barra
+         restava piena da cima a fondo pagina invece di riempirsi. */
+      --tl: scroll(root block);
       animation: progress-x linear both;
-      animation-timeline: scroll(root block);
+      animation-timeline: var(--tl);
     }
   }
 }
@@ -756,6 +790,11 @@
   color: var(--color-ink-2);
 }
 .prose > * + * { margin-top: 1.5rem; }
+
+/* Il primo elemento non porta margine: con l'indice affiancato il testo deve
+   partire esattamente alla sua stessa altezza, e un `h2` in apertura si
+   prenderebbe i 3rem della regola qui sotto sfalsando le due colonne. */
+.prose > :first-child { margin-top: 0; }
 
 .prose h2 {
   margin-top: 3rem;

@@ -25,6 +25,20 @@ import logo from "@/assets/logo-dgf.png";
  * alla pagina indice.
  */
 
+interface Props {
+  /**
+   * Barra opaca fin dal primo pixel, invece che trasparente in cima.
+   *
+   * Serve alle pagine che aprono con una fascia scura: lì una barra
+   * trasparente lascerebbe il logo e le voci, che sono blu scuro, sopra un
+   * fondo blu. Si legge male e non c'è un colore del testo che vada bene
+   * sia sopra la fascia sia sotto, quando è finita.
+   */
+  solid?: boolean;
+}
+
+const { solid = false } = Astro.props;
+
 const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
 const isActive = (href: string) =>
   href === "/" ? path === "/" : path === href || path.startsWith(href + "/");
@@ -32,7 +46,7 @@ const isActive = (href: string) =>
 const SERVICE_ICONS = ["globe", "bag", "phone", "dashboard", "sparkles"] as const;
 ---
 
-<header class="site-nav">
+<header class:list={["site-nav", solid && "is-solid"]}>
   <div class="wrap flex h-14 items-center justify-between gap-4 lg:h-16">
     <a href="/" aria-label={`${SITE.name}, home`} class="shrink-0">
       <Image
@@ -181,13 +195,79 @@ const SERVICE_ICONS = ["globe", "bag", "phone", "dashboard", "sparkles"] as cons
 </header>
 
 <style>
+  /*
+   * Barra fissa e OPACA.
+   *
+   * Prima era `sticky` con un fondo all'88% e una sfocatura dietro: il testo
+   * della pagina si vedeva passare sotto le voci del menu, e nei punti densi
+   * diventava illeggibile. Il fondo pieno è la versione che si legge sempre.
+   *
+   * `fixed` invece di `sticky` perché la barra deve poter galleggiare sopra
+   * la prima sezione (vedi `.under-nav` in global.css): da sticky occuperebbe
+   * comunque una riga sua, e sopra la fascia colorata resterebbe una striscia
+   * bianca. Lo spazio glielo lascia `main`.
+   */
   .site-nav {
-    position: sticky;
+    position: fixed;
+    inset-inline: 0;
     top: 0;
     z-index: 60;
-    background: color-mix(in srgb, var(--color-paper) 88%, transparent);
-    backdrop-filter: blur(12px);
+    background: var(--color-paper);
     border-bottom: 1px solid var(--color-line);
+  }
+
+  /*
+   * In cima alla pagina la barra non si vede: niente fondo, niente filetto,
+   * solo il logo e le voci appoggiati sulla sezione. Scendendo compare, e a
+   * 5rem di scorrimento è la barra bianca piena di sopra.
+   *
+   * È un'animazione guidata dallo scorrimento, non uno script: nessun
+   * listener, nessun ricalcolo a ogni fotogramma, zero kB spediti. Dove non
+   * è supportata (Safari meno recente, Firefox) il blocco `@supports` non si
+   * applica e la barra resta bianca da subito: leggibile comunque, che è
+   * l'unica cosa che non può mancare.
+   *
+   * `.is-solid` resta fuori: quelle pagine aprono con una fascia scura.
+   */
+  /*
+   * `--tl` non è un vezzo: il minificatore CSS accorpa `animation-timeline`
+   * dentro la scorciatoia `animation`, che però non ammette una timeline —
+   * il risultato è `animation: linear both nav-compare scroll(root)`, che il
+   * browser scarta INTERA. Sparivano nome e timeline insieme, e la barra
+   * restava bianca fin da subito senza che niente segnalasse l'errore.
+   * Dietro una variabile il valore non è accorpabile, e resta dov'è.
+   */
+  @supports (animation-timeline: scroll()) {
+    .site-nav:not(.is-solid) {
+      --tl: scroll(root block);
+      animation: nav-compare linear both;
+      animation-timeline: var(--tl);
+      animation-range: 0 5rem;
+    }
+  }
+
+  @keyframes nav-compare {
+    from {
+      background-color: transparent;
+      border-bottom-color: transparent;
+    }
+    to {
+      background-color: var(--color-paper);
+      border-bottom-color: var(--color-line);
+    }
+  }
+
+  /*
+   * Menu aperto: la barra torna opaca a qualunque altezza. Un pannello pieno
+   * appeso a una barra trasparente sembra staccato dalla pagina, e sul
+   * telefono il pannello copre il contenuto mentre la barra sopra no.
+   */
+  .site-nav:has(.mobile[open]),
+  .site-nav:has([data-mega][data-open]),
+  .site-nav:has(.mega:focus-within) {
+    animation: none;
+    background: var(--color-paper);
+    border-bottom-color: var(--color-line);
   }
 
   /* Proporzioni prese da Nexia: 13px medium, spaziature strette. A 15px

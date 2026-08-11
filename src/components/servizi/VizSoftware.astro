@@ -1,0 +1,74 @@
+---
+/*
+ * Software su misura — un gestionale: barra laterale, indicatori, un grafico
+ * che cresce, la tabella che si riempie riga per riga.
+ *
+ * Le colonne del grafico crescono da terra (`data-cresce`): è l'unico modo in
+ * cui un grafico può comparire senza sembrare un'immagine incollata.
+ */
+---
+
+<svg class="viz-svg" viewBox="0 0 400 300" fill="none" aria-hidden="true">
+  <rect data-p="1" x="30" y="26" width="340" height="248" rx="10" class="v-schermo"></rect>
+
+  <!-- Barra laterale -->
+  <path data-p="2" d="M92 26v248" class="v-filo"></path>
+  <rect data-p="2" x="46" y="44" width="30" height="6" rx="3" class="v-accento"></rect>
+  <rect data-p="3" x="46" y="70" width="34" height="5" rx="2.5" class="v-riga"></rect>
+  <rect data-p="3" x="46" y="86" width="28" height="5" rx="2.5" class="v-riga-tenue"></rect>
+  <rect data-p="4" x="46" y="102" width="32" height="5" rx="2.5" class="v-riga-tenue"></rect>
+  <rect data-p="4" x="46" y="118" width="24" height="5" rx="2.5" class="v-riga-tenue"></rect>
+
+  <!-- Tre indicatori -->
+  <g data-p="5">
+    <rect x="110" y="44" width="76" height="42" rx="6" class="v-scheda"></rect>
+    <rect x="120" y="54" width="24" height="4" rx="2" class="v-riga-tenue"></rect>
+    <rect x="120" y="64" width="40" height="10" rx="3" class="v-titolo"></rect>
+  </g>
+  <g data-p="6">
+    <rect x="196" y="44" width="76" height="42" rx="6" class="v-scheda"></rect>
+    <rect x="206" y="54" width="30" height="4" rx="2" class="v-riga-tenue"></rect>
+    <rect x="206" y="64" width="34" height="10" rx="3" class="v-titolo"></rect>
+  </g>
+  <g data-p="7">
+    <rect x="282" y="44" width="76" height="42" rx="6" class="v-scheda"></rect>
+    <rect x="292" y="54" width="26" height="4" rx="2" class="v-riga-tenue"></rect>
+    <rect x="292" y="64" width="44" height="10" rx="3" class="v-titolo"></rect>
+  </g>
+
+  <!-- Grafico a colonne -->
+  <g data-p="8">
+    <rect x="110" y="100" width="248" height="86" rx="6" class="v-scheda"></rect>
+    <path d="M124 172h220" class="v-filo"></path>
+  </g>
+  <g class="v-colonne">
+    <rect data-p="8" data-cresce="" x="134" y="140" width="16" height="32" rx="3" class="v-colonna"></rect>
+    <rect data-p="9" data-cresce="" x="164" y="126" width="16" height="46" rx="3" class="v-colonna"></rect>
+    <rect data-p="9" data-cresce="" x="194" y="148" width="16" height="24" rx="3" class="v-colonna"></rect>
+    <rect data-p="10" data-cresce="" x="224" y="118" width="16" height="54" rx="3" class="v-colonna"></rect>
+    <rect data-p="10" data-cresce="" x="254" y="132" width="16" height="40" rx="3" class="v-colonna"></rect>
+    <rect data-p="11" data-cresce="" x="284" y="110" width="16" height="62" rx="3" class="v-colonna-forte"></rect>
+    <rect data-p="11" data-cresce="" x="314" y="122" width="16" height="50" rx="3" class="v-colonna"></rect>
+  </g>
+
+  <!-- Tabella -->
+  <g data-p="10">
+    <rect x="110" y="198" width="248" height="58" rx="6" class="v-scheda"></rect>
+    <path d="M110 216h248" class="v-filo"></path>
+  </g>
+  <g data-p="11">
+    <rect x="122" y="204" width="34" height="4" rx="2" class="v-riga-tenue"></rect>
+    <rect x="186" y="204" width="34" height="4" rx="2" class="v-riga-tenue"></rect>
+    <rect x="250" y="204" width="34" height="4" rx="2" class="v-riga-tenue"></rect>
+  </g>
+  <g data-p="12">
+    <rect x="122" y="226" width="46" height="5" rx="2.5" class="v-riga"></rect>
+    <rect x="186" y="226" width="30" height="5" rx="2.5" class="v-riga"></rect>
+    <rect x="250" y="226" width="52" height="5" rx="2.5" class="v-riga"></rect>
+  </g>
+  <g data-p="13">
+    <rect x="122" y="240" width="38" height="5" rx="2.5" class="v-riga-tenue"></rect>
+    <rect x="186" y="240" width="42" height="5" rx="2.5" class="v-riga-tenue"></rect>
+    <rect x="250" y="240" width="36" height="5" rx="2.5" class="v-riga-tenue"></rect>
+  </g>
+</svg>

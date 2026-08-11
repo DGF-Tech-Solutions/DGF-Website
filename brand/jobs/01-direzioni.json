@@ -1,0 +1,76 @@
+[
+  {
+    "name": "A1-riunione",
+    "out": "brand/render/01-direzioni/A-persone/A1-riunione.png",
+    "seed": 211,
+    "prompt": "editorial corporate photograph, two professionals seen from behind standing at a whiteboard covered in sticky notes and diagrams, modern bright office, soft overcast daylight from large windows, cool navy and slate blue grading, muted calm palette, shallow depth of field, 35mm lens, fine natural grain, photorealistic, faces not visible"
+  },
+  {
+    "name": "A2-scrivania-mani",
+    "out": "brand/render/01-direzioni/A-persone/A2-scrivania-mani.png",
+    "seed": 212,
+    "prompt": "editorial corporate photograph, close crop of hands typing on a laptop keyboard on a clean desk, open notebook and pen beside it, soft window light from the left, cool navy and slate blue grading, muted palette, shallow depth of field, 50mm lens, fine natural grain, photorealistic, no face"
+  },
+  {
+    "name": "A3-telefono-finestra",
+    "out": "brand/render/01-direzioni/A-persone/A3-telefono-finestra.png",
+    "seed": 213,
+    "prompt": "editorial corporate photograph, a person standing in silhouette by a floor-to-ceiling office window holding a smartphone, backlit by soft grey daylight, city rooftops out of focus behind, cool blue tones, calm minimal composition, 35mm lens, fine natural grain, photorealistic, face not visible"
+  },
+  {
+    "name": "A4-coppia-schermo",
+    "out": "brand/render/01-direzioni/A-persone/A4-coppia-schermo.png",
+    "seed": 214,
+    "prompt": "editorial corporate photograph, two colleagues seen from behind looking at a large monitor showing an out-of-focus blue dashboard interface, modern quiet office, soft daylight, cool navy grading, shallow depth of field, 35mm lens, fine natural grain, photorealistic, faces not visible"
+  },
+
+  {
+    "name": "B1-facciata-vetro",
+    "out": "brand/render/01-direzioni/B-architettura/B1-facciata-vetro.png",
+    "seed": 221,
+    "prompt": "architectural photograph of a modern glass office facade, repeating geometric grid of windows reflecting a pale overcast sky, deep navy and steel blue tones, clean minimal composition, sharp detail, tilt-shift precision, natural light, photorealistic, no people"
+  },
+  {
+    "name": "B2-datacenter",
+    "out": "brand/render/01-direzioni/B-architettura/B2-datacenter.png",
+    "seed": 222,
+    "prompt": "photograph of a clean data center corridor, rows of server racks receding in perspective, cool blue indicator lights, dark navy environment with soft ambient glow, wide angle, crisp detail, calm and orderly, photorealistic, no people, no text"
+  },
+  {
+    "name": "B3-cavi-macro",
+    "out": "brand/render/01-direzioni/B-architettura/B3-cavi-macro.png",
+    "seed": 223,
+    "prompt": "macro photograph of neatly bundled network cables in blue and white, shallow depth of field, dark background, precise and orderly arrangement, cool blue grading, studio lighting, extreme detail, photorealistic, no people, no text"
+  },
+  {
+    "name": "B4-scala-geometrica",
+    "out": "brand/render/01-direzioni/B-architettura/B4-scala-geometrica.png",
+    "seed": 224,
+    "prompt": "architectural photograph looking up at a minimal concrete and glass stairwell, strong geometric lines and repetition, pale daylight from a skylight, cool grey and blue tones, calm negative space, sharp detail, photorealistic, no people"
+  },
+
+  {
+    "name": "C1-scrivania-alto",
+    "out": "brand/render/01-direzioni/C-oggetti/C1-scrivania-alto.png",
+    "seed": 231,
+    "prompt": "overhead flat lay photograph of a tidy workspace on a pale grey desk, closed laptop, notebook, pencil, small cup of coffee, generous empty space, soft directional daylight casting long gentle shadows, cool navy accents, muted minimal palette, studio quality, photorealistic, no text, no people"
+  },
+  {
+    "name": "C2-laptop-finestra",
+    "out": "brand/render/01-direzioni/C-oggetti/C2-laptop-finestra.png",
+    "seed": 232,
+    "prompt": "product photograph of an open laptop on a light wooden table, screen glowing with an out-of-focus blue interface, large soft window behind slightly blown out, calm empty room, cool navy grading, shallow depth of field, 50mm lens, photorealistic, no text, no people"
+  },
+  {
+    "name": "C3-taccuino-schizzo",
+    "out": "brand/render/01-direzioni/C-oggetti/C3-taccuino-schizzo.png",
+    "seed": 233,
+    "prompt": "close photograph of an open sketchbook with hand-drawn interface wireframe boxes in pencil, mechanical pencil resting on the page, matte paper texture, hard directional light with a clean shadow edge, muted cool tones, shallow depth of field, photorealistic, no readable text, no people"
+  },
+  {
+    "name": "C4-telefono-tavolo",
+    "out": "brand/render/01-direzioni/C-oggetti/C4-telefono-tavolo.png",
+    "seed": 234,
+    "prompt": "product photograph of a smartphone standing on a matte navy surface, screen showing a soft out-of-focus blue gradient interface, clean seamless background, soft studio light with a single crisp reflection, minimal and premium, extreme detail, photorealistic, no text, no people"
+  }
+]

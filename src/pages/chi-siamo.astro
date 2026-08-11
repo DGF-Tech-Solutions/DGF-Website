@@ -6,8 +6,8 @@ import Banner from "@/components/Banner.astro";
 import CtaBand from "@/components/CtaBand.astro";
 import Icon from "@/components/Icon.astro";
 import { SITE } from "@/data/site";
-import illustration from "@/assets/illustrazioni/scena-sicurezza.png";
-import scenaProcesso from "@/assets/illustrazioni/scena-processo.png";
+import illustration from "@/assets/foto/chi-siamo.webp";
+import scenaProcesso from "@/assets/foto/processo.webp";
 
 /*
  * Chi siamo, riscritta.
@@ -22,21 +22,21 @@ import scenaProcesso from "@/assets/illustrazioni/scena-processo.png";
  * nascosta in fondo: è il secondo blocco.
  */
 
+/* Senza nomi e cognomi: chi arriva qui deve capire con quante persone parlerà
+   e di cosa si occupano, non archiviare i nostri dati anagrafici. I nomi
+   restano dove servono davvero, cioè nei documenti e nella conversazione. */
 const TEAM = [
   {
-    name: "Francesco Riccardo Giannetto",
     role: "Co-fondatore",
     focus: "AI e automazione",
     icon: "sparkles",
   },
   {
-    name: "David Moonsmee",
     role: "Co-fondatore",
     focus: "Sviluppo e architettura",
     icon: "dashboard",
   },
   {
-    name: "Giacomo Lanza",
     role: "Co-fondatore",
     focus: "Prodotto e design",
     icon: "layers",
@@ -81,13 +81,6 @@ const PRINCIPLES = [
   },
 ] as const;
 
-/** Iniziali: prima lettera del nome + prima lettera del cognome. */
-function initials(name: string): string {
-  const parts = name.split(" ").filter(Boolean);
-  if (parts.length < 2) return (parts[0] ?? "").slice(0, 2).toUpperCase();
-  return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
-}
-
 const schema = {
   "@type": "AboutPage",
   name: `Chi siamo | ${SITE.name}`,
@@ -108,7 +101,8 @@ const schema = {
     lead="Siamo una software house con base a Messina, al lavoro con clienti in tutta Italia. Piccoli abbastanza da rispondere noi al telefono, strutturati abbastanza da portare a casa un progetto."
     crumbs={[{ label: "Chi siamo" }]}
     illustration={illustration}
-    illustrationAlt="Illustrazione: uno scudo con lucchetto"
+    illustrationAlt="Un tavolo con due sedie e un portatile davanti a una vetrata"
+    illustrationAi
   />
 
   <!-- ══════════════════════════════════════════════════════════════════
@@ -205,7 +199,7 @@ const schema = {
         <div class="parallax-slow mx-auto w-full max-w-[22rem] lg:max-w-none">
           <Image
             src={scenaProcesso}
-            alt="Illustrazione: percorso di progetto con quattro tappe"
+            alt="Due persone davanti a una lavagna con foglietti adesivi e frecce"
             widths={[320, 460, 620]}
             sizes="(min-width: 1024px) 420px, 300px"
             loading="lazy"
@@ -264,13 +258,13 @@ const schema = {
         {
           TEAM.map((member, i) => (
             <li class="card group flex flex-col items-center p-7 text-center reveal" style={`--i:${i}`}>
-              <span class="monogram" aria-hidden="true">{initials(member.name)}</span>
-              <h3 class="t-h3 mt-5">{member.name}</h3>
-              <p class="t-small mt-1">{member.role}</p>
-              <span class="chip mt-4">
-                <Icon name={member.icon} size={13} />
-                {member.focus}
+              {/* Al posto del monogramma c'è l'icona dell'area: senza nomi le
+                  iniziali non direbbero più niente. */}
+              <span class="monogram" aria-hidden="true">
+                <Icon name={member.icon} size={30} />
               </span>
+              <h3 class="t-h3 mt-5">{member.focus}</h3>
+              <p class="t-small mt-1">{member.role}</p>
             </li>
           ))
         }

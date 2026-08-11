@@ -1,0 +1,66 @@
+---
+/*
+ * E-commerce — la vetrina, il carrello che si riempie, il pagamento.
+ *
+ * Il conteggio del carrello non è finto: sono tre numeri sovrapposti, ognuno
+ * visibile solo nella sua finestra di tempo. Il risultato è un contatore che
+ * sale, senza una riga di JavaScript.
+ */
+---
+
+<svg class="viz-svg" viewBox="0 0 400 300" fill="none" aria-hidden="true">
+  <!-- Intestazione del negozio -->
+  <rect data-p="1" x="40" y="28" width="320" height="244" rx="10" class="v-schermo"></rect>
+  <path data-p="1" d="M40 62h320" class="v-filo"></path>
+  <rect data-p="2" x="56" y="40" width="54" height="8" rx="4" class="v-titolo-mini"></rect>
+
+  <!-- Carrello con il contatore che sale -->
+  <g data-p="2">
+    <path
+      d="M318 40h4l3 14h14l-2 9h-11"
+      class="v-tratto"
+      stroke-linecap="round"
+      stroke-linejoin="round"></path>
+    <circle cx="329" cy="58" r="2" class="v-pieno"></circle>
+    <circle cx="337" cy="58" r="2" class="v-pieno"></circle>
+  </g>
+  <g data-p="3">
+    <circle cx="340" cy="40" r="8" class="v-bollo"></circle>
+    <text x="340" y="43.5" text-anchor="middle" class="v-bollo-num v-conta-1">1</text>
+    <text x="340" y="43.5" text-anchor="middle" class="v-bollo-num v-conta-2">2</text>
+    <text x="340" y="43.5" text-anchor="middle" class="v-bollo-num v-conta-3">3</text>
+  </g>
+
+  <!-- Griglia di prodotti -->
+  <g data-p="4">
+    <rect x="56" y="78" width="88" height="96" rx="6" class="v-scheda"></rect>
+    <rect x="66" y="88" width="68" height="46" rx="4" class="v-superficie"></rect>
+    <rect x="66" y="142" width="46" height="5" rx="2.5" class="v-riga"></rect>
+    <rect x="66" y="154" width="28" height="8" rx="4" class="v-prezzo"></rect>
+  </g>
+  <g data-p="5">
+    <rect x="156" y="78" width="88" height="96" rx="6" class="v-scheda"></rect>
+    <rect x="166" y="88" width="68" height="46" rx="4" class="v-superficie"></rect>
+    <rect x="166" y="142" width="52" height="5" rx="2.5" class="v-riga"></rect>
+    <rect x="166" y="154" width="28" height="8" rx="4" class="v-prezzo"></rect>
+  </g>
+  <g data-p="6">
+    <rect x="256" y="78" width="88" height="96" rx="6" class="v-scheda"></rect>
+    <rect x="266" y="88" width="68" height="46" rx="4" class="v-superficie"></rect>
+    <rect x="266" y="142" width="40" height="5" rx="2.5" class="v-riga"></rect>
+    <rect x="266" y="154" width="28" height="8" rx="4" class="v-prezzo"></rect>
+  </g>
+
+  <!-- Riepilogo e pagamento -->
+  <g data-p="8">
+    <rect x="56" y="192" width="288" height="60" rx="6" class="v-scheda"></rect>
+    <rect x="70" y="206" width="70" height="5" rx="2.5" class="v-riga-tenue"></rect>
+    <rect x="70" y="220" width="96" height="5" rx="2.5" class="v-riga-tenue"></rect>
+    <rect x="70" y="234" width="54" height="6" rx="3" class="v-riga"></rect>
+  </g>
+  <g data-p="9">
+    <rect x="240" y="210" width="90" height="26" rx="13" class="v-bottone-pieno"></rect>
+    <path d="M262 223l6 6 12-12" class="v-spunta" stroke-linecap="round" stroke-linejoin="round"></path>
+    <text x="292" y="227" class="v-bottone-testo">Pagato</text>
+  </g>
+</svg>

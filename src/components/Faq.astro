@@ -7,6 +7,7 @@
  * sarebbe peggio sotto ogni aspetto misurabile.
  */
 import Icon from "@/components/Icon.astro";
+import { parseInlineLinks, stripInlineLinks, type TextPart } from "@/lib/inline-links";
 
 interface Props {
   items: { q: string; a: string }[];
@@ -16,20 +17,44 @@ interface Props {
 
 const { items, schema = false } = Astro.props;
 
+/*
+ * La freccina dei link esterni è un elemento atomico, e il browser tratta i
+ * suoi due bordi come punti in cui può andare a capo: la freccia finiva da
+ * sola su una riga, con la virgola dopo il link ancora più giù.
+ *
+ * Si separa l'ultima parola dell'etichetta e la si tiene insieme alla freccia
+ * in un blocco indivisibile. Non basta rendere indivisibile tutto il link:
+ * un'etichetta lunga uscirebbe dal riquadro su schermo stretto, mentre così
+ * continua ad andare a capo dove le pare, tranne che in quell'unico punto.
+ */
+function splitTail(text: string): { head: string; tail: string } {
+  const at = text.lastIndexOf(" ");
+  return at === -1
+    ? { head: "", tail: text }
+    : { head: text.slice(0, at + 1), tail: text.slice(at + 1) };
+}
+
+/* La risposta si scrive come testo, con i link in forma `[testo](url)`.
+   Qui diventa un elenco di porzioni; nei dati strutturati torna testo pulito,
+   perché lì il markup sarebbe rumore. */
+const answers: (TextPart & { head?: string; tail?: string })[][] = items.map((i) =>
+  parseInlineLinks(i.a).map((p) => (p.external ? { ...p, ...splitTail(p.text) } : p)),
+);
+
 const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   mainEntity: items.map((i) => ({
     "@type": "Question",
     name: i.q,
-    acceptedAnswer: { "@type": "Answer", text: i.a },
+    acceptedAnswer: { "@type": "Answer", text: stripInlineLinks(i.a) },
   })),
 };
 ---
 
 <div class="space-y-3">
   {
-    items.map((item) => (
+    items.map((item, i) => (
       <details class="faq-item card">
         <summary>
           <span class="t-h3 pr-4">{item.q}</span>
@@ -38,7 +63,23 @@ const faqSchema = {
           </span>
         </summary>
         <div class="faq-answer">
-          <p class="t-body">{item.a}</p>
+          <span class="faq-avatar">
+            <Icon name="user" size={16} />
+          </span>
+          <p class="t-body">
+            {answers[i].map((part) =>
+              part.href ? (
+                <a
+                  href={part.href}
+                  class="faq-link"
+                  target={part.external ? "_blank" : undefined}
+                  rel={part.external ? "noopener noreferrer" : undefined}
+                >{part.external ? part.head : part.text}{part.external && <span class="faq-link-tail">{part.tail}<Icon name="arrow-up-right" size={13} /></span>}</a>
+              ) : (
+                part.text
+              ),
+            )}
+          </p>
         </div>
       </details>
     ))
@@ -83,7 +124,63 @@ const faqSchema = {
     color: #fff;
   }
 
-  .faq-answer { padding: 0 1.375rem 1.375rem; }
+  /* La risposta è la battuta di qualcuno, non una nota a piè di pagina:
+     l'omino a sinistra la fa leggere come una replica e rientra il testo
+     rispetto alla domanda. */
+  .faq-answer {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0 1.375rem 1.375rem;
+  }
+  .faq-answer p { min-width: 0; }
+
+  .faq-avatar {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 1.75rem;
+    height: 1.75rem;
+    margin-top: 0.0625rem;
+    border-radius: 50%;
+    background: var(--color-soft);
+    color: var(--color-navy);
+  }
+
+  /* Sottolineatura tenue come nel corpo degli articoli: dentro a un paragrafo
+     il link si deve vedere senza spezzare la riga di lettura. */
+  .faq-link {
+    font-weight: 600;
+    color: var(--color-navy);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: color-mix(in srgb, var(--color-navy) 35%, transparent);
+    transition: text-decoration-color var(--dur) var(--ease-out-quart),
+                color var(--dur) var(--ease-out-quart);
+  }
+  /* Ultima parola più freccia: un blocco solo, che non si spezza mai. */
+  .faq-link-tail { white-space: nowrap; }
+
+  /*
+   * La freccina dice che il link esce dal sito, prima del clic.
+   *
+   * `:global(svg)` non è pigrizia: l'icona la disegna un altro componente, e
+   * Astro marca con l'attributo di scope solo gli elementi scritti in QUESTO
+   * file. Una regola `.faq-link svg` diventa `.faq-link svg[data-astro-cid-…]`
+   * e non aggancia niente: restava buono il reset globale `svg{display:block}`,
+   * la freccia diventava un blocco e si portava a capo da sola, con la virgola
+   * dopo il link su una terza riga.
+   */
+  .faq-link :global(svg) {
+    display: inline-block;
+    margin-left: 0.1875rem;
+    vertical-align: -0.0625rem;
+  }
+  @media (hover: hover) {
+    .faq-link:hover {
+      color: var(--color-blue);
+      text-decoration-color: currentColor;
+    }
+  }
 
   @media (prefers-reduced-motion: no-preference) {
     .faq-item[open] .faq-answer {

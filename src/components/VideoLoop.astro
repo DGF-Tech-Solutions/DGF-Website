@@ -1,5 +1,6 @@
 ---
 import { Image } from "astro:assets";
+import Icon from "@/components/Icon.astro";
 import poster from "@/assets/video/nexia-demo-poster.png";
 
 /*
@@ -19,20 +20,78 @@ interface Props {
   title: string;
   lead?: string;
   caption?: string;
+  /**
+   * Tre righe che spiegano di che genere di software si tratta.
+   *
+   * Servono perché "SaaS" non vuol dire niente per la maggior parte di chi
+   * legge: senza, il video mostra delle schermate e basta. Con, si capisce
+   * che cosa si sta guardando e perché dovrebbe interessare.
+   */
+  points?: { title: string; text: string }[];
+  pointsTitle?: string;
+  /** Rimando alla scheda del progetto, per chi vuole i dettagli tecnici. */
+  href?: string;
+  hrefLabel?: string;
 }
 
-const { eyebrow, title, lead, caption } = Astro.props;
+const {
+  eyebrow,
+  title,
+  lead,
+  caption,
+  points = [],
+  pointsTitle,
+  href,
+  hrefLabel = "Vedi il progetto",
+} = Astro.props;
 ---
 
 <section class="section">
   <div class="wrap">
-    <div class="mx-auto max-w-2xl text-center">
-      {eyebrow && <span class="t-eyebrow">{eyebrow}</span>}
-      <h2 class="t-h2 mt-3" set:html={title} />
-      {lead && <p class="t-lead mt-5">{lead}</p>}
-    </div>
+    {/* Un contenitore solo per titolo, spiegazione e video: prima erano tre
+        blocchi appoggiati sulla pagina uno sotto l'altro, e il video sembrava
+        capitato lì. Dentro una cornice si legge come una vetrina. */}
+    {/* Niente `reveal` qui: la comparsa d'insieme litigava con la parallasse
+        delle singole righe più sotto — due animazioni sullo stesso blocco,
+        una che lo alza tutto e una che ne muove i pezzi. Il movimento ora è
+        quello fine, riga per riga. */}
+    <div class="video-box">
+      <!-- Titolo sopra, centrato: apre la scena e lascia al video tutta la
+           larghezza sotto. -->
+      <div class="video-testo">
+        {eyebrow && <span class="t-eyebrow">{eyebrow}</span>}
+        <h2 class="t-h2 mt-3" set:html={title} />
+        {lead && <p class="video-lead">{lead}</p>}
+        {pointsTitle && <span class="video-etichetta">{pointsTitle}</span>}
+      </div>
 
-    <figure class="video-frame reveal mt-12">
+      <!--
+        Il video al centro, con le spiegazioni che gli galleggiano intorno
+        invece di stare in una colonna a parte. Sono appoggiate ai bordi e
+        oscillano piano: parlano del prodotto stando addosso al prodotto, che
+        è il motivo per cui si leggono senza staccare gli occhi dal video.
+
+        Su schermo stretto non c'è margine in cui farle galleggiare, quindi
+        tornano un elenco sotto: la stessa informazione, senza sovrapporsi.
+      -->
+      <div class="video-scena">
+        {
+          points.length > 0 && (
+            <ul class="volanti">
+              {points.map((p, i) => (
+                <li class:list={["volante", `volante-${i + 1}`]}>
+                  <span class="volante-num tabular">{String(i + 1).padStart(2, "0")}</span>
+                  <span>
+                    <span class="volante-titolo">{p.title}</span>
+                    <span class="volante-testo">{p.text}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+
+    <figure class="video-frame">
       <div class="video-chrome" aria-hidden="true">
         <span class="dot"></span><span class="dot"></span><span class="dot"></span>
         <span class="video-url">nexia.app</span>
@@ -69,22 +128,264 @@ const { eyebrow, title, lead, caption } = Astro.props;
           <source src="/video/nexia-demo.mp4" type="video/mp4" />
         </video>
       </div>
-    </figure>
+      </figure>
+      </div>
 
-    {caption && <figcaption class="t-small mt-5 text-center">{caption}</figcaption>}
+      <div class="video-piede">
+        {caption && <p class="video-nota">{caption}</p>}
+        {
+          href && (
+            <a href={href} class="link-arrow shrink-0">
+              {hrefLabel}
+              <Icon name="arrow-right" size={16} />
+            </a>
+          )
+        }
+      </div>
+    </div>
   </div>
 </section>
 
 <style>
+  /*
+   * Nessuna cornice: la sezione è bianca e il video ci sta appoggiato sopra.
+   *
+   * Prima c'era un riquadro grigio attorno a tutto. Il difetto è che con le
+   * schede dei servizi qui sopra e i pannelli del metodo qui sotto — tutti
+   * dentro un contorno — la pagina diventava una fila di scatole, e il
+   * riquadro grigio faceva sembrare il video una schermata secondaria invece
+   * dell'elemento principale della sezione. Senza, l'unica cosa che ha un
+   * bordo è il video, ed è lì che va l'occhio.
+   */
+  .video-box { max-width: 74rem; margin-inline: auto; }
+
+  /*
+   * A sinistra il testo, a destra il video: superato. Ora il titolo sta sopra
+   * e centrato, e sotto il video prende tutta la larghezza — era la richiesta,
+   * e in effetti un gestionale mostrato in mezza riga non si legge.
+   */
+  .video-testo {
+    max-width: 44rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .video-lead {
+    margin-top: 1rem;
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--color-ink-3);
+  }
+
+  /* Etichetta che introduce i cartellini: senza, "01 Vive sul web" appare
+     senza che si capisca di che elenco faccia parte. */
+  .video-etichetta {
+    display: inline-block;
+    margin-top: 1.5rem;
+    padding: 0.3125rem 0.875rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-soft);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-ink-3);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     La parallasse dell'introduzione
+
+     Le quattro righe in cima scorrono più LENTE della pagina e si sfilano
+     l'una dall'altra: l'occhiello per primo, poi il titolo, il sommario e
+     l'etichetta. Salendo si compattano, e il video sembra risalire e passare
+     sopra al testo invece che seguirlo in fila.
+
+     Perché lo scarto cresce verso il basso: se fosse l'occhiello a muoversi
+     di più, il blocco si aprirebbe man mano e le righe si allontanerebbero
+     fino a sembrare scollegate. Facendo ritardare le righe più in basso, il
+     movimento le stringe verso il titolo — si legge come una cosa sola che
+     rallenta, non come quattro pezzi che si sfaldano.
+
+     `--tl` dietro una variabile è obbligatorio: il minificatore accorpa
+     `animation-timeline` dentro la scorciatoia `animation`, che non ammette
+     una timeline, e il browser scarterebbe tutta la dichiarazione. È lo
+     stesso inciampo già annotato in Nav.astro e in global.css.
+     ═══════════════════════════════════════════════════════════════════════ */
+  @keyframes intro-parallasse {
+    from { transform: translate3d(0, var(--p), 0); }
+    to   { transform: translate3d(0, calc(var(--p) * -0.55), 0); }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .video-testo > * {
+        --p: 0px;
+        --tl: view();
+        display: block;
+        animation: intro-parallasse linear both;
+        animation-timeline: var(--tl);
+        animation-range: entry 15% exit 85%;
+        will-change: transform;
+      }
+      .video-testo > .t-eyebrow { --p: 10px; }
+      .video-testo > h2 { --p: 26px; }
+      .video-testo > .video-lead { --p: 44px; }
+      /* L'etichetta resta `inline-block`: da `block` la pillola si stirerebbe
+         per tutta la riga invece di stare stretta sul testo. */
+      .video-testo > .video-etichetta { --p: 62px; display: inline-block; }
+    }
+  }
+
+  /* ─── La scena: video al centro, cartellini intorno ───────────────────── */
+  .video-scena {
+    position: relative;
+    margin-top: 2.25rem;
+  }
+
+  /*
+   * Il riquadro entra leggermente rimpicciolito e si apre alla sua misura
+   * mentre sale: è il movimento che fa "arrivare" il video addosso a chi
+   * legge, invece di trovarselo già lì. Solo `transform`, quindi gira sul
+   * compositore e non costa niente al thread principale.
+   *
+   * L'animazione si ferma a `cover 45%`: da lì in poi il video resta fermo e
+   * alla sua misura piena per tutto il tempo in cui lo si guarda. Se
+   * continuasse fino in fondo il fotogramma respirerebbe mentre si prova a
+   * leggere la tabella, che è il difetto di metà delle parallassi in giro.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      /* Sulla SCENA, non sul solo riquadro: i cartellini sono posizionati
+         rispetto a lei, e animando il riquadro da solo resterebbero fermi
+         a mezz'aria mentre il video sotto cambia misura. Insieme, arrivano
+         come un blocco. */
+      .video-scena {
+        --tl: view();
+        transform-origin: 50% 100%;
+        animation: video-arriva linear both;
+        animation-timeline: var(--tl);
+        animation-range: entry 5% cover 45%;
+        will-change: transform;
+      }
+    }
+  }
+  @keyframes video-arriva {
+    from { transform: scale(0.94) translate3d(0, 26px, 0); }
+    to   { transform: scale(1) translate3d(0, 0, 0); }
+  }
+
+  .volanti {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0 0 1.5rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Azzurro chiaro, lo stesso delle schede del sito: su fondo bianco un
+     cartellino bianco sparirebbe, e bordarlo di grigio avrebbe rimesso il
+     contorno che si voleva togliere. Il colore basta a staccarlo. */
+  .volante {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    border-radius: var(--radius-md);
+    background: var(--color-soft);
+  }
+  .volante-num {
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    line-height: 1.7;
+    color: var(--color-navy);
+  }
+  .volante-titolo {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--color-ink);
+  }
+  .volante-testo {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+    line-height: 1.55;
+    color: var(--color-ink-3);
+  }
+
+  /*
+   * Da 1100px in su i cartellini si staccano e vanno a galleggiare sui bordi
+   * del video. Sotto quella misura non c'è margine laterale in cui metterli
+   * senza coprire la tabella — che è la cosa che il video deve far vedere —
+   * quindi restano un elenco sopra al riquadro.
+   *
+   * Il video si restringe apposta (`max-width` sul riquadro) per lasciare
+   * loro il posto: sono APPOGGIATI ai bordi, mezzi dentro e mezzi fuori, ed è
+   * quella sovrapposizione a dare profondità alla scena.
+   */
+  @media (min-width: 1100px) {
+    /*
+     * Lo spazio ai lati è largo QUANTO METÀ cartellino: così ognuno resta per
+     * metà fuori e per metà appoggiato al video. Con un margine più stretto
+     * finivano quasi tutti sopra l'immagine e coprivano la tabella, che è
+     * l'unica cosa che il video deve far vedere.
+     */
+    .video-scena { padding-inline: 6.5rem; }
+    .volanti { display: block; margin: 0; }
+
+    .volante {
+      position: absolute;
+      z-index: 2;
+      width: 13rem;
+      padding: 0.75rem 0.875rem;
+      box-shadow: var(--shadow-lg);
+    }
+    /* Agli angoli, dove la schermata è meno densa: in alto a sinistra c'è la
+       testata del menu, in basso le ultime righe della tabella. */
+    /* Non più in alto di così: sopra c'è la finta barra del browser, e
+       coprire l'indirizzo toglie proprio il dettaglio che dice "questa è
+       un'applicazione web vera". */
+    .volante-1 { top: 14%; left: 0; }
+    .volante-2 { top: 38%; right: 0; }
+    .volante-3 { bottom: 5%; left: 0; }
+  }
+
+  /* L'oscillazione: piccola e lenta, altrimenti distrae da ciò che sta
+     spiegando. Le classi arrivano da global.css, qui si sfasano soltanto
+     così i tre non si muovono all'unisono come un blocco solo. */
+  @media (prefers-reduced-motion: no-preference) and (min-width: 1100px) {
+    .volante { animation: float-y 6s var(--ease-out-quart) infinite; }
+    .volante-2 { animation-duration: 7.4s; animation-delay: -2.1s; }
+    .volante-3 { animation-duration: 5.6s; animation-delay: -3.4s; }
+  }
+
+  .video-piede {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 2rem;
+    margin-top: 1.25rem;
+  }
+  .video-nota {
+    font-size: 0.8125rem;
+    line-height: 1.6;
+    color: var(--color-ink-3);
+  }
+
   .video-frame {
-    max-width: 68rem;
+    max-width: 54rem;
     margin-inline: auto;
     overflow: hidden;
     border: 1px solid var(--color-line);
-    border-radius: var(--radius-xl);
+    border-radius: var(--radius-lg);
     background: var(--color-paper);
     box-shadow: var(--shadow-lg);
   }
+
 
   /* Finta barra del browser: chiarisce che si sta guardando un'applicazione
      web e non un video promozionale. */
@@ -139,6 +440,13 @@ const { eyebrow, title, lead, caption } = Astro.props;
       transform-origin: 45% 52%;
     }
   }
+
+  /*
+   * Su schermo largo NON serve alcuno zoom: con il video tornato al centro il
+   * riquadro è largo circa 930 px, e la tabella si legge alla sua misura
+   * naturale. Lo zoom serviva quando stava in mezza riga; tenerlo adesso
+   * ritaglierebbe il menu laterale senza guadagnare nulla.
+   */
   .video-poster,
   .video-el {
     position: absolute;

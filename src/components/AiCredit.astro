@@ -1,0 +1,46 @@
+---
+/*
+ * Dichiarazione di origine artificiale di un'immagine.
+ *
+ * Perché esiste: dal 2 agosto 2026 si applica l'articolo 50 del regolamento
+ * UE 2024/1689 (AI Act). Le linee guida della Commissione leggono la
+ * definizione di "deepfake" in senso largo — vi rientra anche la
+ * rappresentazione realistica di una persona che non esiste, e l'assenza di
+ * intento ingannevole non toglie l'obbligo. Chi pubblica il contenuto
+ * (il "deployer") deve dichiararlo in modo chiaro e distinguibile, al più
+ * tardi al momento della prima esposizione.
+ *
+ * Da qui la forma: una riga sotto l'immagine, non una nota in fondo alla
+ * pagina. "Prima esposizione" vuol dire lì dove l'immagine si vede.
+ *
+ * Le illustrazioni piatte non ne avrebbero bisogno (non sono naturalistiche,
+ * quindi fuori definizione), ma dirlo comunque costa una riga e toglie
+ * l'ambiguità su quali immagini siano generate e quali no.
+ */
+interface Props {
+  /** Testo alternativo, per casi in cui "immagine" non è la parola giusta. */
+  label?: string;
+  class?: string;
+}
+
+const { label = "Immagine generata con IA", class: className = "" } = Astro.props;
+---
+
+<p class:list={["ai-credit", className]}>{label}</p>
+
+<style>
+  .ai-credit {
+    margin-top: 0.625rem;
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+    color: var(--color-muted);
+    text-align: center;
+  }
+
+  /* Sulle fasce scure il grigio del testo secondario sparirebbe. */
+  :global(.on-dark) .ai-credit,
+  :global(.cta-band) .ai-credit {
+    color: rgb(255 255 255 / 0.55);
+  }
+</style>

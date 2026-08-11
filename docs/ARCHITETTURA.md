@@ -55,16 +55,72 @@ etichette entrano, il titolo sale — ma il titolo è visibile dal primo frame.
 
 | Prima | Adesso |
 |---|---|
-| `d3-geo` + `topojson-client` + `world-atlas/land-110m.json` | 11 `<div>` con un bordo |
-| ~110 kB di JSON nel bundle | 0 kB |
-| Canvas ridisegnato a ogni frame → CPU costante | Una sola animazione `transform`, gestita dalla GPU |
+| `d3-geo` + `topojson-client` + `world-atlas/land-110m.json` nel bundle | Nessuna dipendenza: la mappa è già proiettata dentro l'HTML |
+| ~110 kB di JSON + ~600 righe di React | 65 kB di dati di path (≈20 kB gzippati), 0 kB di JavaScript |
+| Proiezione ricalcolata e ~1000 nodi SVG ridipinti a ogni fotogramma | Una sola animazione `transform`, condivisa, sul compositore |
 
-I meridiani e i paralleli sono posizionati nello spazio 3D dal browser
-(`transform-style: preserve-3d`). La geometria è quella della sfera: per la
-latitudine φ il cerchio ha raggio `cos(φ)` e quota `sin(φ)`.
+La mappa gira davvero, con le coste, la rete di nodi e Messina al posto suo. Il
+trucco sta tutto in una osservazione: **una sfera vista da lontano deforma la
+mappa in due modi che dipendono solo dalla latitudine, non da quanto ha girato.**
 
-Il reticolo è anche più coerente con la direzione Swiss dei continenti pieni:
-è un disegno tecnico.
+1. la comprime in orizzontale di `cos φ` (il parallelo a 60° è largo metà
+   dell'equatore);
+2. la schiaccia in verticale, perché la latitudine φ finisce all'altezza
+   `sin φ`.
+
+Siccome sono deformazioni che dipendono solo dalla riga dello schermo, restano
+vere per sempre e si possono calcolare una volta sola. `scripts/gen-globo.mjs`
+taglia il planisfero in 51 strisce orizzontali, calcola per ognuna larghezza e
+schiacciamento, e scrive `src/data/globo.json`. A runtime resta una traslazione
+orizzontale sola, uguale per tutte le strisce: la fa la GPU, il thread
+principale non viene mai svegliato.
+
+Dettagli che contano:
+
+- **Finestra di 114,6° e non 180°.** Dentro la striscia la longitudine avanza
+  in modo lineare, mentre sulla sfera vera rallenta verso il bordo (`sin λ`).
+  360/π è l'ampiezza per cui la scala al centro del disco è esatta: la mappa
+  non risulta né schiacciata né stirata. Quel che si perde è il lembo più
+  radente, che la dissolvenza del bordo copre comunque.
+- **Dettaglio variabile con la distanza da Messina.** I dati di partenza sono
+  a 1:50 milioni (a 1:110 la Sicilia sono undici punti: un triangolo). Presi
+  interi sarebbero 60.000 punti, troppi per l'HTML della home — quindi la
+  soglia di semplificazione cresce con la distanza dal puntino: 0,05° attorno
+  all'Italia (lo Stretto, le Eolie, la Sardegna, le isole greche), 0,45°
+  dall'altra parte del mondo. Nessuna cucitura fra le due zone: è lo stesso
+  Douglas–Peucker, con la soglia calcolata punto per punto.
+- **`vector-effect="non-scaling-stroke"`** su ogni path: il tratto non si
+  deforma con la striscia, quindi le coste hanno lo stesso spessore
+  all'equatore e ai poli.
+- **Colori come attributi, non come CSS.** Le geometrie sono richiamate con
+  `<use>`, che clona in uno shadow tree dove i selettori del foglio di stile
+  non arrivano: con il CSS le copie perderebbero `fill:none` e comparirebbero
+  come macchie nere.
+- **`max-width: none` sui nastri.** Il reset globale dà `max-width:100%` a ogni
+  `<svg>`: senza toglierlo, nel disco finisce il mondo intero invece dei 114°
+  che deve mostrare.
+- **Giro completo**, 120 s: la Sicilia sparisce dietro al pianeta per due terzi
+  del tempo, come su una sfera vera. L'animazione parte con un ritardo negativo
+  calcolato perché al primo fotogramma Messina sia già al centro. Nel
+  componente esiste anche `MOTO = "pendolo"` (oscillazione di ±34° attorno
+  all'Italia, Messina sempre in vista): cambiando quella parola si adeguano
+  durata, estremi, verso e numero di copie della mappa.
+- **I nomi non stanno dentro le strisce.** Continenti, oceani e città hanno
+  ognuno un nastro proprio, largo come il parallelo della loro latitudine, con
+  la stessa animazione: dentro una striscia verrebbero stirati insieme alla
+  mappa. Sotto i 1024 px non vengono proprio generati come livelli — 25
+  animazioni per del testo nascosto costavano 50 ms di TBT su mobile.
+- **`translate: 0 -19.09%` sulla sfera.** Messina cade al 19,09% dell'altezza
+  del disco ((1 − sin 38,19°) / 2). Posizionando il disco e poi tirandolo su di
+  quella frazione, a finire all'altezza scelta è la riga di Messina e non il
+  centro della sfera — che è l'equatore. Senza, la Sicilia resta appesa in alto.
+- **Su mobile il globo passa dietro al testo**, non sotto: nella colonna
+  finiva quasi tutto sotto la piega e la hero era lunga il doppio dello
+  schermo.
+
+Per rigenerare la mappa (cambiare risoluzione delle coste, numero di nodi,
+densità della rete): `node scripts/gen-globo.mjs`. Non gira a ogni build —
+l'output è versionato, così il sito compila anche senza i dati cartografici.
 
 ### I video
 

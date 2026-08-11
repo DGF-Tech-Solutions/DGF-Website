@@ -1,0 +1,13 @@
+[
+  { "name": "metodo-01-ascolto", "seed": 611, "out": "brand/render/04-metodo/metodo-01-ascolto.png",
+    "prompt": "editorial corporate photograph, tight three-quarter overhead crop of a pale grey table, a hand writing in an open blank notebook with a pen, a second pair of hands resting on the table opposite, a plain cup at the edge of the frame, soft directional daylight from the left casting gentle shadows, cool navy and slate blue grading, muted calm palette, shallow depth of field, 50mm lens, fine natural grain, photorealistic, no faces, no readable text, blank pages, simple uncluttered composition" },
+
+  { "name": "metodo-02-proposta", "seed": 612, "out": "brand/render/04-metodo/metodo-02-proposta.png",
+    "prompt": "editorial corporate photograph, tight three-quarter overhead crop of a pale grey table, a bound printed document lying open, one hand turning a page, a pen resting across the corner, soft directional daylight from the left casting gentle shadows, cool navy and slate blue grading, muted calm palette, shallow depth of field, 50mm lens, fine natural grain, photorealistic, no faces, no readable text, blank pages, simple uncluttered composition" },
+
+  { "name": "metodo-03-costruzione", "seed": 613, "out": "brand/render/04-metodo/metodo-03-costruzione.png",
+    "prompt": "editorial corporate photograph, tight three-quarter crop of two hands on a keyboard on a pale grey desk, the edge of a monitor strongly backlit so the screen reads as plain white glare with no content, soft directional daylight from the left, cool navy and slate blue grading, muted calm palette, shallow depth of field, 50mm lens, fine natural grain, photorealistic, no faces, no visible interface, no readable text, simple uncluttered composition" },
+
+  { "name": "metodo-04-consegna", "seed": 614, "out": "brand/render/04-metodo/metodo-04-consegna.png",
+    "prompt": "editorial corporate photograph, tight three-quarter overhead crop of a pale grey table, two hands sliding an open laptop across the table towards a second pair of waiting hands, the laptop screen showing only a soft defocused pale glow with no content, soft directional daylight from the left casting gentle shadows, cool navy and slate blue grading, muted calm palette, shallow depth of field, 50mm lens, fine natural grain, photorealistic, no faces, no readable text, simple uncluttered composition" }
+]

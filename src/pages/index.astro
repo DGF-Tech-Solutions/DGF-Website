@@ -3,25 +3,44 @@ import { getCollection } from "astro:content";
 import { Image } from "astro:assets";
 import Base from "@/layouts/Base.astro";
 import Icon from "@/components/Icon.astro";
+import ServiziSchede from "@/components/ServiziSchede.astro";
 import Globe from "@/components/Globe.astro";
-import Marquee from "@/components/Marquee.astro";
 import VideoLoop from "@/components/VideoLoop.astro";
-import CaseCard from "@/components/CaseCard.astro";
 import ArticleCard from "@/components/ArticleCard.astro";
 import CtaBand from "@/components/CtaBand.astro";
 import { SITE } from "@/data/site";
-import { SERVICES } from "@/data/services";
-import processoIllustration from "@/assets/illustrazioni/scena-processo.png";
-
-const projects = (await getCollection("portfolio"))
-  .sort((a, b) => a.data.order - b.data.order)
-  .slice(0, 3);
+import AiCredit from "@/components/AiCredit.astro";
+import fase1 from "@/assets/foto/fase-1-ascolto.webp";
+import fase2 from "@/assets/foto/fase-2-proposta.webp";
+import fase3 from "@/assets/foto/fase-3-costruzione.webp";
+import fase4 from "@/assets/foto/fase-4-consegna.webp";
 
 const articles = (await getCollection("blog", ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 2);
 
-const SERVICE_ICONS = ["globe", "bag", "phone", "dashboard", "sparkles"] as const;
+/*
+ * Cos'è un SaaS, in tre righe.
+ *
+ * La sigla la usiamo noi tutti i giorni, ma il visitatore tipo di questo sito
+ * non la conosce: senza una spiegazione il video qui sotto mostra delle
+ * schermate e basta, e nessuno capisce che cosa sta guardando né perché
+ * dovrebbe volerne uno.
+ */
+const SAAS = [
+  {
+    title: "Vive sul web",
+    text: "Si apre dal browser, senza installare niente. Lo stesso account funziona dall'ufficio, da casa e dal telefono.",
+  },
+  {
+    title: "Si aggiorna da solo",
+    text: "Le correzioni e le funzioni nuove arrivano a tutti insieme. Nessuno resta indietro con una versione di tre anni fa.",
+  },
+  {
+    title: "Si paga a canone",
+    text: "Nessuna licenza da comprare in blocco all'inizio. Il costo segue l'uso, e si può smettere quando serve.",
+  },
+] as const;
 
 /** Le tre frasi sotto le CTA: rassicurano prima ancora che si scorra. */
 const TRUST = [
@@ -30,77 +49,37 @@ const TRUST = [
   "Parli sempre con chi sviluppa",
 ];
 
-/* I due nastri scorrono in versi opposti: il contrasto di direzione rende
-   evidente che si muovono, senza che nessuno dei due debba correre. */
-const COSA_COSTRUIAMO = [
-  "Siti web",
-  "E-commerce",
-  "App mobile",
-  "Gestionali su misura",
-  "Portali clienti",
-  "Integrazioni con API",
-  "Automazioni",
-  "Manutenzione continua",
-];
-
-const TECNOLOGIE = [
-  "Next.js",
-  "Astro",
-  "React",
-  "TypeScript",
-  "Django",
-  "PostgreSQL",
-  "Stripe",
-  "Docker",
-  "Tailwind CSS",
-  "Celery",
-];
-
 const PHASES = [
   {
     icon: "message",
     title: "Ascolto",
     text: "Capiamo il problema prima di parlare di soluzioni. Spesso quello che serve è diverso da quello che si era immaginato, e dirlo è parte del lavoro.",
+    photo: fase1,
+    photoAlt: "Una mano prende appunti su un taccuino, di fronte le mani di chi parla",
   },
   {
     icon: "file",
     title: "Proposta",
     text: "Ambito, tempi e costo messi per iscritto prima di iniziare. Nessuna voce a sorpresa a metà progetto.",
+    photo: fase2,
+    photoAlt: "Una mano sfoglia un documento rilegato appoggiato sul tavolo",
   },
   {
     icon: "wrench",
     title: "Costruzione",
     text: "Ti mostriamo il lavoro mentre procede, non alla fine. Se qualcosa non convince si corregge quando costa poco.",
+    photo: fase3,
+    photoAlt: "Mani su una tastiera davanti a un monitor in controluce",
   },
   {
     icon: "package",
     title: "Consegna",
     text: "Il progetto è tuo: codice, dominio, accessi. Ti spieghiamo come funziona e restiamo raggiungibili.",
+    photo: fase4,
+    photoAlt: "Un portatile aperto viene fatto scorrere sul tavolo verso due mani",
   },
 ] as const;
 
-const COMMITMENTS = [
-  {
-    icon: "users",
-    title: "Parli con chi scrive il codice",
-    text: "Nessun passaggio di consegne fra commerciale e tecnico. Chi ti risponde è chi il lavoro lo fa.",
-  },
-  {
-    icon: "shield",
-    title: "Il progetto è tuo, per intero",
-    text: "Codice sorgente, dominio e accessi restano di tua proprietà. Nessun vincolo che ti obblighi a restare.",
-  },
-  {
-    icon: "file",
-    title: "Preventivo scritto prima",
-    text: "Ambito e costo definiti in partenza. Se serve una modifica fuori perimetro, la quantifichiamo prima di farla.",
-  },
-  {
-    icon: "check",
-    title: "Ti diciamo anche di no",
-    text: "Se pensiamo che ti serva qualcosa di più semplice, o niente affatto, te lo diciamo, anche quando significa fatturare meno.",
-  },
-] as const;
 ---
 
 <Base title={SITE.name} description={SITE.description} canonical="/">
@@ -109,13 +88,14 @@ const COMMITMENTS = [
        Il titolo è l'elemento LCP: si anima solo in `transform`, mai in
        opacità, altrimenti la metrica slitterebbe di tutta l'animazione.
 
-       A destra il globo: è disegnato in CSS, quindi non c'è nessuna
-       immagine da scaricare sopra la piega e l'LCP resta il titolo.
+       A destra il pianeta: è SVG dentro l'HTML e sta dopo il titolo nel
+       documento, quindi non c'è nessuna immagine da scaricare sopra la piega
+       e l'LCP resta il titolo.
        ══════════════════════════════════════════════════════════════════ -->
-  <section class="glow-bg overflow-hidden">
+  <section class="hero glow-bg under-nav overflow-hidden">
     <div class="wrap">
-      <div class="grid items-center gap-10 pt-12 pb-14 sm:pt-16 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14 lg:pt-20 lg:pb-24">
-        <div>
+      <div class="hero-griglia grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
+        <div class="hero-testo">
           <span class="chip anim-fade-rise">
             <Icon name="pin" size={13} />
             Software house · {SITE.city}, {SITE.countryName}
@@ -152,63 +132,62 @@ const COMMITMENTS = [
         </div>
 
         <!--
-          Globo con i cartellini che galleggiano attorno.
-          Il contenitore è largo quanto il globo: così i cartellini si
-          posizionano rispetto ALLA SFERA e non alla colonna, e sporgono di
-          poco senza uscire dalla pagina.
+          Il pianeta, con i cartellini che gli galleggiano davanti.
+          La colonna serve solo da ancoraggio: la sfera è larga il doppio ed
+          esce dal bordo destro della pagina (vedi `.hero-globo-sfera`), così
+          si legge come un pianeta inquadrato di taglio e non come un'icona.
         -->
         {/* `anim-rise` (solo transform) e non una dissolvenza: sopra la piega
             un'opacità che riparte lascia il vuoto al posto della figura. */}
-        <div class="anim-rise relative mx-auto w-full max-w-[22rem] sm:max-w-[26rem] lg:max-w-[32rem]">
-          <div class="globe-halo" aria-hidden="true"></div>
-          <Globe class="relative" />
-
-          <div class="float absolute -left-4 top-[14%] hidden w-[13.5rem] sm:block lg:-left-10">
-            <div class="card flex items-center gap-3 px-3.5 py-2.5">
-              <span class="icon-tile icon-tile-sm"><Icon name="zap" size={16} /></span>
-              <span>
-                <span class="block text-[0.8125rem] font-bold text-[var(--color-ink)]">Siti istantanei</span>
-                <span class="block text-[0.6875rem] leading-tight text-[var(--color-ink-3)]">Ottimizzati fino all'ultimo kB</span>
-              </span>
-            </div>
+        <div class="hero-globo anim-rise">
+          {/* Il globo sta in un contenitore invece di ricevere una classe:
+              una classe passata a un componente non porta con sé lo scope CSS
+              di questa pagina, e la regola non lo aggancerebbe. L'alone sta
+              dentro allo stesso contenitore, così segue la sfera a ogni
+              dimensione senza ripetere le regole di posizione. */}
+          <div class="hero-globo-sfera">
+            <div class="globe-halo" aria-hidden="true"></div>
+            <Globe />
           </div>
 
-          <div class="float-slow absolute -right-4 top-[45%] hidden w-[12rem] sm:block lg:-right-8">
-            <div class="card flex items-center gap-3 px-3.5 py-2.5">
-              <span class="icon-tile icon-tile-sm"><Icon name="shield" size={16} /></span>
-              <span>
-                <span class="block text-[0.8125rem] font-bold text-[var(--color-ink)]">Nessun vincolo</span>
-                <span class="block text-[0.6875rem] leading-tight text-[var(--color-ink-3)]">Il codice è tuo</span>
-              </span>
-            </div>
-          </div>
+          <!--
+            Tre didascalie appoggiate sul globo.
 
-          <div class="float-fast absolute bottom-[8%] -left-2 hidden w-[13rem] lg:block lg:-left-6">
-            <div class="card flex items-center gap-3 px-3.5 py-2.5">
-              <span class="icon-tile icon-tile-sm"><Icon name="headset" size={16} /></span>
+            Prima erano tre schede bianche: rettangoli opachi incollati sopra
+            al pianeta, che coprivano i continenti e sembravano appartenere a
+            un'altra pagina. Ora parlano la stessa lingua della mappa — un
+            puntino sul posto, un filo, la scritta — come l'etichetta di
+            Messina. Niente riquadro da attraversare con lo sguardo.
+
+            Stanno sul terzo sinistro del disco, dove la mappa è già sfumata.
+          -->
+          <ul class="hero-note">
+            <li class="hero-note-1 float">
+              <span class="hero-note-punto" aria-hidden="true"></span>
               <span>
-                <span class="block text-[0.8125rem] font-bold text-[var(--color-ink)]">Risposta in 1 giorno</span>
-                <span class="block text-[0.6875rem] leading-tight text-[var(--color-ink-3)]">Lavorativo</span>
+                <span class="hero-note-titolo">Siti istantanei</span>
+                <span class="hero-note-riga">Ottimizzati fino all'ultimo kB</span>
               </span>
-            </div>
-          </div>
+            </li>
+
+            <li class="hero-note-2 float-slow">
+              <span class="hero-note-punto" aria-hidden="true"></span>
+              <span>
+                <span class="hero-note-titolo">Il codice è tuo</span>
+                <span class="hero-note-riga">Sorgenti, dominio e accessi</span>
+              </span>
+            </li>
+
+            <li class="hero-note-3 float-fast">
+              <span class="hero-note-punto" aria-hidden="true"></span>
+              <span>
+                <span class="hero-note-titolo">Risposta in 1 giorno</span>
+                <span class="hero-note-riga">Lavorativo, e risponde una persona</span>
+              </span>
+            </li>
+          </ul>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════════════════════════════════════════
-       NASTRI — cosa costruiamo e con cosa
-       Occupano tutta la larghezza, senza `wrap`: il taglio ai bordi dello
-       schermo è ciò che li fa leggere come un flusso continuo.
-       ══════════════════════════════════════════════════════════════════ -->
-  <section class="border-y border-[var(--color-line)] bg-[var(--color-paper)] py-10 sm:py-12">
-    <p class="t-eyebrow wrap mb-6 text-center">Cosa costruiamo, e con cosa</p>
-    <div class="space-y-3">
-      {/* La riga delle tecnologie ha voci più corte, quindi serve una copia
-          in più per coprire gli schermi larghi. */}
-      <Marquee items={COSA_COSTRUIAMO} duration={46} repeats={4} />
-      <Marquee items={TECNOLOGIE} duration={54} repeats={6} reverse />
     </div>
   </section>
 
@@ -217,52 +196,25 @@ const COMMITMENTS = [
        ══════════════════════════════════════════════════════════════════ -->
   <section class="band-soft section">
     <div class="wrap">
-      <div class="mx-auto max-w-2xl text-center">
-        <span class="t-eyebrow">I servizi</span>
-        <h2 class="t-h2 mt-3">
-          Cinque cose, <span class="t-dim">fatte bene.</span>
-        </h2>
-        <p class="t-lead mt-4">
-          Non facciamo tutto. Per ognuno di questi sappiamo dirti anche quando
-          non ti serve, e succede più spesso di quanto immagini.
+      <!-- Testata su due colonne invece che centrata: dà alla sezione un asse
+           verticale a sinistra, lo stesso del resto della pagina, e lascia al
+           blocco sotto tutta la larghezza. Una testata centrata sopra una
+           griglia larga fa sembrare le due cose scollegate. -->
+      <div class="servizi-testata">
+        <div>
+          <span class="t-eyebrow">I servizi</span>
+          <h2 class="t-h2 mt-3">
+            Cinque cose, <span class="t-dim">fatte bene.</span>
+          </h2>
+        </div>
+        <p class="t-lead">
+          Costruiamo software su misura, qualunque sia il problema da
+          risolvere. Questi cinque sono quelli che ci chiedono più spesso: se
+          il tuo caso non è nell'elenco, raccontacelo lo stesso.
         </p>
       </div>
 
-      <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {
-          SERVICES.map((s, i) => (
-            <a href={`/servizi/${s.slug}`} class="card group relative flex flex-col p-6 reveal">
-              <Icon
-                name="arrow-up-right"
-                size={16}
-                class="absolute right-5 top-5 text-[var(--color-line)] transition-colors group-hover:text-[var(--color-navy)]"
-              />
-              <span class="icon-tile">
-                <Icon name={SERVICE_ICONS[i]} size={22} />
-              </span>
-              <h3 class="t-h3 mt-4">{s.title}</h3>
-              <p class="t-body mt-2 flex-1 text-[0.875rem]">{s.summary}</p>
-              <span class="mt-5 flex items-center gap-2 text-[0.75rem] font-semibold text-[var(--color-ink-3)]">
-                <Icon name="clock" size={14} />
-                {s.timeline}
-              </span>
-            </a>
-          ))
-        }
-
-        <!-- Cella finale: chiude la griglia e porta al contatto -->
-        <div class="card flex flex-col justify-center bg-[var(--color-soft)] p-6">
-          <h3 class="t-h3">Non sai quale ti serve?</h3>
-          <p class="t-body mt-2 text-[0.875rem]">
-            È la situazione più comune. Raccontaci il problema e ti diciamo noi
-            da dove conviene partire.
-          </p>
-          <a href="/contatti" class="link-arrow mt-5">
-            Scrivici
-            <Icon name="arrow-right" size={16} />
-          </a>
-        </div>
-      </div>
+      <ServiziSchede />
     </div>
   </section>
 
@@ -271,125 +223,91 @@ const COMMITMENTS = [
        Registrazione vera di Nexia Home, non un video d'archivio.
        ══════════════════════════════════════════════════════════════════ -->
   <VideoLoop
-    eyebrow="Software in funzione"
-    title='Non un mockup: <span class="t-dim">il prodotto vero.</span>'
-    lead="Questa è Nexia Home mentre importa una fattura e la associa da sola al fornitore giusto. L'abbiamo costruita noi, e la manteniamo tutti i giorni."
-    caption="Registrazione dell'applicazione reale, senza montaggio."
+    eyebrow="In produzione, adesso"
+    title='Il software che vedi <span class="t-dim">sta girando davvero.</span>'
+    lead="Nexia Home importa una fattura elettronica e la associa da sola al fornitore giusto. L'abbiamo progettata, scritta e messa online noi, e la manteniamo tutti i giorni."
+    caption="Schermo registrato dall'applicazione in funzione. Nessun montaggio, nessuna accelerazione."
+    href="/portfolio/nexia-home"
+    hrefLabel="Come l'abbiamo costruita"
+    pointsTitle="Cos'è un software SaaS"
+    points={SAAS}
   />
 
   <!-- ══════════════════════════════════════════════════════════════════
        COME LAVORIAMO
        ══════════════════════════════════════════════════════════════════ -->
-  <section class="band-soft section">
+  <section class="metodo band-soft section">
+    {/* Due aloni che scorrono più lenti della pagina: danno profondità al
+        fondo senza una sola immagine da scaricare. */}
+    <span class="metodo-alone metodo-alone-1 parallax-slow" aria-hidden="true"></span>
+    <span class="metodo-alone metodo-alone-2 parallax-fast" aria-hidden="true"></span>
+
     <div class="wrap">
-      <div class="grid items-center gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
-        <div class="order-2 lg:order-1">
-          <Image
-            src={processoIllustration}
-            alt="Illustrazione: pianificazione del progetto"
-            widths={[280, 400, 560]}
-            sizes="(min-width: 1024px) 360px, 55vw"
-            loading="lazy"
-            class="mx-auto w-full max-w-[18rem] lg:max-w-none"
-          />
-        </div>
-
-        <div class="order-1 lg:order-2">
-          <span class="t-eyebrow">Il metodo</span>
-          <h2 class="t-h2 mt-3">
-            Quattro passaggi, <span class="t-dim">nessuna sorpresa.</span>
-          </h2>
-          <p class="t-lead mt-4 max-w-xl">
-            Lo stesso percorso su ogni progetto, dal sito vetrina al gestionale.
-            Sapere cosa succede dopo è metà della tranquillità.
-          </p>
-
-          <ol class="mt-10 space-y-6">
-            {
-              PHASES.map((p, i) => (
-                <li class="group flex gap-4 reveal">
-                  <span class="icon-tile"><Icon name={p.icon} size={20} /></span>
-                  <span class="pt-0.5">
-                    <span class="flex items-baseline gap-2">
-                      <span class="t-h3">{p.title}</span>
-                      <span class="phase-num">0{i + 1}</span>
-                    </span>
-                    <span class="t-body mt-1 block">{p.text}</span>
-                  </span>
-                </li>
-              ))
-            }
-          </ol>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════════════════════════════════════════
-       PROGETTI
-       ══════════════════════════════════════════════════════════════════ -->
-  <section class="section">
-    <div class="wrap">
-      <div class="flex flex-wrap items-end justify-between gap-6">
-        <div class="max-w-2xl">
-          <span class="t-eyebrow">I progetti</span>
-          <h2 class="t-h2 mt-3">
-            Cosa sappiamo <span class="t-dim">costruire.</span>
-          </h2>
-          <p class="t-lead mt-4">
-            Nexia Home è il gestionale per amministratori di condominio che
-            abbiamo costruito e che manteniamo: contabilità, adempimenti
-            fiscali, assemblee e portale per i condòmini. La scheda racconta le
-            scelte tecniche, non solo il risultato.
-          </p>
-        </div>
-        <a href="/portfolio" class="link-arrow shrink-0 pb-1">
-          Tutti i progetti
-          <Icon name="arrow-right" size={16} />
-        </a>
-      </div>
-
-      <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {
-          projects.map((entry, i) => (
-            <div class="reveal" style={`--i:${i}`}>
-              <CaseCard entry={entry} />
-            </div>
-          ))
-        }
-      </div>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════════════════════════════════════════
-       IMPEGNI — unica fascia scura della pagina
-       ══════════════════════════════════════════════════════════════════ -->
-  <section class="on-dark section">
-    <div class="wrap">
-      <div class="mx-auto max-w-2xl text-center">
-        <span class="t-eyebrow">Gli impegni</span>
+      <div class="metodo-intro">
+        <span class="t-eyebrow">Il metodo</span>
         <h2 class="t-h2 mt-3">
-          Quattro cose che mettiamo <span class="t-dim">per iscritto.</span>
+          Quattro passaggi, <span class="t-dim">nessuna sorpresa.</span>
         </h2>
         <p class="t-lead mt-4">
-          Non sono slogan: sono condizioni che trovi nel preventivo e che puoi
-          contestarci se non le rispettiamo.
+          Lo stesso percorso su ogni progetto, dal sito vetrina al gestionale.
+          Sapere cosa succede dopo è metà della tranquillità.
         </p>
       </div>
 
-      <div class="mt-12 grid gap-5 sm:grid-cols-2">
+      <!--
+        I quattro passaggi si sostituiscono mentre si scorre: ogni pannello si
+        aggancia sotto la barra e il successivo gli sale sopra, lasciando
+        vedere il bordo di quelli già passati. È un effetto di sola
+        impaginazione — `position: sticky` e quattro `top` diversi — quindi
+        nessuno script, nessun calcolo a ogni fotogramma.
+      -->
+      <ol class="metodo-pila">
         {
-          COMMITMENTS.map((c) => (
-            <div class="card group flex gap-4 p-6 reveal">
-              <span class="icon-tile"><Icon name={c.icon} size={20} /></span>
-              <span>
-                <span class="t-h3 block">{c.title}</span>
-                <span class="t-body mt-2 block">{c.text}</span>
-              </span>
-            </div>
+          PHASES.map((p, i) => (
+            <li class="passo" style={`--i:${i}`}>
+              <div class="passo-corpo">
+                <div class="passo-testo">
+                  <span class="passo-testa">
+                    <span class="icon-tile"><Icon name={p.icon} size={20} /></span>
+                    <span class="passo-num tabular">{`Fase 0${i + 1} di 04`}</span>
+                  </span>
+                  <h3 class="passo-titolo">{p.title}</h3>
+                  <p class="passo-riga">{p.text}</p>
+                </div>
+
+                {/* Una foto per fase, dentro un riquadro con lo stesso raggio
+                    della scheda. Sono inquadrature strette — mani e un oggetto
+                    solo — perché a 320 px una stanza intera diventa poltiglia.
+                    I quattro gesti (scrivere, sfogliare, digitare, passare)
+                    raccontano il percorso anche senza leggere i titoli. */}
+                <figure class="passo-scena">
+                  <Image
+                    src={p.photo}
+                    alt={p.photoAlt}
+                    widths={[320, 480, 640]}
+                    sizes="(min-width: 1024px) 320px, 40vw"
+                    loading="lazy"
+                  />
+                </figure>
+
+                <span class="passo-tacche" aria-hidden="true">
+                  {PHASES.map((_, k) => (
+                    <i class:list={[k <= i && "acceso"]} />
+                  ))}
+                </span>
+              </div>
+            </li>
           ))
         }
-      </div>
+      </ol>
+
+      {/* Una dichiarazione per la sezione e non quattro sotto ogni scheda:
+          le foto si vedono qui, la riga sta qui, e il lettore non se la
+          ritrova ripetuta a ogni pannello. */}
+      <AiCredit
+        label="Le fotografie di questa sezione sono generate con IA."
+        class="metodo-credito"
+      />
     </div>
   </section>
 
@@ -427,28 +345,413 @@ const COMMITMENTS = [
 </Base>
 
 <style>
-  /* Numero d'ordine della fase. Decorativo, ma resta testo: il colore deve
-     comunque reggere il contrasto sul fondo chiaro della sezione, quindi si
-     usa il grigio di sistema già verificato e non un grigio più tenue. */
-  .phase-num {
+  /* ═══════════════════════════════════════════════════════════════════════
+     IL METODO — quattro pannelli che si sostituiscono scorrendo
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  /*
+   * `clip` e non `hidden`, ed è la differenza fra la sezione che funziona e
+   * la sezione che non funziona: `overflow: hidden` rende l'elemento un
+   * contenitore di scorrimento, e `position: sticky` sui pannelli qui dentro
+   * smette di agganciarsi — la pila torna un elenco normale. `clip` ritaglia
+   * gli aloni senza creare quel contenitore.
+   */
+  .metodo { position: relative; overflow: clip; isolation: isolate; }
+
+  /* Aloni di fondo che scorrono più lenti della pagina. Cerchi sfocati, non
+     immagini: costano zero byte e si muovono sul compositore, quindi la
+     parallasse non tocca mai il thread principale. */
+  .metodo-alone {
+    position: absolute;
+    z-index: -1;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .metodo-alone-1 {
+    top: -8rem;
+    right: -12rem;
+    width: 36rem;
+    height: 36rem;
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--color-cyan) 22%, transparent) 0%,
+      transparent 66%
+    );
+  }
+  .metodo-alone-2 {
+    bottom: -14rem;
+    left: -14rem;
+    width: 32rem;
+    height: 32rem;
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--color-navy) 12%, transparent) 0%,
+      transparent 68%
+    );
+  }
+
+  .metodo-intro { max-width: 38rem; }
+
+  /*
+   * La pila.
+   *
+   * Ogni pannello si aggancia in alto (`sticky`) e ci resta finché il
+   * successivo non gli sale sopra. I `top` crescono di mezzo centimetro a
+   * pannello, così di quelli già passati resta visibile il bordo superiore:
+   * è quel dettaglio che fa leggere il blocco come un mazzo di carte invece
+   * che come un salto brusco fra una schermata e l'altra.
+   *
+   * Il margine negativo fra un elemento e l'altro è ciò che li fa
+   * sovrapporre; senza, la pila diventa un elenco normale.
+   */
+  .metodo-pila {
+    list-style: none;
+    margin: 3rem 0 0;
+    padding: 0;
+  }
+
+  .passo { position: sticky; top: calc(var(--nav-h) + 1.5rem + var(--i) * 0.75rem); }
+  .passo + .passo { margin-top: 2.5rem; }
+
+  .passo-corpo {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: center;
+    gap: clamp(1.75rem, 1.2rem + 2.4vw, 3.25rem);
+    min-height: 20rem;
+    overflow: hidden;
+    padding: clamp(1.75rem, 1.2rem + 2.4vw, 3.25rem);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-xl);
+    background: var(--color-paper);
+    box-shadow: var(--shadow-lg);
+  }
+  @media (min-width: 1024px) {
+    /* Da qui in su la scheda è a due colonne: il testo tiene la sua misura di
+       lettura e la foto occupa la colonna fissa a destra, dove prima c'era
+       solo il vuoto riempito dal numero. */
+    .passo-corpo { min-height: 24rem; grid-template-columns: 1fr 20rem; }
+  }
+
+  .passo-testo { position: relative; z-index: 1; max-width: 34rem; }
+
+  .passo-testa { display: flex; align-items: center; gap: 0.875rem; }
+  .passo-num {
+    font-family: var(--font-mono);
     font-size: 0.6875rem;
-    font-weight: 700;
+    font-weight: 600;
     letter-spacing: 0.08em;
-    font-variant-numeric: tabular-nums;
+    text-transform: uppercase;
     color: var(--color-ink-3);
   }
 
+  .passo-titolo {
+    margin-top: 1.25rem;
+    font-size: clamp(1.5rem, 1.2rem + 1.4vw, 2.25rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    color: var(--color-ink);
+  }
+  .passo-riga {
+    margin-top: 0.875rem;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--color-ink-3);
+  }
+
+  /*
+   * Il riquadro della foto. `aspect-ratio` fisso e `object-fit: cover`: i
+   * render sono 1152x896 (1,29) contro il 4:3 del riquadro (1,33), quindi il
+   * ritaglio vale il 4% ai lati e nessuna inquadratura ne soffre.
+   */
+  .passo-scena {
+    display: none;
+    margin: 0;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--color-paper-2);
+  }
+  .passo-scena :global(img) {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+  /* Sotto i 1024px la scheda resta di solo testo: quattro foto in colonna
+     allungherebbero la pila al punto da perdere il ritmo dello scorrimento. */
+  @media (min-width: 1024px) {
+    .passo-scena { display: block; }
+  }
+
+  /* Quattro tacche in alto a destra: dicono a che punto del percorso si è
+     senza dover contare i pannelli. */
+  .passo-tacche {
+    position: absolute;
+    top: clamp(1.75rem, 1.2rem + 2.4vw, 3.25rem);
+    right: clamp(1.75rem, 1.2rem + 2.4vw, 3.25rem);
+    display: flex;
+    gap: 0.3125rem;
+  }
+  .passo-tacche i {
+    width: 1.5rem;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--color-line);
+  }
+  .passo-tacche i.acceso { background: var(--color-navy); }
+
+  /* Chi ha chiesto meno movimento non si trova i pannelli che si accavallano:
+     diventano quattro schede una sotto l'altra, che è la stessa informazione
+     senza l'effetto. */
+  @media (prefers-reduced-motion: reduce) {
+    .passo { position: static; }
+    .passo-corpo { min-height: 0; }
+  }
+
+
   /* Alone dietro al globo: dà profondità al reticolo, che altrimenti
      resterebbe sospeso sul bianco senza appoggio. */
+  /* ── La hero ────────────────────────────────────────────────────────────
+   *
+   * Prende una schermata intera: sotto non deve avanzare una striscia della
+   * sezione successiva, che spezzerebbe l'inquadratura del pianeta. `svh` e
+   * non `vh` perché su mobile `vh` conta anche la barra del browser, che
+   * all'inizio c'è: la hero risulterebbe più alta dello schermo.
+   *
+   * L'altezza della barra di navigazione è misurata, non stimata: 57 px sotto
+   * i 1024, 65 sopra (cambia il padding del logo).
+   */
+  /* Il respiro sopra e sotto si adatta all'altezza della finestra: con un
+     padding fisso, su un portatile basso il blocco di testo non ci stava e la
+     lista di rassicurazioni finiva sotto la piega. */
+  .hero-griglia {
+    padding-block: clamp(1.75rem, 4.5vh, 5rem);
+  }
+
+  /*
+   * Alta quanto la finestra, non una riga di meno.
+   *
+   * Qui c'era `calc(100svh - altezza della barra)`, e sotto la testata
+   * restava scoperta una striscia della sezione successiva. Il motivo:
+   * `.under-nav` tira su la sezione di tutta l'altezza della barra e gliela
+   * restituisce come spaziatura interna, quindi il riquadro parte già dal
+   * bordo alto della finestra. Sottrarre di nuovo la barra la toglieva due
+   * volte, e quello che avanzava in fondo era proprio alto come la barra.
+   *
+   * `svh` e non `vh`: sul telefono `vh` conta la finestra con la barra degli
+   * indirizzi ritirata, e la testata sborderebbe da subito.
+   */
+  .hero {
+    min-height: 100svh;
+    display: grid;
+    align-items: center;
+  }
+
+  /*
+   * Il globo non sta dentro la colonna: la colonna gli fa solo da ancoraggio.
+   * La sfera è larga quasi il doppio ed esce dal bordo destro della pagina,
+   * così si legge come un pianeta enorme inquadrato di taglio e non come
+   * un'icona rotonda. Il taglio lo fa `overflow-hidden` della sezione.
+   *
+   * IL PUNTO CHIAVE È `translate: 0 -19.09%`.
+   *
+   * Messina sta al 19,09% dell'altezza del disco: è la sua latitudine
+   * proiettata sulla sfera ((1 − sin 38,19°) / 2), non un numero scelto a
+   * occhio. Posizionando il disco con `top: 44%` e poi tirandolo su di quel
+   * 19,09%, è la RIGA DI MESSINA a finire al 44% dell'altezza — non il centro
+   * della sfera. Senza questa correzione Messina resta appesa in alto a
+   * destra, perché il centro del disco è l'equatore.
+   */
+  .hero-globo {
+    position: relative;
+    width: 100%;
+  }
+
+  /* Il testo passa sempre sopra al pianeta. Nella griglia il globo viene dopo
+     nel documento, quindi senza questo si dipingeva sopra al titolo e sopra
+     al bottone: il bordo del disco si vedeva attraversarli. */
+  .hero-testo {
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-globo-sfera {
+    position: absolute;
+  }
+
+  /* Sotto i 1024 px il globo passa DIETRO al testo invece di stare sotto.
+     Prima finiva quasi tutto sotto la piega — su un telefono si vedeva solo
+     una mezzaluna in fondo alla schermata — e la hero era lunga il doppio
+     dello schermo. Così invece il pianeta fa da fondale, come nel disegno
+     originale, e la hero sta in una schermata. */
+  @media (max-width: 1023px) {
+    .hero-griglia {
+      position: relative;
+    }
+
+    .hero-globo {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .hero-globo-sfera {
+      top: 44%;
+      left: 50%;
+      width: 34rem;
+      max-width: 165%;
+      translate: -50% -19.09%;
+      /* Dietro al testo va tenuto basso: qui il contrasto conta più
+         dell'effetto. */
+      opacity: 0.62;
+      --gb-fondo-da: 74%;
+      --gb-fondo-a: 96%;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .hero-globo {
+      height: 33rem;
+    }
+
+    /*
+     * Ancorata al BORDO DELLO SCHERMO, non alla colonna.
+     *
+     * La colonna finisce dove finisce il contenitore centrato (75rem), quindi
+     * su un monitor largo restava una fascia bianca a destra della sfera e il
+     * taglio non c'era più. Con questo calcolo il disco sborda sempre di 6rem
+     * oltre il bordo della finestra, a qualunque larghezza — ed è anche ciò
+     * che porta Messina più al centro: la Sicilia passa dal centro del disco,
+     * e il centro del disco è mezza sfera più a sinistra del suo bordo.
+     */
+    .hero-globo-sfera {
+      top: 42%;
+      left: auto;
+      right: calc(-1 * max(0px, (100vw - var(--measure-page)) / 2) - 6rem);
+      width: 62rem;
+      translate: 0 -19.09%;
+      /* Il disco è più alto della sezione e ne esce dal fondo: si spegne
+         appena prima del taglio, invece di finire di netto sul cambio di
+         sfondo. La percentuale è la frazione di disco che resta visibile. */
+      --gb-fondo-da: 50%;
+      --gb-fondo-a: 65%;
+    }
+  }
+
+  @media (min-width: 1600px) {
+    .hero-globo-sfera {
+      width: 70rem;
+    }
+  }
+
+  /* ── Le didascalie sul globo ───────────────────────────────────────────
+   *
+   * Puntino, filo, testo. Nessuna superficie: quello che si vede è la scritta
+   * appoggiata sulla mappa, non una scheda che ci sta sopra. Per farla
+   * reggere sul disegno il puntino ha un alone bianco (stacca dalle coste) e
+   * il titolo è in navy pieno.
+   *
+   * Nessuno stato di hover: non sono cliccabili, e fingere che lo siano è
+   * peggio che non averli.
+   */
+  .hero-note li {
+    position: absolute;
+    z-index: 1;
+    display: none;
+    align-items: center;
+    gap: 0.6rem;
+    width: max-content;
+    max-width: 15rem;
+  }
+
+  /* Solo nel layout a due colonne: sotto i 1024 px il globo passa dietro al
+     testo e le didascalie gli finirebbero addosso. */
+  @media (min-width: 1024px) {
+    .hero-note li {
+      display: flex;
+    }
+  }
+
+  /* Il puntino segna il posto; il filo lo collega alla scritta. Sono un
+     elemento solo: il pallino è il bordo, il filo è lo pseudo-elemento. */
+  .hero-note-punto {
+    position: relative;
+    flex-shrink: 0;
+    width: 0.4375rem;
+    height: 0.4375rem;
+    border-radius: 50%;
+    background: var(--color-navy);
+    box-shadow: 0 0 0 0.25rem rgb(255 255 255 / 0.72);
+  }
+
+  .hero-note-punto::after {
+    content: "";
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    width: 1.375rem;
+    border-top: 1px solid color-mix(in srgb, var(--color-navy) 38%, transparent);
+  }
+
+  /*
+   * Il testo su una superficie bianca.
+   *
+   * Senza, la scritta si mescolava alle coste e alla rete: leggibile a fatica
+   * e con l'aria di essere finita lì per sbaglio. Con il riquadro torna a
+   * essere una cosa sola — puntino, filo, targhetta — e resta comunque una
+   * didascalia della mappa, non una scheda: bordo capello, ombra bassissima,
+   * niente riquadro icona.
+   */
+  .hero-note li > span:last-child {
+    margin-left: 1.375rem;
+    padding: 0.5rem 0.8125rem 0.5625rem;
+    border-radius: var(--radius-md);
+    background: var(--color-paper);
+    border: 1px solid var(--color-line);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .hero-note-titolo {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-navy);
+  }
+
+  .hero-note-riga {
+    display: block;
+    margin-top: 0.125rem;
+    font-size: 0.75rem;
+    line-height: 1.35;
+    color: var(--color-ink-3);
+  }
+
+  .hero-note-1 { top: 15%; left: -3rem; }
+  .hero-note-2 { top: 45%; left: 1.5rem; }
+  .hero-note-3 { top: 74%; left: -1.5rem; }
+
+  /* L'alone azzurro dietro alla sfera: sta dentro al suo contenitore, quindi
+     la seghe automaticamente, e sfuma prima del bordo così non disegna un
+     secondo cerchio attorno al primo. */
   .globe-halo {
     position: absolute;
-    inset: 6%;
+    top: 50%;
+    left: 50%;
+    width: 122%;
+    aspect-ratio: 1;
+    translate: -50% -50%;
     border-radius: 50%;
     background: radial-gradient(
       circle at 42% 34%,
-      color-mix(in srgb, var(--color-cyan) 16%, transparent),
-      color-mix(in srgb, var(--color-soft) 55%, transparent) 58%,
-      transparent 72%
+      color-mix(in srgb, var(--color-cyan) 13%, transparent),
+      color-mix(in srgb, var(--color-soft) 42%, transparent) 50%,
+      transparent 68%
     );
   }
 </style>

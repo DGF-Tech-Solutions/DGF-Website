@@ -5,7 +5,7 @@ import ContactForm from "@/components/ContactForm.astro";
 import Icon from "@/components/Icon.astro";
 import { SITE } from "@/data/site";
 import { SERVICES } from "@/data/services";
-import illustration from "@/assets/illustrazioni/scena-contatti.png";
+import illustration from "@/assets/foto/contatti.webp";
 
 const SERVICE_ICONS = ["globe", "bag", "phone", "dashboard", "sparkles"] as const;
 
@@ -35,7 +35,8 @@ const schema = {
     lead="Non serve un capitolato: bastano l'obiettivo e qualche vincolo. Rispondiamo entro un giorno lavorativo."
     crumbs={[{ label: "Contatti" }]}
     illustration={illustration}
-    illustrationAlt="Illustrazione: assistenza e contatto"
+    illustrationAlt="Mani sistemano le cuffie con microfono davanti a un portatile"
+    illustrationAi
   />
 
   <section class="section">

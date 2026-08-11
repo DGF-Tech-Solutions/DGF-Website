@@ -44,7 +44,12 @@ const {
 } = Astro.props;
 ---
 
-<section class="hero-band band-brand">
+{/* `under-nav`: la fascia blu arriva fino al bordo della finestra e la barra
+    ci galleggia sopra. Senza, fra il bordo e l'inizio del blu resterebbe una
+    striscia bianca alta quanto la barra. Le pagine che usano questa testata
+    devono passare `navSolid` a `Base`: su fondo blu una barra trasparente
+    lascerebbe logo e voci, che sono blu scuro, illeggibili. */}
+<section class="hero-band band-brand under-nav">
   <div class="wrap relative z-10">
     <Breadcrumbs items={crumbs} class="pt-5 pb-8 sm:pt-6" />
 

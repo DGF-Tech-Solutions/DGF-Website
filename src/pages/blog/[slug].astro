@@ -56,7 +56,7 @@ const schema = {
   <div class="read-progress" aria-hidden="true"></div>
 
   <article>
-    <header class="glow-bg overflow-hidden border-b border-[var(--color-line)]">
+    <header class="glow-bg under-nav overflow-hidden border-b border-[var(--color-line)]">
       <div class="wrap pt-6 pb-12 sm:pt-8 sm:pb-14">
         <Breadcrumbs
           items={[{ label: "Blog", href: "/blog" }, { label: d.title }]}
@@ -76,26 +76,26 @@ const schema = {
     </header>
 
     <div class="wrap section">
-      {/* Colonna di lettura centrata, col testo che riempie tutta la sua
-          larghezza. Prima `.prose` era largo quanto la misura di lettura ma
-          allineato a sinistra dentro un contenitore molto più largo: il
-          risultato era mezza pagina di vuoto sulla destra. */}
-      <div class="reading">
+      {/* Il testo arriva ai bordi del contenitore, gli stessi di ogni altra
+          sezione del sito. Prima era una colonna da 42rem centrata, che
+          lasciava due fasce vuote ai lati larghe un quarto di schermo
+          ciascuna. */}
+      <div class="article-body">
         <div class="prose !max-w-none">
           <Content />
         </div>
 
-      <!-- Firma -->
-      <div class="card mt-14 flex flex-col gap-4 bg-[var(--color-soft)] p-6 sm:flex-row sm:items-center">
-        <span class="icon-tile bg-white shrink-0"><Icon name="message" size={20} /></span>
-        <p class="t-body flex-1 !text-[0.9375rem]">
-          Scritto da <strong class="font-semibold text-[var(--color-ink)]">{d.author}</strong>.
-          Hai una domanda su questo argomento?
-        </p>
-        <a href="/contatti" class="btn btn-primary shrink-0 !py-2.5 !text-[0.875rem]">
-          Scrivici
-          <Icon name="arrow-right" size={15} />
-        </a>
+        <!-- Firma -->
+        <div class="card mt-14 flex flex-col gap-4 bg-[var(--color-soft)] p-6 sm:flex-row sm:items-center">
+          <span class="icon-tile bg-white shrink-0"><Icon name="message" size={20} /></span>
+          <p class="t-body flex-1 !text-[0.9375rem]">
+            Scritto da <strong class="font-semibold text-[var(--color-ink)]">{d.author}</strong>.
+            Hai una domanda su questo argomento?
+          </p>
+          <a href="/contatti" class="btn btn-primary shrink-0 !py-2.5 !text-[0.875rem]">
+            Scrivici
+            <Icon name="arrow-right" size={15} />
+          </a>
         </div>
       </div>
     </div>
@@ -130,3 +130,8 @@ const schema = {
     lead="Se l'argomento dell'articolo riguarda un problema che hai adesso, scrivici: ti diciamo cosa faremmo noi, anche se la risposta è che non ti serve niente."
   />
 </Base>
+
+<style>
+  /* L'ancora dell'indice non deve finire sotto la barra in alto. */
+  .article-body :global(h2) { scroll-margin-top: 6rem; }
+</style>

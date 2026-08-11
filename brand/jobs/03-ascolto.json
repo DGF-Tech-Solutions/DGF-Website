@@ -1,0 +1,19 @@
+[
+  { "name": "ascolto-a", "seed": 511, "out": "brand/render/03-ascolto/ascolto-a.png",
+    "prompt": "editorial corporate photograph, two people seated across a small light table in conversation, framed from the shoulders down so no faces are visible, one hand gesturing mid-sentence, an open notebook and two cups on the table, large window with soft overcast daylight behind, cool navy and slate blue grading, muted calm palette, shallow depth of field, 35mm lens, fine natural grain, photorealistic, no readable text, blank page" },
+
+  { "name": "ascolto-b", "seed": 512, "out": "brand/render/03-ascolto/ascolto-b.png",
+    "prompt": "editorial corporate photograph, over the shoulder view from behind a listener taking notes in a paper notebook, the other person's hands resting on the table out of focus opposite, quiet bright meeting room, soft overcast daylight from the side, cool navy and slate blue grading, muted calm palette, shallow depth of field, 50mm lens, fine natural grain, photorealistic, faces not visible, no readable text, blank page" },
+
+  { "name": "ascolto-c", "seed": 513, "out": "brand/render/03-ascolto/ascolto-c.png",
+    "prompt": "editorial corporate photograph, wide calm view of a small meeting table by a floor-to-ceiling window, two people seated in relaxed conversation as soft backlit silhouettes, generous empty space on the left of the frame, soft grey daylight, cool navy and slate blue grading, muted palette, 35mm lens, fine natural grain, photorealistic, faces not visible, no readable text" },
+
+  { "name": "servizi-generali-a", "seed": 521, "out": "brand/render/03-ascolto/servizi-generali-a.png",
+    "prompt": "editorial corporate photograph, overhead view of a working bench with a laptop, a smartphone and printed sheets laid side by side, two hands reaching across arranging them, pale grey surface, soft directional daylight with gentle shadows, cool navy and slate blue grading, muted calm palette, 35mm lens, fine natural grain, the screens show only a soft heavily defocused wash of blue and grey light with no discernible interface elements, photorealistic, no face, no readable text" },
+
+  { "name": "software-a2", "seed": 531, "out": "brand/render/03-ascolto/software-a2.png",
+    "prompt": "editorial corporate photograph, two colleagues seen from behind at a desk, a large monitor turned three quarters away from the camera so its content is not visible, only the glow of the screen spilling onto the desk, calm modern office, soft overcast daylight, cool navy and slate blue grading, muted palette, shallow depth of field, 35mm lens, fine natural grain, photorealistic, faces not visible, no visible interface, no readable text" },
+
+  { "name": "software-b2", "seed": 532, "out": "brand/render/03-ascolto/software-b2.png",
+    "prompt": "editorial corporate photograph, close side view of hands on a mechanical keyboard, a monitor strongly backlit against a bright window so the screen reads as pure white glare with no content, tidy desk, soft overcast daylight, cool navy and slate blue grading, muted calm palette, shallow depth of field, 50mm lens, fine natural grain, photorealistic, no face, no visible interface, no readable text" }
+]

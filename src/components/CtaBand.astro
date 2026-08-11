@@ -1,12 +1,15 @@
 ---
-import { Image } from "astro:assets";
 import Icon from "@/components/Icon.astro";
-import illustration from "@/assets/illustrazioni/scena-contatti.png";
 
 /*
  * Fascia di chiusura blu, ricalcata su quella in fondo alle pagine di Nexia:
  * badge in pillola, titolo bianco centrato, occhiello, due bottoni e una riga
- * di rassicurazioni con le spunte. L'illustrazione sporge dal bordo destro.
+ * di rassicurazioni con le spunte.
+ *
+ * Senza immagine, di proposito: questa fascia si ripete in fondo a ogni
+ * pagina, e una fotografia decorativa da 180 px qui vorrebbe accanto la
+ * dichiarazione di origine artificiale su tutte le pagine del sito. Molto
+ * ingombro per una decorazione. La fascia regge da sola, con il testo.
  *
  * Va in fondo a OGNI pagina secondaria: è l'unico punto in cui il sito chiede
  * qualcosa, e ripeterlo sempre nello stesso posto è ciò che lo rende efficace.
@@ -68,18 +71,6 @@ const {
     </div>
   </div>
 
-  <!-- Illustrazione appoggiata al bordo destro, come su Nexia. Decorativa:
-       alt vuoto, così gli screen reader non la annunciano. -->
-  <div class="cta-art" aria-hidden="true">
-    <Image
-      src={illustration}
-      alt=""
-      widths={[220, 320]}
-      sizes="(min-width: 1280px) 260px, 180px"
-      loading="lazy"
-      class="w-full"
-    />
-  </div>
 </section>
 
 <style>
@@ -166,22 +157,4 @@ const {
   }
   .cta-fact :global(svg) { color: var(--color-cyan); flex-shrink: 0; }
 
-  /* L'illustrazione sporge dal bordo: si vede solo da schermi larghi, dove
-     c'è spazio. Sotto, occuperebbe il posto del testo. */
-  .cta-art {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    z-index: 0;
-    width: 11rem;
-    display: none;
-    opacity: 0.9;
-    pointer-events: none;
-  }
-  @media (min-width: 1024px) {
-    .cta-art { display: block; width: 13rem; right: 2%; }
-  }
-  @media (min-width: 1280px) {
-    .cta-art { width: 16rem; right: 4%; }
-  }
 </style>

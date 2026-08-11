@@ -1,0 +1,48 @@
+---
+/*
+ * Intelligenza artificiale — la domanda che si scrive, la rete che si accende,
+ * la risposta che arriva riga per riga.
+ *
+ * Il cursore che lampeggia è l'unica animazione che continua a girare: dà il
+ * senso di "sta lavorando" senza far muovere nient'altro.
+ */
+---
+
+<svg class="viz-svg" viewBox="0 0 400 300" fill="none" aria-hidden="true">
+  <rect data-p="1" x="30" y="30" width="340" height="240" rx="10" class="v-schermo"></rect>
+
+  <!-- La richiesta -->
+  <g data-p="2">
+    <rect x="50" y="52" width="200" height="30" rx="8" class="v-scheda"></rect>
+    <rect x="62" y="64" width="86" height="5" rx="2.5" class="v-riga"></rect>
+    <rect x="154" y="64" width="42" height="5" rx="2.5" class="v-riga-tenue"></rect>
+  </g>
+  <rect data-p="3" data-lampeggia="" x="200" y="61" width="1.6" height="11" class="v-cursore"></rect>
+
+  <!-- La rete: archi che si tracciano, nodi che si accendono -->
+  <g class="v-rete">
+    <path data-p="4" data-traccia="" pathLength="1" d="M96 118L166 100" class="v-arco"></path>
+    <path data-p="4" data-traccia="" pathLength="1" d="M96 118L166 146" class="v-arco"></path>
+    <path data-p="5" data-traccia="" pathLength="1" d="M166 100L238 118" class="v-arco"></path>
+    <path data-p="5" data-traccia="" pathLength="1" d="M166 146L238 118" class="v-arco"></path>
+    <path data-p="5" data-traccia="" pathLength="1" d="M166 100L166 146" class="v-arco"></path>
+    <path data-p="6" data-traccia="" pathLength="1" d="M238 118L310 100" class="v-arco"></path>
+    <path data-p="6" data-traccia="" pathLength="1" d="M238 118L310 146" class="v-arco"></path>
+
+    <circle data-p="4" cx="96" cy="118" r="5" class="v-nodo"></circle>
+    <circle data-p="5" cx="166" cy="100" r="5" class="v-nodo"></circle>
+    <circle data-p="5" cx="166" cy="146" r="5" class="v-nodo"></circle>
+    <circle data-p="6" cx="238" cy="118" r="6.5" class="v-nodo-forte"></circle>
+    <circle data-p="7" cx="310" cy="100" r="5" class="v-nodo"></circle>
+    <circle data-p="7" cx="310" cy="146" r="5" class="v-nodo"></circle>
+  </g>
+
+  <!-- La risposta, riga per riga -->
+  <g data-p="8">
+    <rect x="50" y="182" width="300" height="68" rx="8" class="v-scheda-piena"></rect>
+  </g>
+  <rect data-p="9" x="64" y="196" width="120" height="5" rx="2.5" class="v-riga-risposta"></rect>
+  <rect data-p="10" x="64" y="210" width="230" height="5" rx="2.5" class="v-riga-risposta"></rect>
+  <rect data-p="11" x="64" y="224" width="186" height="5" rx="2.5" class="v-riga-risposta"></rect>
+  <rect data-p="12" x="64" y="238" width="94" height="5" rx="2.5" class="v-riga-risposta-tenue"></rect>
+</svg>

@@ -6,7 +6,7 @@ import CtaBand from "@/components/CtaBand.astro";
 import Icon from "@/components/Icon.astro";
 import { SERVICES } from "@/data/services";
 import { SITE } from "@/data/site";
-import illustration from "@/assets/illustrazioni/scena-software.png";
+import illustration from "@/assets/foto/servizi.webp";
 
 const SERVICE_ICONS = ["globe", "bag", "phone", "dashboard", "sparkles"] as const;
 
@@ -44,7 +44,8 @@ const schema = {
     lead="Non facciamo tutto. Per ognuno di questi sappiamo dirti anche quando non ti serve, e succede più spesso di quanto immagini."
     crumbs={[{ label: "Servizi" }]}
     illustration={illustration}
-    illustrationAlt="Illustrazione: pannello con grafici e tabella"
+    illustrationAlt="Un banco di lavoro con portatile, telefono e fogli stampati"
+    illustrationAi
   />
 
   <section class="section">
@@ -91,10 +92,6 @@ const schema = {
                       <li class="chip chip-line !text-[0.6875rem]">{t}</li>
                     ))}
                   </ul>
-                  <span class="mt-4 flex items-center gap-2 border-t border-[var(--color-line)] pt-4 text-[0.8125rem] font-semibold text-[var(--color-ink-3)]">
-                    <Icon name="clock" size={15} />
-                    {s.timeline}
-                  </span>
                 </div>
               </a>
             ))

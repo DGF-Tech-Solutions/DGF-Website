@@ -1,0 +1,10 @@
+[
+  { "name": "consegna-mani", "seed": 711, "out": "brand/render/05-consegna/consegna-mani.png",
+    "prompt": "editorial corporate photograph, tight crop of two hands pushing a closed silver laptop across a pale grey table towards a second pair of open waiting hands on the far side, clear gesture of handing something over, soft directional daylight from the left, cool navy and slate blue grading, muted calm palette, shallow depth of field, 50mm lens, fine natural grain, photorealistic, no faces, no readable text, simple uncluttered composition" },
+
+  { "name": "consegna-stretta", "seed": 712, "out": "brand/render/05-consegna/consegna-stretta.png",
+    "prompt": "editorial corporate photograph, tight crop of two people shaking hands over a pale grey table, a closed laptop and a folder resting beside them, framed at chest height so no faces are visible, soft directional daylight from the left, cool navy and slate blue grading, muted calm palette, shallow depth of field, 50mm lens, fine natural grain, photorealistic, no faces, no readable text, simple uncluttered composition" },
+
+  { "name": "consegna-chiavi", "seed": 713, "out": "brand/render/05-consegna/consegna-chiavi.png",
+    "prompt": "editorial corporate photograph, tight overhead crop of one open palm holding a small set of keys above a pale grey table, a second hand reaching in to take them, a closed laptop at the edge of the frame, soft directional daylight from the left, cool navy and slate blue grading, muted calm palette, shallow depth of field, 50mm lens, fine natural grain, photorealistic, no faces, no readable text, simple uncluttered composition" }
+]

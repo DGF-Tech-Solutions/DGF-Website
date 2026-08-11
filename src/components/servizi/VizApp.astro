@@ -1,0 +1,62 @@
+---
+/*
+ * App — un telefono, la lista che si popola, la notifica che scende.
+ *
+ * La notifica arriva per ultima e scende dall'alto: è la cosa che distingue
+ * un'app da un sito, quindi è l'unico elemento che si muove invece di
+ * comparire e basta.
+ */
+---
+
+<svg class="viz-svg" viewBox="0 0 400 300" fill="none" aria-hidden="true">
+  <!-- Scocca -->
+  <rect data-p="1" x="140" y="18" width="120" height="264" rx="18" class="v-scocca"></rect>
+  <rect data-p="1" x="147" y="25" width="106" height="250" rx="13" class="v-schermo"></rect>
+  <rect data-p="1" x="184" y="31" width="32" height="5" rx="2.5" class="v-tacca-pieno"></rect>
+
+  <!-- Intestazione -->
+  <rect data-p="3" x="158" y="50" width="46" height="8" rx="4" class="v-titolo-mini"></rect>
+  <circle data-p="3" cx="238" cy="54" r="7" class="v-cerchio-tenue"></circle>
+
+  <!-- Lista -->
+  <g data-p="4">
+    <rect x="158" y="72" width="84" height="30" rx="6" class="v-scheda"></rect>
+    <circle cx="172" cy="87" r="7" class="v-cerchio-pieno"></circle>
+    <rect x="186" y="81" width="44" height="4" rx="2" class="v-riga"></rect>
+    <rect x="186" y="90" width="30" height="4" rx="2" class="v-riga-tenue"></rect>
+  </g>
+  <g data-p="5">
+    <rect x="158" y="110" width="84" height="30" rx="6" class="v-scheda"></rect>
+    <circle cx="172" cy="125" r="7" class="v-cerchio-pieno"></circle>
+    <rect x="186" y="119" width="38" height="4" rx="2" class="v-riga"></rect>
+    <rect x="186" y="128" width="46" height="4" rx="2" class="v-riga-tenue"></rect>
+  </g>
+  <g data-p="6">
+    <rect x="158" y="148" width="84" height="30" rx="6" class="v-scheda"></rect>
+    <circle cx="172" cy="163" r="7" class="v-cerchio-pieno"></circle>
+    <rect x="186" y="157" width="48" height="4" rx="2" class="v-riga"></rect>
+    <rect x="186" y="166" width="26" height="4" rx="2" class="v-riga-tenue"></rect>
+  </g>
+
+  <!-- Barra in basso -->
+  <g data-p="7">
+    <path d="M147 240h106" class="v-filo"></path>
+    <circle cx="172" cy="258" r="4" class="v-pieno"></circle>
+    <circle cx="200" cy="258" r="4" class="v-cerchio-tenue"></circle>
+    <circle cx="228" cy="258" r="4" class="v-cerchio-tenue"></circle>
+  </g>
+
+  <!-- La notifica: scende da sopra il bordo dello schermo -->
+  <g data-p="9" data-scende="">
+    <rect x="152" y="192" width="96" height="34" rx="8" class="v-notifica"></rect>
+    <rect x="162" y="200" width="8" height="8" rx="2.5" class="v-pieno-chiaro"></rect>
+    <rect x="176" y="201" width="40" height="4" rx="2" class="v-riga-chiara"></rect>
+    <rect x="162" y="214" width="66" height="4" rx="2" class="v-riga-chiara-tenue"></rect>
+  </g>
+
+  <!-- Due onde: il segnale che arriva anche a telefono chiuso -->
+  <path data-p="10" data-traccia="" pathLength="1" d="M282 122a44 44 0 0 1 0 56" class="v-onda"></path>
+  <path data-p="11" data-traccia="" pathLength="1" d="M298 108a68 68 0 0 1 0 84" class="v-onda"></path>
+  <path data-p="10" data-traccia="" pathLength="1" d="M118 122a44 44 0 0 0 0 56" class="v-onda"></path>
+  <path data-p="11" data-traccia="" pathLength="1" d="M102 108a68 68 0 0 0 0 84" class="v-onda"></path>
+</svg>

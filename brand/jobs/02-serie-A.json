@@ -1,0 +1,122 @@
+[
+  {
+    "name": "siti-web-a",
+    "seed": 311,
+    "out": "brand/render/02-serie-A/siti-web-a.png",
+    "prompt": "editorial corporate photograph, a person seen from behind at a desk looking at a laptop showing an out-of-focus website layout, bright minimal office, large window on the left, soft overcast daylight, cool navy and slate blue grading, muted calm palette, shallow depth of field, 35mm lens, fine natural grain, the screen shows only a soft heavily defocused wash of blue and grey light with no discernible interface elements, no icons, no menus, photorealistic, face not visible, no readable text, no signage"
+  },
+  {
+    "name": "siti-web-b",
+    "seed": 312,
+    "out": "brand/render/02-serie-A/siti-web-b.png",
+    "prompt": "editorial corporate photograph, close crop of two hands holding a tablet displaying a soft out-of-focus web page, clean desk below with a notebook, soft window light, cool navy and slate blue grading, muted calm palette, shallow depth of field, 50mm lens, fine natural grain, the screen shows only a soft heavily defocused wash of blue and grey light with no discernible interface elements, no icons, no menus, photorealistic, no face, no readable text"
+  },
+  {
+    "name": "ecommerce-a",
+    "seed": 321,
+    "out": "brand/render/02-serie-A/ecommerce-a.png",
+    "prompt": "editorial corporate photograph, hands sealing a plain cardboard parcel on a clean workbench, small stack of boxes beside, laptop out of focus behind, soft overcast daylight from a window, cool navy and slate blue grading, muted calm palette, shallow depth of field, 35mm lens, fine natural grain, the screen shows only a soft heavily defocused wash of blue and grey light with no discernible interface elements, no icons, no menus, photorealistic, no face, no readable text, no labels"
+  },
+  {
+    "name": "ecommerce-b",
+    "seed": 322,
+    "out": "brand/render/02-serie-A/ecommerce-b.png",
+    "prompt": "editorial corporate photograph, a person seen from behind in a small tidy stockroom checking a smartphone, neat shelves of plain boxes, soft daylight from a doorway, cool navy and slate blue grading, muted calm palette, shallow depth of field, 35mm lens, fine natural grain, the screen shows only a soft heavily defocused wash of blue and grey light with no discernible interface elements, no icons, no menus, photorealistic, face not visible, no readable text"
+  },
+  {
+    "name": "app-a",
+    "seed": 331,
+    "out": "brand/render/02-serie-A/app-a.png",
+    "prompt": "editorial corporate photograph, close crop of two hands holding a smartphone with a soft out-of-focus blue interface, quiet office background thrown out of focus, soft overcast daylight, cool navy and slate blue grading, muted calm palette, shallow depth of field, 50mm lens, fine natural grain, the screen shows only a soft heavily defocused wash of blue and grey light with no discernible interface elements, no icons, no menus, photorealistic, no face, no readable text"
+  },
+  {
+    "name": "app-b",
+    "seed": 332,
+    "out": "brand/render/02-serie-A/app-b.png",
+    "prompt": "editorial corporate photograph, a person seen from behind walking through a bright modern lobby while looking at a phone, wide clean architecture, soft overcast daylight, cool navy and slate blue grading, muted calm palette, shallow depth of field, 35mm lens, fine natural grain, the screen shows only a soft heavily defocused wash of blue and grey light with no discernible interface elements, no icons, no menus, photorealistic, face not visible, no readable text, no signage"
+  },
+  {
+    "name": "software-a",
+    "seed": 341,
+    "out": "brand/render/02-serie-A/software-a.png",
+    "prompt": "editorial corporate photograph, two colleagues seen from behind at a desk studying a large monitor filled with an out-of-focus blue data dashboard, calm modern office, soft overcast daylight, cool navy and slate blue grading, muted palette, shallow depth of field, 35mm lens, fine natural grain, the screen shows only a soft heavily defocused wash of blue and grey light with no discernible interface elements, no icons, no menus, photorealistic, faces not visible, no readable text"
+  },
+  {
+    "name": "software-b",
+    "seed": 342,
+    "out": "brand/render/02-serie-A/software-b.png",
+    "prompt": "editorial corporate photograph, over the shoulder view of a person at a dual monitor workstation, screens glowing with out-of-focus blue interface panels, tidy desk, soft daylight mixed with screen light, cool navy grading, muted palette, shallow depth of field, 35mm lens, fine natural grain, the screen shows only a soft heavily defocused wash of blue and grey light with no discernible interface elements, no icons, no menus, photorealistic, face not visible, no readable text"
+  },
+  {
+    "name": "ai-a",
+    "seed": 351,
+    "out": "brand/render/02-serie-A/ai-a.png",
+    "prompt": "editorial corporate photograph, a person seen from behind seated in front of three large screens in a calm dim room, soft blue screen glow, orderly and professional not dramatic, cool navy and slate blue grading, muted palette, shallow depth of field, 35mm lens, fine natural grain, the screen shows only a soft heavily defocused wash of blue and grey light with no discernible interface elements, no icons, no menus, photorealistic, face not visible, no readable text"
+  },
+  {
+    "name": "ai-b",
+    "seed": 352,
+    "out": "brand/render/02-serie-A/ai-b.png",
+    "prompt": "editorial corporate photograph, hands resting beside a laptop whose screen shows soft out-of-focus blue graph curves, quiet desk, single lamp and window light, cool navy and slate blue grading, muted calm palette, shallow depth of field, 50mm lens, fine natural grain, the screen shows only a soft heavily defocused wash of blue and grey light with no discernible interface elements, no icons, no menus, photorealistic, no face, no readable text"
+  },
+  {
+    "name": "processo-a",
+    "seed": 361,
+    "out": "brand/render/02-serie-A/processo-a.png",
+    "prompt": "editorial corporate photograph, two colleagues seen from behind standing at a whiteboard with sticky notes and simple hand-drawn boxes and arrows, bright meeting room, soft overcast daylight, cool navy and slate blue grading, muted calm palette, shallow depth of field, 35mm lens, fine natural grain, photorealistic, faces not visible, no readable text, no writing on the notes"
+  },
+  {
+    "name": "processo-b",
+    "seed": 362,
+    "out": "brand/render/02-serie-A/processo-b.png",
+    "prompt": "editorial corporate photograph, a hand placing a sticky note on a glass wall covered with a grid of coloured sticky notes, bright office behind out of focus, soft overcast daylight, cool navy and slate blue grading, muted palette, shallow depth of field, 50mm lens, fine natural grain, photorealistic, no face, no readable text, blank notes"
+  },
+  {
+    "name": "progetti-a",
+    "seed": 371,
+    "out": "brand/render/02-serie-A/progetti-a.png",
+    "prompt": "editorial corporate photograph, two people seen from behind leaning over a table spread with printed interface wireframe sheets, one hand pointing at a sheet, bright studio space, soft overcast daylight, cool navy and slate blue grading, muted palette, shallow depth of field, 35mm lens, fine natural grain, photorealistic, faces not visible, no readable text"
+  },
+  {
+    "name": "progetti-b",
+    "seed": 372,
+    "out": "brand/render/02-serie-A/progetti-b.png",
+    "prompt": "editorial corporate photograph, overhead view of hands arranging printed screen mockups in a grid on a pale desk, pencil and notebook at the edge, soft directional daylight with gentle shadows, cool navy and slate blue grading, muted palette, 50mm lens, fine natural grain, the screen shows only a soft heavily defocused wash of blue and grey light with no discernible interface elements, no icons, no menus, photorealistic, no face, no readable text"
+  },
+  {
+    "name": "blog-a",
+    "seed": 381,
+    "out": "brand/render/02-serie-A/blog-a.png",
+    "prompt": "editorial corporate photograph, close crop of a hand writing in an open notebook beside a laptop, mug of coffee at the edge of the frame, warm soft window light on a cool grey desk, cool navy and slate blue grading, muted calm palette, shallow depth of field, 50mm lens, fine natural grain, the screen shows only a soft heavily defocused wash of blue and grey light with no discernible interface elements, no icons, no menus, photorealistic, no face, no readable text, blank page"
+  },
+  {
+    "name": "blog-b",
+    "seed": 382,
+    "out": "brand/render/02-serie-A/blog-b.png",
+    "prompt": "editorial corporate photograph, a person seen from behind reading at a quiet desk by a tall window, city light diffused, calm and studious atmosphere, cool navy and slate blue grading, muted palette, shallow depth of field, 35mm lens, fine natural grain, photorealistic, face not visible, no readable text"
+  },
+  {
+    "name": "contatti-a",
+    "seed": 391,
+    "out": "brand/render/02-serie-A/contatti-a.png",
+    "prompt": "editorial corporate photograph, a person in silhouette standing by a floor-to-ceiling office window holding a phone to their ear, soft grey daylight, city rooftops out of focus, cool navy and slate blue grading, calm minimal composition, 35mm lens, fine natural grain, the screen shows only a soft heavily defocused wash of blue and grey light with no discernible interface elements, no icons, no menus, photorealistic, face not visible, no readable text"
+  },
+  {
+    "name": "contatti-b",
+    "seed": 392,
+    "out": "brand/render/02-serie-A/contatti-b.png",
+    "prompt": "editorial corporate photograph, close crop of hands adjusting a headset microphone at a tidy desk, laptop out of focus behind, soft window light, cool navy and slate blue grading, muted calm palette, shallow depth of field, 50mm lens, fine natural grain, the screen shows only a soft heavily defocused wash of blue and grey light with no discernible interface elements, no icons, no menus, photorealistic, no face, no readable text"
+  },
+  {
+    "name": "chi-siamo-a",
+    "seed": 401,
+    "out": "brand/render/02-serie-A/chi-siamo-a.png",
+    "prompt": "editorial corporate photograph, two colleagues standing in conversation as backlit silhouettes against a bright office window, relaxed posture, wide calm composition with generous empty space, cool navy and slate blue grading, muted palette, 35mm lens, fine natural grain, photorealistic, faces not visible, no readable text"
+  },
+  {
+    "name": "chi-siamo-b",
+    "seed": 402,
+    "out": "brand/render/02-serie-A/chi-siamo-b.png",
+    "prompt": "editorial corporate photograph, a small empty meeting corner with two chairs, a table with a closed laptop and two cups, soft overcast daylight through a large window, quiet human presence just left, cool navy and slate blue grading, muted calm palette, 35mm lens, fine natural grain, the screen shows only a soft heavily defocused wash of blue and grey light with no discernible interface elements, no icons, no menus, photorealistic, no people, no readable text"
+  }
+]

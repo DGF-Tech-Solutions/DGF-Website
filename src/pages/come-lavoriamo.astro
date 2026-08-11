@@ -5,7 +5,7 @@ import CtaBand from "@/components/CtaBand.astro";
 import Icon from "@/components/Icon.astro";
 import type { IconName } from "@/components/Icon.astro";
 import { SITE } from "@/data/site";
-import illustration from "@/assets/illustrazioni/scena-processo.png";
+import illustration from "@/assets/foto/ascolto.webp";
 
 /*
  * Come lavoriamo.
@@ -171,6 +171,7 @@ const schema = {
   description="Ascolto, proposta, costruzione, consegna: le quattro fasi di ogni progetto DGF, spiegate per intero. Cosa succede, cosa serve da te, quanto dura e cosa non facciamo."
   canonical="/come-lavoriamo"
   schema={schema}
+  navSolid
 >
   <HeroBand
     badge="Il metodo"
@@ -179,7 +180,8 @@ const schema = {
     lead="Lo stesso percorso su ogni progetto, dal sito vetrina al gestionale. Qui trovi cosa succede in ogni fase, cosa serve da parte tua e soprattutto cosa non facciamo."
     crumbs={[{ label: "Come lavoriamo" }]}
     illustration={illustration}
-    illustrationAlt="Illustrazione: percorso di progetto con quattro tappe"
+    illustrationAlt="Due persone sedute a un tavolo davanti a una vetrata, in conversazione"
+    illustrationAi
     cta={{ label: "Parliamo del tuo progetto", href: "/contatti" }}
   />
 

@@ -36,8 +36,6 @@ export interface Service {
   includes: { title: string; text: string }[];
   /** Tecnologie usate, mostrate come dati. */
   stack: string[];
-  /** Indicazione di tempi realistici. */
-  timeline: string;
   faq: ServiceFaq[];
 }
 
@@ -89,7 +87,6 @@ export const SERVICES: readonly Service[] = [
       },
     ],
     stack: ["Astro", "Next.js", "TypeScript", "Tailwind CSS"],
-    timeline: "3–6 settimane",
     faq: [
       {
         q: "Posso aggiornare i testi da solo?",
@@ -150,7 +147,6 @@ export const SERVICES: readonly Service[] = [
       },
     ],
     stack: ["Next.js", "Stripe", "PostgreSQL", "Tailwind CSS"],
-    timeline: "6–12 settimane",
     faq: [
       {
         q: "Meglio partire da un e-commerce o da una vetrina?",
@@ -212,7 +208,6 @@ export const SERVICES: readonly Service[] = [
       },
     ],
     stack: ["React Native", "Expo", "TypeScript", "Supabase"],
-    timeline: "8–16 settimane",
     faq: [
       {
         q: "Serve davvero un'app o basta un sito?",
@@ -274,7 +269,6 @@ export const SERVICES: readonly Service[] = [
       },
     ],
     stack: ["Next.js", "PostgreSQL", "Prisma", "Docker"],
-    timeline: "10–20 settimane",
     faq: [
       {
         q: "Non conviene un gestionale già pronto?",
@@ -336,7 +330,6 @@ export const SERVICES: readonly Service[] = [
       },
     ],
     stack: ["Claude API", "Python", "PostgreSQL", "Vector DB"],
-    timeline: "4–12 settimane",
     faq: [
       {
         q: "I miei dati finiscono nell'addestramento di qualcuno?",

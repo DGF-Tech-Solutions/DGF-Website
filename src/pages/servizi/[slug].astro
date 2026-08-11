@@ -7,12 +7,13 @@ import CtaBand from "@/components/CtaBand.astro";
 import Icon from "@/components/Icon.astro";
 import { SERVICES } from "@/data/services";
 import { SITE } from "@/data/site";
+import { stripInlineLinks } from "@/lib/inline-links";
 
-import imgSiti from "@/assets/illustrazioni/scena-siti-web.png";
-import imgEcom from "@/assets/illustrazioni/scena-ecommerce.png";
-import imgApp from "@/assets/illustrazioni/scena-app.png";
-import imgSoft from "@/assets/illustrazioni/scena-software.png";
-import imgAi from "@/assets/illustrazioni/scena-ai.png";
+import imgSiti from "@/assets/foto/siti-web.webp";
+import imgEcom from "@/assets/foto/ecommerce.webp";
+import imgApp from "@/assets/foto/app.webp";
+import imgSoft from "@/assets/foto/software.webp";
+import imgAi from "@/assets/foto/ai.webp";
 
 export function getStaticPaths() {
   return SERVICES.map((service) => ({
@@ -25,6 +26,17 @@ const { service } = Astro.props;
 
 /* Gli import sono statici per forza (Astro li risolve a build time):
    qui li associamo allo slug con una mappa esplicita. */
+/* Descrizioni brevi di cosa si vede: mai "il nostro ufficio" o "il nostro
+   team", perché non lo sono. Le foto sono generate, e il credito sotto
+   all'immagine lo dichiara. */
+const ALT: Record<string, string> = {
+  "siti-web": "Una persona guarda una pagina web su un portatile",
+  ecommerce: "Mani chiudono una scatola su un bancone accanto a un portatile",
+  app: "Mani tengono uno smartphone con lo schermo acceso",
+  "software-su-misura": "Due persone al lavoro davanti a uno schermo",
+  "intelligenza-artificiale": "Mani su un portatile con un grafico sullo schermo",
+};
+
 const ILLUSTRATIONS: Record<string, ImageMetadata> = {
   "siti-web": imgSiti,
   ecommerce: imgEcom,
@@ -57,7 +69,9 @@ const schema = [
     mainEntity: service.faq.map((f) => ({
       "@type": "Question",
       name: f.q,
-      acceptedAnswer: { "@type": "Answer", text: f.a },
+      // Senza markup: se la risposta contiene un link, nei dati strutturati
+      // deve arrivare la frase e basta.
+      acceptedAnswer: { "@type": "Answer", text: stripInlineLinks(f.a) },
     })),
   },
 ];
@@ -75,17 +89,14 @@ const schema = [
     lead={service.intro}
     crumbs={[{ label: "Servizi", href: "/servizi" }, { label: service.title }]}
     illustration={ILLUSTRATIONS[service.slug]}
-    illustrationAlt={`Illustrazione: ${service.title.toLowerCase()}`}
+    illustrationAlt={ALT[service.slug]}
+    illustrationAi
   >
     <div class="mt-8 flex flex-wrap gap-3">
       <a href="/contatti" class="btn btn-primary">
         Parliamo del tuo progetto
         <Icon name="arrow-right" size={16} />
       </a>
-      <span class="btn btn-ghost !cursor-default">
-        <Icon name="clock" size={16} />
-        {service.timeline}
-      </span>
     </div>
   </PageHeader>
 
