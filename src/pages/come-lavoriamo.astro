@@ -314,7 +314,11 @@ const schema = {
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.04em;
-    color: var(--color-soft-2);
+    /* Non `--color-soft-2`: su bianco dava 1,28:1, e Lighthouse lo segnala
+       anche se il numero è `aria-hidden` — resta testo visibile. Questo
+       azzurro spento arriva a 3,2:1 e continua a leggersi come filigrana
+       accanto al titolo, senza rubargli la scena. */
+    color: #6d93af;
   }
 
   /* Le quattro domande, separate da un filetto interno invece che da schede
