@@ -1,0 +1,32 @@
+# ============================================================================
+# Terminatori di riga.
+#
+# Il progetto si sviluppa su Windows ma si compila su Linux (container e
+# GitHub Actions). Senza queste regole git convertirebbe gli script in CRLF
+# al checkout, e in Linux fallirebbero con "bad interpreter: no such file or
+# directory" — un errore che non dice niente su cosa sia successo davvero.
+# ============================================================================
+
+# Normalizza tutto il testo a LF nel repository.
+* text=auto eol=lf
+
+# File che DEVONO restare LF anche nella copia di lavoro su Windows:
+# vengono eseguiti dentro Linux.
+*.sh            text eol=lf
+Dockerfile      text eol=lf
+*.yml           text eol=lf
+*.yaml          text eol=lf
+.dockerignore   text eol=lf
+docker/*.conf   text eol=lf
+
+# Binari: git non deve toccarli.
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.webp   binary
+*.avif   binary
+*.ico    binary
+*.woff   binary
+*.woff2  binary
+*.mp4    binary
+*.pdf    binary
