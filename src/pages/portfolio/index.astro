@@ -69,17 +69,17 @@ const schema = {
                 totale) perché il filtro ha già il suo messaggio di elenco vuoto. */}
             <p class="t-small mb-5">{totalLabel}</p>
 
-            {/* Schede larghe in colonna singola: qui la scheda ha tutta la
-                riga, quindi il riassunto si distende invece di incolonnarsi e
-                servizi e tecnologie stanno su una riga sola.
+            {/* Stessa griglia degli articoli del blog: le due pagine sono
+                sorelle e una scheda progetto larga il doppio di una scheda
+                articolo le farebbe sembrare due sezioni di siti diversi.
 
                 Nessuna immagine in `eager`: su mobile la testata riempie il
                 primo schermo e le schede restano sotto la piega. L'unica
                 immagine prioritaria della pagina è quella della testata, e due
                 immagini prioritarie si contenderebbero la banda. */}
-            <div class="grid gap-5">
+            <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {projects.map((entry) => (
-                <CaseCard entry={entry} as="h2" wide />
+                <CaseCard entry={entry} as="h2" />
               ))}
             </div>
           </Explorer>

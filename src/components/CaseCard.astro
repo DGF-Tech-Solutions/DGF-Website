@@ -6,17 +6,12 @@ import { kindLabel } from "@/lib/project";
 
 /*
  * Scheda progetto, sorella di ArticleCard: stessa impaginazione interna
- * (riga categoria + metadato, titolo, riassunto, invito in fondo) con in più
- * l'anteprima del lavoro e l'elenco completo dei tag.
+ * (riga categoria + metadato, titolo, riassunto, invito in fondo) e stesso
+ * ingombro nella griglia, con in più l'anteprima del lavoro e i tag.
  *
- * Due forme, stesso contenuto:
- *
- *   verticale  immagine sopra, testo sotto. Serve nelle griglie a due o tre
- *              colonne (home, progetti correlati), dove la colonna è stretta.
- *   larga      immagine a sinistra, testo a destra. Serve nell'elenco dei
- *              progetti, dove la scheda occupa tutta la riga: il riassunto ha
- *              spazio per respirare invece di incolonnarsi verso il basso, e
- *              i tag stanno su una riga sola.
+ * La misura è quella della scheda articolo di proposito: progetti e blog sono
+ * due elenchi paralleli, e schede di larghezza diversa li farebbero sembrare
+ * due sezioni di siti diversi.
  *
  * In fondo, a sinistra, l'etichetta sulla natura del progetto: dichiarare che
  * un lavoro è dimostrativo, o che è il nostro prodotto e non una commessa,
@@ -26,8 +21,6 @@ interface Props {
   entry: CollectionEntry<"portfolio">;
   /** Carica l'immagine subito. Solo se la scheda è sopra la piega. */
   eager?: boolean;
-  /** Forma larga: immagine a sinistra, testo a destra. */
-  wide?: boolean;
   /**
    * Livello del titolo: dopo un h1 (pagine hub) serve h2, dentro una sezione
    * che ha già il suo h2 serve h3. Saltare un livello è un errore di
@@ -36,7 +29,7 @@ interface Props {
   as?: "h2" | "h3";
 }
 
-const { entry, eager = false, wide = false, as: Heading = "h3" } = Astro.props;
+const { entry, eager = false, as: Heading = "h3" } = Astro.props;
 const d = entry.data;
 
 /* Testo su cui lavora la ricerca dell'Explorer. Comprende anche servizi e
@@ -47,10 +40,10 @@ const haystack = `${d.client} ${d.title} ${d.summary} ${d.category} ${d.services
   .normalize("NFD")
   .replace(/[̀-ͯ]/g, "");
 
-/* Nella forma verticale la colonna è stretta: oltre una certa quantità i tag
-   diventano un muro e coprono il riassunto, quindi si mostrano i primi e si
-   conta il resto. Nella forma larga ci stanno tutti. */
-const TAG_LIMIT = wide ? Infinity : 4;
+/* La colonna è stretta: oltre una certa quantità i tag diventano un muro e
+   rubano lo spazio al riassunto, quindi si mostrano i primi e si conta il
+   resto. L'elenco completo sta nella scheda tecnica del progetto. */
+const TAG_LIMIT = 4;
 const allTags = [...d.services, ...d.stack];
 const shownTags = allTags.slice(0, TAG_LIMIT);
 const hiddenTags = allTags.length - shownTags.length;
@@ -58,59 +51,45 @@ const hiddenTags = allTags.length - shownTags.length;
 
 <a
   href={`/portfolio/${entry.id}`}
-  class:list={["card group overflow-hidden", wide ? "case-wide" : "flex flex-col"]}
+  class="card group flex flex-col overflow-hidden"
   data-search={haystack}
   data-cat={d.category}
 >
-  <div
-    class:list={[
-      "overflow-hidden bg-[var(--color-paper-2)]",
-      wide ? "case-media" : "ratio-16-10 border-b border-[var(--color-line)]",
-    ]}
-  >
+  <div class="ratio-16-10 overflow-hidden border-b border-[var(--color-line)] bg-[var(--color-paper-2)]">
     <Image
       src={d.cover}
       alt={`Anteprima del progetto ${d.client}`}
       widths={[340, 460, 620, 780]}
-      sizes={wide
-        ? "(min-width: 1024px) 24rem, (min-width: 768px) 40vw, 92vw"
-        : "(min-width: 1024px) 32vw, (min-width: 640px) 48vw, 90vw"}
+      sizes="(min-width: 1024px) 32vw, (min-width: 640px) 48vw, 90vw"
       quality={74}
       loading={eager ? "eager" : "lazy"}
       class="h-full w-full object-cover object-top transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-[1.04]"
     />
   </div>
 
-  <div class:list={["flex flex-1 flex-col", wide ? "p-6 sm:p-8" : "p-5 sm:p-6"]}>
+  <div class="flex flex-1 flex-col p-5 sm:p-6">
     <div class="flex items-center justify-between gap-3">
       <span class="tag">{d.category}</span>
       <span class="meta tabular">{d.year}</span>
     </div>
 
-    <Heading
-      class:list={[
-        "mt-4 transition-colors group-hover:text-[var(--color-navy)]",
-        wide ? "t-h2 !text-[1.5rem] sm:!text-[1.75rem]" : "t-h3",
-      ]}
-    >
+    <Heading class="t-h3 mt-4 transition-colors group-hover:text-[var(--color-navy)]">
       {d.title}
     </Heading>
 
-    <p class:list={["t-body mt-3", wide ? "max-w-2xl" : "flex-1 text-[0.875rem]"]}>
-      {d.summary}
-    </p>
+    <p class="t-body mt-3 flex-1 text-[0.875rem]">{d.summary}</p>
 
     <!-- Servizi e tecnologie: i primi pieni, le seconde a filo. Sono due tipi
          di informazione diversi e distinguerli evita di leggerli come un
          elenco unico e indistinto. -->
-    <ul class:list={["tag-row", wide ? "mt-6" : "mt-5"]}>
+    <ul class="tag-row mt-5">
       {shownTags.map((t, i) => (
         <li class:list={["tag-sm", i >= d.services.length && "tag-line"]}>{t}</li>
       ))}
       {hiddenTags > 0 && <li class="tag-sm tag-more">+{hiddenTags}</li>}
     </ul>
 
-    <div class:list={["flex items-center justify-between gap-3", wide ? "mt-7" : "mt-6"]}>
+    <div class="mt-6 flex items-center justify-between gap-3">
       <span class="meta">{kindLabel(d.kind, d.client)}</span>
       <span class="read-more">
         Vedi il progetto
@@ -121,29 +100,6 @@ const hiddenTags = allTags.length - shownTags.length;
 </a>
 
 <style>
-  /*
-   * Forma larga. Sotto i 768 px resta impilata: una miniatura affiancata a un
-   * testo su uno schermo da telefono lascerebbe a entrambi una colonna
-   * inutilizzabile.
-   */
-  @media (min-width: 768px) {
-    .case-wide {
-      display: grid;
-      grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
-    }
-    .case-media {
-      border-right: 1px solid var(--color-line);
-      /* L'immagine riempie l'altezza decisa dal testo accanto. */
-      min-height: 100%;
-    }
-  }
-  @media (max-width: 767px) {
-    .case-media {
-      aspect-ratio: 16 / 10;
-      border-bottom: 1px solid var(--color-line);
-    }
-  }
-
   /* Chip di categoria: maiuscoletto piccolo su fondo azzurro. */
   .tag {
     display: inline-flex;
