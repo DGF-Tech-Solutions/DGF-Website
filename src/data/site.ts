@@ -27,12 +27,22 @@ export const SITE = {
   themeColor: "#054b77",
 } as const;
 
-/** Navigazione principale. Solo hub: la profondità si scopre entrandoci. */
+/**
+ * Navigazione principale.
+ *
+ * L'ordine non è casuale: prima cosa facciamo (Servizi), poi come lo
+ * facciamo (Come lavoriamo), poi le prove (Progetti), poi i contenuti
+ * (Blog), infine chi siamo. È il percorso di chi ci sta valutando.
+ *
+ * "Servizi" è l'unica voce con un pannello: cinque sottopagine sono troppe
+ * per un link semplice. Le altre sono link piatti.
+ */
 export const NAV = [
   { label: "Servizi", href: "/servizi" },
+  { label: "Come lavoriamo", href: "/come-lavoriamo" },
   { label: "Progetti", href: "/portfolio" },
-  { label: "Chi siamo", href: "/chi-siamo" },
   { label: "Blog", href: "/blog" },
+  { label: "Chi siamo", href: "/chi-siamo" },
 ] as const;
 
 /** Voce di azione, separata perché ha un trattamento visivo diverso. */

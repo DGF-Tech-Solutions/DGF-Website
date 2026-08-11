@@ -1,0 +1,335 @@
+---
+import Base from "@/layouts/Base.astro";
+import HeroBand from "@/components/HeroBand.astro";
+import Icon from "@/components/Icon.astro";
+import type { IconName } from "@/components/Icon.astro";
+import { SITE } from "@/data/site";
+import illustration from "@/assets/illustrazioni/scena-processo.png";
+
+/*
+ * Come lavoriamo.
+ *
+ * In home le quattro fasi stanno in quattro righe: bastano a far capire che
+ * un metodo c'è, non bastano a chi sta decidendo se affidarci un progetto.
+ * Qui ognuna viene aperta sulle quattro domande che una persona si fa
+ * davvero prima di firmare: cosa succede, cosa devo fare io, quanto dura,
+ * e — la più utile — cosa NON succede in questa fase.
+ *
+ * Le durate sono indicative e dichiarate come tali. Siamo agli inizi: non
+ * abbiamo medie su decine di progetti da esibire, e inventarle sarebbe il
+ * primo modo per contraddire la pagina stessa.
+ */
+
+/* Le quattro domande sono le stesse per ogni fase: definirle una volta sola
+   tiene la struttura uguale in tutte e quattro le sezioni. */
+const DETAIL_META = [
+  { key: "succede", label: "Cosa succede", icon: "zap" },
+  { key: "richiesto", label: "Cosa serve da te", icon: "users" },
+  { key: "durata", label: "Quanto dura", icon: "clock" },
+  { key: "escluso", label: "Cosa non facciamo qui", icon: "shield" },
+] as const satisfies readonly { key: string; label: string; icon: IconName }[];
+
+type DetailKey = (typeof DETAIL_META)[number]["key"];
+
+interface Phase {
+  icon: IconName;
+  title: string;
+  /** Sottotitolo: la fase in una riga, come si legge in home. */
+  claim: string;
+  text: string;
+  details: Record<DetailKey, string>;
+}
+
+const PHASES: Phase[] = [
+  {
+    icon: "message",
+    title: "Ascolto",
+    claim: "Prima il problema, poi la soluzione.",
+    text: "Quasi nessuno arriva con un problema, arriva con una soluzione già scelta: «mi serve un sito», «mi serve un'app». Il nostro lavoro in questa fase è tornare indietro di un passo e capire cosa deve succedere davvero, per chi, e cosa oggi non funziona. Succede spesso che quello che serve sia diverso — a volte più piccolo — di quello che si era immaginato. Dirtelo è parte del lavoro, anche quando ci conviene tacere.",
+    details: {
+      succede:
+        "Una conversazione, in videochiamata o di persona, in cui parli quasi solo tu. Noi facciamo domande: chi userà la cosa, cosa fa oggi al posto tuo, cosa succede se non la costruiamo, quali vincoli ci sono già (gestionali, fornitori, scadenze). Se stai già usando qualcosa, ce lo facciamo mostrare dal vivo.",
+      richiesto:
+        "Un'ora vera, senza fretta, con presente chi poi decide. Se esistono, gli accessi in sola lettura a quello che hai già: sito attuale, gestionale, statistiche. E il contesto scomodo — cosa è andato storto con chi ci ha provato prima di noi.",
+      durata:
+        "Una o due conversazioni, di solito nell'arco di una settimana. Non si paga e non impegna a nulla: se dopo l'ascolto una delle due parti non è convinta, ci si saluta.",
+      escluso:
+        "Non ti diamo un prezzo a voce, perché un numero detto in fretta poi vincola entrambi. Non apriamo l'editor e non «buttiamo giù due idee»: costruire prima di aver capito è il modo più caro di sbagliare. E non ti mandiamo un preventivo precompilato dieci minuti dopo la chiamata.",
+    },
+  },
+  {
+    icon: "file",
+    title: "Proposta",
+    claim: "Tutto scritto prima di iniziare.",
+    text: "La proposta è il documento su cui poi ci puoi misurare. Contiene cosa costruiamo, cosa resta espressamente fuori, con quali tecnologie e perché quelle, in quanto tempo e a quale cifra. Se ci sono più strade — una più veloce e una più solida — le mettiamo entrambe con i rispettivi costi, e diciamo quale sceglieremmo noi e per quale ragione. Ogni scelta tecnica ha accanto una spiegazione in italiano comprensibile: se non riusciamo a spiegarla, di solito è la scelta sbagliata.",
+    details: {
+      succede:
+        "Mettiamo per iscritto perimetro, tempi, costo e responsabilità di ciascuno. Le voci fuori perimetro sono elencate esplicitamente, non lasciate al non detto. Poi ci risentiamo per rivederla insieme riga per riga e correggere quello che non torna.",
+      richiesto:
+        "Leggerla davvero e contestare le parti che non ti convincono — è il momento giusto per farlo. Dirci il budget reale, anche se è basso: serve a capire se ha senso partire, non a tarare il prezzo verso l'alto. E se esiste una data vincolante, dircela adesso.",
+      durata:
+        "La consegniamo entro pochi giorni lavorativi dall'ultimo confronto. Poi il tempo che ti serve per decidere: non facciamo solleciti né offerte «valide fino a venerdì».",
+      escluso:
+        "Non scriviamo voci «da definire» né cifre a partire da. Non inseriamo canoni obbligatori o clausole che ti leghino a noi dopo la consegna. E non iniziamo a sviluppare prima che la proposta sia accettata: nessuno dei due deve trovarsi con lavoro fatto e non concordato.",
+    },
+  },
+  {
+    icon: "wrench",
+    title: "Costruzione",
+    claim: "Lo vedi mentre nasce, non alla fine.",
+    text: "Lavoriamo per blocchi: alla fine di ognuno c'è qualcosa che puoi aprire dal telefono, non uno screenshot in una presentazione. È la parte più importante del metodo, perché una correzione fatta alla settimana due costa una frazione della stessa correzione fatta il giorno prima del lancio. Se durante la costruzione emerge che una scelta iniziale era sbagliata, lo diciamo noi: preferiamo ammetterlo a metà strada che consegnare qualcosa che sappiamo già essere debole.",
+    details: {
+      succede:
+        "Sviluppo per blocchi, con un indirizzo di anteprima sempre aggiornato e un punto fisso ogni settimana — anche breve, anche solo per dire che tutto procede. Ogni scelta rilevante presa in corsa te la raccontiamo quando la prendiamo, non a cose fatte.",
+      richiesto:
+        "I contenuti nei tempi concordati: testi, foto, listini, dati da migrare. È di gran lunga la prima causa di ritardo sui progetti, più di qualunque difficoltà tecnica. Poi un referente unico che risponda entro pochi giorni e che abbia il potere di decidere senza dover chiedere a un comitato.",
+      durata:
+        "È la voce più variabile e dipende dall'ambito: la stima sta nella proposta ed è quella su cui ci misuri. Se una data inizia a slittare lo sai da noi, con il motivo, prima che te ne accorga.",
+      escluso:
+        "Non aggiungiamo funzioni non concordate perché «tanto ci stanno»: gonfiano i tempi e li paghi comunque, in un modo o nell'altro. Non spariamo per settimane in nome della sorpresa finale. E non modifichiamo il prezzo per una richiesta fuori perimetro senza averla quantificata e fattela approvare prima.",
+    },
+  },
+  {
+    icon: "package",
+    title: "Consegna",
+    claim: "Le chiavi passano a te, per intero.",
+    text: "Consegnare non significa mandare un link e sparire. Significa che codice, dominio e accessi sono intestati a te, che sai come si aggiorna quello che ti abbiamo costruito, e che hai scritto da qualche parte cosa fare se qualcosa smette di funzionare alle nove di sera. Dopo la consegna restiamo raggiungibili: se vuoi un contratto di manutenzione lo facciamo, se non lo vuoi il progetto funziona lo stesso e non ti abbiamo legato a niente.",
+    details: {
+      succede:
+        "Pubblicazione, passaggio di codice sorgente, dominio e credenziali a tuo nome, e una sessione registrata in cui ti mostriamo come si usa e come si aggiorna. Ti lasciamo un documento con gli accessi, le procedure ordinarie e i contatti utili quando qualcosa non va.",
+      richiesto:
+        "Le intestazioni a tuo nome dove servono: dominio, hosting, account di pagamento, profili aziendali. E qualcuno che partecipi alla sessione finale e sia in grado di rispiegarla ai colleghi — un solo passaggio di consegne, fatto bene.",
+      durata:
+        "La messa online è questione di ore. L'accompagnamento va oltre: nei giorni successivi al lancio ci sentiamo più spesso, perché è lì che saltano fuori le cose che nessun test aveva previsto.",
+      escluso:
+        "Non teniamo il codice o gli accessi come garanzia. Non subordiniamo la consegna alla firma di un contratto di assistenza. E non consideriamo chiuso il rapporto il giorno dopo il lancio: se qualcosa che abbiamo scritto noi non funziona, si sistema.",
+    },
+  },
+];
+
+/* Quello che chiediamo a te. Sta in una fascia sola perché è una cosa sola:
+   il progetto riesce se entrambe le parti fanno la loro parte. */
+const RICHIESTE = [
+  {
+    icon: "file",
+    title: "I contenuti, in tempo",
+    text: "Testi, foto, listini, dati da migrare. Possiamo aiutarti a scriverli e a sistemarli, ma le informazioni vere le hai tu. È la prima causa di ritardo su qualsiasi progetto, molto prima delle difficoltà tecniche.",
+  },
+  {
+    icon: "users",
+    title: "Un referente unico",
+    text: "Una persona che raccolga le opinioni interne e ci arrivi con una decisione. Quattro voci che si contraddicono via email non sono feedback: sono un progetto che si ferma.",
+  },
+  {
+    icon: "clock",
+    title: "Risposte in tempi ragionevoli",
+    text: "Non servono risposte immediate, servono risposte. Qualche giorno lavorativo per approvare un blocco è normale; tre settimane di silenzio spostano la consegna, e lo diciamo prima invece che dopo.",
+  },
+  {
+    icon: "check",
+    title: "Sincerità sul budget",
+    text: "Dirci quanto puoi spendere non fa salire il prezzo: fa capire se il progetto sta in piedi e con quale perimetro. Se la cifra non basta per farlo bene, preferiamo dirtelo subito piuttosto che consegnarti metà lavoro.",
+  },
+] as const satisfies readonly { icon: IconName; title: string; text: string }[];
+
+/*
+ * Schema: WebPage e non HowTo.
+ * HowTo descrive istruzioni che esegue chi legge; qui i passaggi li
+ * facciamo noi, e chi legge è il committente. Segnalarla come HowTo sarebbe
+ * un uso improprio del tipo (che oltretutto Google non usa più per i
+ * risultati arricchiti). Le quattro fasi restano leggibili come ItemList
+ * ordinata, che è esattamente quello che sono.
+ */
+const schema = {
+  "@type": "WebPage",
+  "@id": `${SITE.url}/come-lavoriamo`,
+  name: `Come lavoriamo — ${SITE.name}`,
+  url: `${SITE.url}/come-lavoriamo`,
+  description:
+    "Le quattro fasi di ogni progetto DGF: ascolto, proposta, costruzione, consegna. Cosa succede, cosa serve da te, quanto dura e cosa non facciamo.",
+  inLanguage: "it-IT",
+  isPartOf: { "@id": `${SITE.url}/#website` },
+  about: { "@id": `${SITE.url}/#organization` },
+  mainEntity: {
+    "@type": "ItemList",
+    name: "Le fasi di un progetto",
+    itemListOrder: "https://schema.org/ItemListOrderAscending",
+    numberOfItems: PHASES.length,
+    itemListElement: PHASES.map((p, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: p.title,
+      description: p.text,
+    })),
+  },
+};
+---
+
+<Base
+  title="Come lavoriamo"
+  description="Ascolto, proposta, costruzione, consegna: le quattro fasi di ogni progetto DGF, spiegate per intero. Cosa succede, cosa serve da te, quanto dura e cosa non facciamo."
+  canonical="/come-lavoriamo"
+  schema={schema}
+>
+  <HeroBand
+    badge="Il metodo"
+    badgeIcon="wrench"
+    title='Quattro passaggi, <span class="t-dim">nessuna sorpresa.</span>'
+    lead="Lo stesso percorso su ogni progetto, dal sito vetrina al gestionale. Qui trovi cosa succede in ogni fase, cosa serve da parte tua e — soprattutto — cosa non facciamo."
+    crumbs={[{ label: "Come lavoriamo" }]}
+    illustration={illustration}
+    illustrationAlt="Illustrazione: percorso di progetto con quattro tappe"
+    cta={{ label: "Parliamo del tuo progetto", href: "/contatti" }}
+  />
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       LE QUATTRO FASI
+       Fondi alternati e lato alternato: la pagina avanza come il processo
+       che descrive, invece di ripetere quattro volte la stessa griglia.
+       ══════════════════════════════════════════════════════════════════ -->
+  {
+    PHASES.map((phase, i) => {
+      const flipped = i % 2 === 1;
+      return (
+        <section class:list={["section", flipped && "band-soft"]} aria-labelledby={`fase-${i + 1}`}>
+          <div class="wrap">
+            <div class="grid items-start gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
+              {/* Racconto */}
+              <div class:list={[flipped ? "reveal-right lg:order-2" : "reveal-left"]}>
+                <div class="flex items-center gap-4">
+                  <span class="icon-tile">
+                    <Icon name={phase.icon} size={22} />
+                  </span>
+                  <span class="phase-num tabular" aria-hidden="true">
+                    0{i + 1}
+                  </span>
+                </div>
+
+                <span class="t-eyebrow mt-6 block">Fase {i + 1} di {PHASES.length}</span>
+                <h2 id={`fase-${i + 1}`} class="t-h2 mt-3">
+                  {phase.title}
+                  <span class="t-dim"> — {phase.claim}</span>
+                </h2>
+                <p class="t-lead mt-5 max-w-xl">{phase.text}</p>
+              </div>
+
+              {/* Dettaglio: le quattro domande, sempre nello stesso ordine */}
+              <div class:list={["card p-6 sm:p-8", flipped ? "reveal-left lg:order-1" : "reveal-right"]}>
+                <ul class="phase-details">
+                  {DETAIL_META.map((meta) => (
+                    <li class="phase-detail">
+                      <span class="icon-tile icon-tile-sm">
+                        <Icon name={meta.icon} size={16} />
+                      </span>
+                      <span>
+                        <span class="t-eyebrow block">{meta.label}</span>
+                        <span class="t-body mt-2 block">{phase.details[meta.key]}</span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    })
+  }
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       COSA CHIEDIAMO A TE
+       ══════════════════════════════════════════════════════════════════ -->
+  <section class="on-dark section">
+    <div class="wrap">
+      <div class="mx-auto max-w-2xl text-center">
+        <span class="t-eyebrow">La tua parte</span>
+        <h2 class="t-h2 mt-3">
+          Cosa chiediamo <span class="t-dim">a te.</span>
+        </h2>
+        <p class="t-lead mt-4">
+          Un progetto non riesce perché lo seguiamo bene noi: riesce quando
+          entrambe le parti fanno la loro. Queste quattro sono le uniche cose
+          che ci servono davvero.
+        </p>
+      </div>
+
+      <ul class="mt-12 grid gap-5 sm:grid-cols-2">
+        {
+          RICHIESTE.map((r, i) => (
+            <li class="card group flex gap-4 p-6 reveal" style={`--i:${i}`}>
+              <span class="icon-tile">
+                <Icon name={r.icon} size={20} />
+              </span>
+              <span>
+                <span class="t-h3 block">{r.title}</span>
+                <span class="t-body mt-2 block">{r.text}</span>
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       CHIUSURA
+       ══════════════════════════════════════════════════════════════════ -->
+  <section class="section">
+    <div class="wrap">
+      <div class="mx-auto max-w-2xl text-center reveal">
+        <span class="t-eyebrow">Il primo passo</span>
+        <h2 class="t-h2 mt-3">
+          Si parte <span class="t-dim">dall'ascolto.</span>
+        </h2>
+        <p class="t-lead mt-4">
+          Raccontaci il problema, non la soluzione che hai già in mente. La
+          prima risposta arriva entro un giorno lavorativo e la prima
+          conversazione non impegna a nulla.
+        </p>
+
+        <div class="mt-8 flex flex-wrap justify-center gap-3">
+          <a href="/contatti" class="btn btn-primary btn-lg">
+            Scrivici
+            <Icon name="arrow-right" size={17} />
+          </a>
+          <a href="/servizi" class="btn btn-ghost btn-lg">Guarda cosa facciamo</a>
+        </div>
+
+        <div class="mt-7 flex flex-wrap justify-center gap-2">
+          <span class="chip"><Icon name="check" size={13} /> Prima conversazione gratuita</span>
+          <span class="chip"><Icon name="check" size={13} /> Preventivo scritto prima di iniziare</span>
+          <span class="chip"><Icon name="check" size={13} /> Codice e dominio restano tuoi</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* Numero della fase: grande, tenue, in mono. Serve come segnaposto visivo
+     nello scorrimento — non è informazione, quindi è aria-hidden. */
+  .phase-num {
+    font-family: var(--font-mono);
+    font-size: clamp(2.25rem, 1.6rem + 2.6vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--color-soft-2);
+  }
+
+  /* Le quattro domande, separate da un filetto interno invece che da schede
+     annidate: dentro una card, un'altra card sarebbe rumore. */
+  .phase-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .phase-detail {
+    display: flex;
+    gap: 0.875rem;
+  }
+  .phase-detail + .phase-detail {
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-line-2);
+  }
+</style>

@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import Base from "@/layouts/Base.astro";
-import PageHeader from "@/components/PageHeader.astro";
+import HeroBand from "@/components/HeroBand.astro";
 import ArticleCard from "@/components/ArticleCard.astro";
 import Explorer from "@/components/Explorer.astro";
 import Icon from "@/components/Icon.astro";
@@ -21,6 +21,8 @@ for (const a of articles) {
 const categories = [...counts.entries()]
   .map(([label, count]) => ({ label, count }))
   .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+
+const totalLabel = `${articles.length} ${articles.length === 1 ? "articolo" : "articoli"}`;
 
 const schema = {
   "@type": "Blog",
@@ -43,13 +45,15 @@ const schema = {
   canonical="/blog"
   schema={schema}
 >
-  <PageHeader
-    eyebrow="Dal blog"
+  <HeroBand
+    badge="Blog"
+    badgeIcon="message"
     title='Quello che spieghiamo <span class="t-dim">ai clienti.</span>'
-    lead="Le domande che ci arrivano più spesso, con la risposta estesa che durante una chiamata non c'è tempo di dare."
+    lead="Le domande che ci arrivano più spesso, con la risposta estesa che in una chiamata non c'è tempo di dare."
     crumbs={[{ label: "Blog" }]}
     illustration={illustration}
-    illustrationAlt="Illustrazione: scrivania con laptop, appunti e caffè"
+    illustrationAlt="Illustrazione: scrivania con laptop, appunti e una tazza di caffè"
+    cta={{ label: "Parliamo del tuo progetto", href: "/contatti" }}
   />
 
   <section class="section">
@@ -62,6 +66,11 @@ const schema = {
             categories={categories}
             noun="articolo"
           >
+            {/* Il conteggio sta dentro lo slot dell'Explorer, sopra la griglia:
+                è la stessa riga di riepilogo di Nexia. Resta statico (mostra il
+                totale) perché il filtro ha già il suo messaggio di elenco vuoto. */}
+            <p class="t-small mb-5">{totalLabel}</p>
+
             <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {articles.map((entry) => (
                 <ArticleCard entry={entry} as="h2" />

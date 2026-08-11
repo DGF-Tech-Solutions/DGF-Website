@@ -3,6 +3,15 @@ import { Image } from "astro:assets";
 import type { CollectionEntry } from "astro:content";
 import Icon from "@/components/Icon.astro";
 
+/*
+ * Scheda progetto, sorella di ArticleCard: stessa impaginazione interna
+ * (riga categoria + metadato, titolo, riassunto, invito in fondo) con in più
+ * l'anteprima del lavoro in cima, che qui è l'informazione che convince.
+ *
+ * In fondo, a sinistra, l'etichetta sulla natura del progetto: dichiarare che
+ * un lavoro è dimostrativo costa poco e vale molto, e va detto sulla scheda —
+ * non solo dentro al caso.
+ */
 interface Props {
   entry: CollectionEntry<"portfolio">;
   /** Carica l'immagine subito. Solo se la scheda è sopra la piega. */
@@ -17,9 +26,22 @@ interface Props {
 
 const { entry, eager = false, as: Heading = "h3" } = Astro.props;
 const d = entry.data;
+
+/* Testo su cui lavora la ricerca dell'Explorer. Comprende anche servizi e
+   tecnologie: chi cerca "Stripe" o "SEO" si aspetta di trovare il progetto
+   che li usa, non solo quello che li ha nel titolo. */
+const haystack = `${d.client} ${d.title} ${d.summary} ${d.category} ${d.services.join(" ")} ${d.stack.join(" ")}`
+  .toLowerCase()
+  .normalize("NFD")
+  .replace(/[̀-ͯ]/g, "");
 ---
 
-<a href={`/portfolio/${entry.id}`} class="card group flex flex-col overflow-hidden">
+<a
+  href={`/portfolio/${entry.id}`}
+  class="card group flex flex-col overflow-hidden"
+  data-search={haystack}
+  data-cat={d.category}
+>
   <div class="ratio-16-10 overflow-hidden border-b border-[var(--color-line)] bg-[var(--color-paper-2)]">
     <Image
       src={d.cover}
@@ -32,28 +54,72 @@ const d = entry.data;
     />
   </div>
 
-  <div class="flex flex-1 flex-col p-5">
-    <div class="flex items-center gap-2">
-      <span class="chip">{d.category}</span>
-      <span class="t-small tabular ml-auto">{d.year}</span>
+  <div class="flex flex-1 flex-col p-5 sm:p-6">
+    <div class="flex items-center justify-between gap-3">
+      <span class="tag">{d.category}</span>
+      <span class="meta tabular">{d.year}</span>
     </div>
 
-    <Heading class="t-h3 mt-3">{d.client}</Heading>
-    <p class="t-body mt-2 flex-1 text-[0.875rem]">{d.summary}</p>
+    <Heading class="t-h3 mt-4 transition-colors group-hover:text-[var(--color-navy)]">
+      {d.title}
+    </Heading>
 
-    <div class="mt-5 flex items-center justify-between gap-3">
-      {/*
-        Etichetta di natura del progetto, sempre presente: dichiarare che un
-        lavoro è dimostrativo costa poco e vale molto.
-      */}
-      <span class="t-small">
+    <p class="t-body mt-3 flex-1 text-[0.875rem]">{d.summary}</p>
+
+    <div class="mt-6 flex items-center justify-between gap-3">
+      <span class="meta">
         {d.kind === "dimostrativo" ? "Progetto dimostrativo" : "Progetto cliente"}
       </span>
-      <Icon
-        name="arrow-right"
-        size={17}
-        class="text-[var(--color-navy)] transition-transform group-hover:translate-x-1"
-      />
+      <span class="read-more">
+        Vedi il progetto
+        <Icon name="arrow-right" size={15} />
+      </span>
     </div>
   </div>
 </a>
+
+<style>
+  /* Chip di categoria: maiuscoletto piccolo su fondo azzurro. */
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.3125rem 0.625rem;
+    border-radius: var(--radius-sm);
+    background: var(--color-soft);
+    color: var(--color-navy);
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    white-space: nowrap;
+  }
+
+  .meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3125rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--color-ink-3);
+    white-space: nowrap;
+  }
+
+  /* Come il `.read-more` di ArticleCard, ma senza margine sopra: qui divide
+     la riga con l'etichetta di natura del progetto, e la spaziatura la dà
+     il contenitore. */
+  .read-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4375rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--color-navy);
+    white-space: nowrap;
+  }
+  .read-more :global(svg) {
+    transition: transform var(--dur) var(--ease-out-quart);
+  }
+  @media (hover: hover) {
+    .group:hover .read-more :global(svg) { transform: translateX(3px); }
+  }
+</style>

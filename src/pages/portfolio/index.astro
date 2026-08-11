@@ -1,8 +1,9 @@
 ---
 import { getCollection } from "astro:content";
 import Base from "@/layouts/Base.astro";
-import PageHeader from "@/components/PageHeader.astro";
+import HeroBand from "@/components/HeroBand.astro";
 import CaseCard from "@/components/CaseCard.astro";
+import Explorer from "@/components/Explorer.astro";
 import Banner from "@/components/Banner.astro";
 import Icon from "@/components/Icon.astro";
 import { SITE } from "@/data/site";
@@ -17,6 +18,18 @@ const projects = (await getCollection("portfolio")).sort(
    `kind: cliente` nel suo file e il banner cambia da solo. */
 const clientProjects = projects.filter((p) => p.data.kind === "cliente").length;
 const onlyDemos = clientProjects === 0;
+
+/* Categorie con il conteggio, ordinate per frequenza: i chip li costruiamo
+   dai contenuti reali, non da un elenco scritto a mano che poi diverge. */
+const counts = new Map<string, number>();
+for (const p of projects) {
+  counts.set(p.data.category, (counts.get(p.data.category) ?? 0) + 1);
+}
+const categories = [...counts.entries()]
+  .map(([label, count]) => ({ label, count }))
+  .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+
+const totalLabel = `${projects.length} ${projects.length === 1 ? "progetto" : "progetti"}`;
 
 const schema = {
   "@type": "CollectionPage",
@@ -37,13 +50,15 @@ const schema = {
   canonical="/portfolio"
   schema={schema}
 >
-  <PageHeader
-    eyebrow="I progetti"
+  <HeroBand
+    badge="Progetti"
+    badgeIcon="layers"
     title='Cosa sappiamo <span class="t-dim">costruire.</span>'
     lead="Ogni scheda racconta un problema reale, le scelte fatte per risolverlo e come si è tradotto in software."
     crumbs={[{ label: "Progetti" }]}
     illustration={illustration}
     illustrationAlt="Illustrazione: un monitor con il layout di un sito"
+    cta={{ label: "Parliamo del tuo progetto", href: "/contatti" }}
   />
 
   <section class="section">
@@ -60,7 +75,7 @@ const schema = {
           <Banner
             icon="shield"
             title="Siamo agli inizi, e preferiamo dirlo."
-            class="mx-auto max-w-4xl"
+            class="mx-auto mb-12 max-w-4xl"
           >
             <p>
               <strong>
@@ -81,21 +96,33 @@ const schema = {
         )
       }
 
-      {/*
-        Nessuna immagine in `eager`: con il banner in mezzo, su mobile le
-        schede sono sotto la piega. L'unica immagine prioritaria della pagina
-        resta quella della testata — due immagini prioritarie si
-        contenderebbero la banda e ritarderebbero entrambe.
-      */}
-      <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {
-          projects.map((entry, i) => (
-            <div class="reveal" style={`--i:${i}`}>
-              <CaseCard entry={entry} as="h2" />
+      {
+        projects.length > 0 ? (
+          <Explorer
+            placeholder="Cerca un progetto, un settore o una tecnologia…"
+            label="Cerca fra i progetti"
+            categories={categories}
+            noun="progetto"
+          >
+            {/* Il conteggio sta dentro lo slot dell'Explorer, sopra la griglia:
+                è la stessa riga di riepilogo di Nexia. Resta statico (mostra il
+                totale) perché il filtro ha già il suo messaggio di elenco vuoto. */}
+            <p class="t-small mb-5">{totalLabel}</p>
+
+            {/* Nessuna immagine in `eager`: con il banner in mezzo, su mobile
+                le schede sono sotto la piega. L'unica immagine prioritaria
+                della pagina resta quella della testata — due immagini
+                prioritarie si contenderebbero la banda. */}
+            <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {projects.map((entry) => (
+                <CaseCard entry={entry} as="h2" />
+              ))}
             </div>
-          ))
-        }
-      </div>
+          </Explorer>
+        ) : (
+          <p class="t-lead text-center">Non ci sono ancora progetti pubblicati.</p>
+        )
+      }
 
       <div class="card mt-16 flex flex-col items-center gap-5 bg-[var(--color-soft)] px-6 py-12 text-center">
         <span class="icon-tile bg-white"><Icon name="message" size={22} /></span>

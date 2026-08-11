@@ -125,7 +125,9 @@ const COMMITMENTS = [
           posizionano rispetto ALLA FIGURA e non alla colonna, e sporgono di
           poco senza uscire dalla pagina.
         -->
-        <div class="anim-fade delay-2 relative mx-auto w-full max-w-[24rem] sm:max-w-[28rem] lg:max-w-[34rem]">
+        {/* `anim-rise` (solo transform) e non una dissolvenza: sopra la piega
+            un'opacità che riparte lascia il vuoto al posto dell'immagine. */}
+        <div class="anim-rise relative mx-auto w-full max-w-[24rem] sm:max-w-[28rem] lg:max-w-[34rem]">
           <Image
             src={heroIllustration}
             alt="Illustrazione: un monitor con l'interfaccia di un sito"
