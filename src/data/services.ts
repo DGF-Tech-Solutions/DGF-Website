@@ -24,6 +24,14 @@ export interface Service {
   intro: string;
   /** A chi serve davvero. L'onestà qui vale più di un elenco di funzionalità. */
   bestFor: string[];
+  /**
+   * Quando NON serve, e cosa consigliamo al suo posto.
+   *
+   * È la sezione che nessun sito di software house scrive, ed è esattamente
+   * per questo che convince: dice al visitatore che non gli venderemo qualcosa
+   * di cui non ha bisogno. Vale più di dieci righe di "siamo affidabili".
+   */
+  notFor: { case: string; instead: string }[];
   /** Cosa comprende concretamente. */
   includes: { title: string; text: string }[];
   /** Tecnologie usate, mostrate come dati. */
@@ -47,6 +55,20 @@ export const SERVICES: readonly Service[] = [
       "Attività che vogliono essere trovate e contattate, non vendere online",
       "Studi professionali, artigiani, aziende di servizi",
       "Chi ha un sito vecchio che non si vede bene da telefono",
+    ],
+    notFor: [
+      {
+        case: "Ti serve solo una pagina con contatti e orari",
+        instead: "Una scheda Google Business curata ti porta più clienti locali di un sito, e costa zero.",
+      },
+      {
+        case: "Vuoi vendere prodotti online da subito",
+        instead: "Allora il servizio giusto è l'e-commerce, non la vetrina.",
+      },
+      {
+        case: "Hai bisogno di pubblicare contenuti ogni giorno",
+        instead: "Meglio partire da una piattaforma editoriale già pronta e personalizzarla.",
+      },
     ],
     includes: [
       {
@@ -93,6 +115,22 @@ export const SERVICES: readonly Service[] = [
       "Chi vende già offline e vuole aprire un canale diretto",
       "Chi paga troppe commissioni su un marketplace",
     ],
+    notFor: [
+      {
+        case: "Non hai ancora un pubblico che ti cerca",
+        instead:
+          "Il negozio funzionerà tecnicamente e resterà vuoto: aprirlo non genera domanda. Prima la vetrina e la visibilità.",
+      },
+      {
+        case: "Vendi pochi pezzi molto costosi e su misura",
+        instead: "Una vetrina con richiesta di preventivo converte meglio di un carrello.",
+      },
+      {
+        case: "Nessuno in azienda può occuparsene ogni giorno",
+        instead:
+          "Un e-commerce va alimentato: foto, prezzi, ordini, resi. Senza qualcuno che lo segua, deperisce.",
+      },
+    ],
     includes: [
       {
         title: "Architettura del catalogo",
@@ -137,6 +175,23 @@ export const SERVICES: readonly Service[] = [
       "Servizi usati spesso dalle stesse persone",
       "Chi ha bisogno di notifiche o uso offline",
       "Team sul campo che lavorano da telefono o tablet",
+    ],
+    notFor: [
+      {
+        case: "Ti basta che il sito si apra bene da telefono",
+        instead:
+          "Un sito ben fatto si installa sulla schermata home e sembra un'app, senza costi di store né manutenzione annuale.",
+      },
+      {
+        case: "L'app sarebbe usata una volta ogni tanto",
+        instead:
+          "Nessuno tiene sul telefono un'app che apre due volte l'anno. Meglio un sito raggiungibile da un link.",
+      },
+      {
+        case: "Non hai budget per mantenerla nel tempo",
+        instead:
+          "iOS e Android cambiano ogni anno: un'app non aggiornata smette di funzionare. Se il budget copre solo la costruzione, è un problema rimandato.",
+      },
     ],
     includes: [
       {
@@ -183,6 +238,23 @@ export const SERVICES: readonly Service[] = [
       "Chi paga licenze per strumenti usati al 10%",
       "Chi ha un processo particolare che nessun software standard copre",
     ],
+    notFor: [
+      {
+        case: "Ti serve fatturare e tenere la contabilità",
+        instead:
+          "Esistono gestionali pronti che lo fanno bene e costano una frazione. Costruirlo da zero sarebbe buttare soldi.",
+      },
+      {
+        case: "Il processo cambia ogni due mesi",
+        instead:
+          "Prima stabilizzatelo su carta. Un software costruito su un processo instabile nasce già da rifare.",
+      },
+      {
+        case: "Nessuno userà lo strumento oltre a te",
+        instead:
+          "Un foglio di calcolo ben organizzato è più veloce da cambiare e non ha bisogno di manutenzione.",
+      },
+    ],
     includes: [
       {
         title: "Mappatura del processo reale",
@@ -227,6 +299,23 @@ export const SERVICES: readonly Service[] = [
       "Chi smista, classifica o riassume grandi quantità di documenti",
       "Chi risponde ogni giorno alle stesse domande dei clienti",
       "Chi ha dati aziendali che nessuno riesce a interrogare",
+    ],
+    notFor: [
+      {
+        case: "Vuoi l'AI perché ne parlano tutti",
+        instead:
+          "Senza un compito ripetitivo e misurabile da automatizzare, è una spesa che fa notizia e non risultato. Te lo diciamo prima, non dopo.",
+      },
+      {
+        case: "Il compito richiede di non sbagliare mai",
+        instead:
+          "L'AI sbaglia per natura. Dove l'errore ha conseguenze legali o economiche serve una regola deterministica, non un modello.",
+      },
+      {
+        case: "I dati sono pochi, sporchi o inesistenti",
+        instead:
+          "Prima si mettono in ordine i dati. Senza, qualsiasi modello produce risposte plausibili e sbagliate.",
+      },
     ],
     includes: [
       {

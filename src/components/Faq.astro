@@ -2,16 +2,15 @@
 /*
  * Domande frequenti — accordion senza una riga di JavaScript.
  *
- * <details>/<summary> danno gratis: apertura, chiusura, navigazione da
- * tastiera, annuncio corretto agli screen reader e funzionamento anche se
- * lo script fallisce. Riscriverlo in React sarebbe stato peggio sotto ogni
- * aspetto misurabile.
- *
- * Emette anche i dati strutturati FAQPage, che Google usa per i rich result.
+ * <details>/<summary> danno gratis apertura, chiusura, navigazione da
+ * tastiera e annuncio corretto agli screen reader. Riscriverlo in React
+ * sarebbe peggio sotto ogni aspetto misurabile.
  */
+import Icon from "@/components/Icon.astro";
+
 interface Props {
   items: { q: string; a: string }[];
-  /** Emette il JSON-LD FAQPage. Una pagina sola per sito dovrebbe farlo. */
+  /** Emette il JSON-LD FAQPage (una sola pagina per sito dovrebbe farlo). */
   schema?: boolean;
 }
 
@@ -28,16 +27,18 @@ const faqSchema = {
 };
 ---
 
-<div class="faq">
+<div class="space-y-3">
   {
     items.map((item) => (
-      <details class="faq-item">
+      <details class="faq-item card">
         <summary>
-          <span class="t-h3 pr-6">{item.q}</span>
-          <span class="faq-icon" aria-hidden="true" />
+          <span class="t-h3 pr-4">{item.q}</span>
+          <span class="faq-icon">
+            <Icon name="chevron-down" size={18} />
+          </span>
         </summary>
         <div class="faq-answer">
-          <p class="t-body prose-measure">{item.a}</p>
+          <p class="t-body">{item.a}</p>
         </div>
       </details>
     ))
@@ -47,19 +48,14 @@ const faqSchema = {
 {schema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} is:inline />}
 
 <style>
-  .faq-item {
-    border-top: 1px solid var(--color-hairline);
-  }
-  .faq-item:last-child {
-    border-bottom: 1px solid var(--color-hairline);
-  }
+  .faq-item { overflow: hidden; }
 
   .faq-item summary {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    padding-block: 1.5rem;
+    padding: 1.125rem 1.375rem;
     cursor: pointer;
     list-style: none;
     transition: color var(--dur) var(--ease-out-quart);
@@ -69,37 +65,29 @@ const faqSchema = {
     .faq-item summary:hover { color: var(--color-navy); }
   }
 
-  /* Icona "+" che diventa "−" all'apertura. Due pseudo-elementi, zero SVG. */
   .faq-icon {
-    position: relative;
+    display: grid;
+    place-items: center;
     flex-shrink: 0;
-    width: 1rem;
-    height: 1rem;
-    margin-top: 0.375rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background: var(--color-soft);
+    color: var(--color-navy);
+    transition: transform var(--dur) var(--ease-out-quart),
+                background-color var(--dur) var(--ease-out-quart);
   }
-  .faq-icon::before,
-  .faq-icon::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    margin: auto;
-    background: var(--color-blue);
+  .faq-item[open] .faq-icon {
+    transform: rotate(180deg);
+    background: var(--color-navy);
+    color: #fff;
   }
-  .faq-icon::before { width: 100%; height: 1.5px; }
-  .faq-icon::after {
-    width: 1.5px;
-    height: 100%;
-    transition: transform var(--dur) var(--ease-out-quart);
-  }
-  .faq-item[open] .faq-icon::after { transform: scaleY(0); }
 
-  .faq-answer {
-    padding-bottom: 1.75rem;
-  }
+  .faq-answer { padding: 0 1.375rem 1.375rem; }
 
   @media (prefers-reduced-motion: no-preference) {
     .faq-item[open] .faq-answer {
-      animation: fade-rise 300ms var(--ease-out-quart) both;
+      animation: fade-rise 260ms var(--ease-out-quart) both;
     }
   }
 </style>

@@ -112,6 +112,23 @@ aggiornano ovunque: header, footer, meta tag, dati strutturati.
 
 ---
 
+## Illustrazioni
+
+Vivono in `src/assets/illustrazioni/` e si generano con ComfyUI:
+
+```bash
+python scripts/gen-illustrazioni.py            # tutte quelle mancanti
+python scripts/gen-illustrazioni.py --set scena
+python scripts/gen-illustrazioni.py --force    # rigenera anche le esistenti
+```
+
+**Attenzione**: sono import statici. Se un file manca, la pagina che lo usa
+**non compila** — non è che si vede un'immagine rotta, è che il sito non parte.
+Genera prima le immagini, poi apri il sito.
+
+Se una non convince, cambia il suo `seed` in `scripts/gen-illustrazioni.py` e
+rigenera solo quella: `python scripts/gen-illustrazioni.py scena-ai --force`.
+
 ## Regole da non rompere
 
 Sono le scelte che tengono il sito veloce. Se le si perde, si perdono i punteggi.

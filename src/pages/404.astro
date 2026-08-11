@@ -1,7 +1,10 @@
 ---
 import Base from "@/layouts/Base.astro";
+import Icon from "@/components/Icon.astro";
 import { NAV } from "@/data/site";
 import { SERVICES } from "@/data/services";
+
+const SERVICE_ICONS = ["globe", "bag", "phone", "dashboard", "sparkles"] as const;
 ---
 
 <Base
@@ -10,58 +13,48 @@ import { SERVICES } from "@/data/services";
   canonical="/404"
   noindex
 >
-  <section class="section">
+  <section class="glow-bg section">
     <div class="wrap">
-      <div class="max-w-2xl">
-        <div class="flex items-baseline gap-3">
-          <span class="t-index tabular">404</span>
-          <span class="t-label">Errore</span>
-        </div>
-
-        <h1 class="t-h1 mt-5">Questa pagina non c'è</h1>
-
-        <p class="t-lead mt-6">
+      <div class="mx-auto max-w-2xl text-center">
+        <span class="chip"><Icon name="search" size={14} /> Errore 404</span>
+        <h1 class="t-h1 mt-5">
+          Questa pagina <span class="t-dim">non c'è.</span>
+        </h1>
+        <p class="t-lead mt-5">
           L'indirizzo è sbagliato, oppure la pagina è stata spostata. Qui sotto
           trovi le sezioni principali del sito.
         </p>
-
-        <a href="/" class="btn btn-primary mt-8">
+        <a href="/" class="btn btn-primary btn-lg mt-8">
           Torna alla home
-          <span class="arrow" aria-hidden="true">→</span>
+          <Icon name="arrow-right" size={17} />
         </a>
       </div>
 
-      <div class="mt-16 grid gap-10 border-t border-[var(--color-hairline)] pt-10 sm:grid-cols-2">
-        <div>
-          <h2 class="t-label">Sezioni</h2>
-          <ul class="mt-4 space-y-2.5">
-            {
-              NAV.map((l) => (
-                <li>
-                  <a href={l.href} class="link-underline text-[0.9375rem]">
-                    {l.label}
-                  </a>
-                </li>
-              ))
-            }
-            <li><a href="/contatti" class="link-underline text-[0.9375rem]">Contatti</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h2 class="t-label">Servizi</h2>
-          <ul class="mt-4 space-y-2.5">
-            {
-              SERVICES.map((s) => (
-                <li>
-                  <a href={`/servizi/${s.slug}`} class="link-underline text-[0.9375rem]">
-                    {s.title}
-                  </a>
-                </li>
-              ))
-            }
-          </ul>
-        </div>
+      <div class="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          SERVICES.map((s, i) => (
+            <a href={`/servizi/${s.slug}`} class="card group flex items-center gap-3 p-5">
+              <span class="icon-tile icon-tile-sm">
+                <Icon name={SERVICE_ICONS[i]} size={17} />
+              </span>
+              <span class="text-[0.9375rem] font-semibold text-[var(--color-ink)]">
+                {s.title}
+              </span>
+            </a>
+          ))
+        }
+        {
+          [...NAV.filter((l) => l.href !== "/servizi"), { label: "Contatti", href: "/contatti" }].map((l) => (
+            <a href={l.href} class="card group flex items-center gap-3 p-5">
+              <span class="icon-tile icon-tile-sm">
+                <Icon name="arrow-right" size={17} />
+              </span>
+              <span class="text-[0.9375rem] font-semibold text-[var(--color-ink)]">
+                {l.label}
+              </span>
+            </a>
+          ))
+        }
       </div>
     </div>
   </section>

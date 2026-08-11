@@ -1,10 +1,17 @@
 ---
+import type { ImageMetadata } from "astro";
 import Base from "@/layouts/Base.astro";
 import PageHeader from "@/components/PageHeader.astro";
 import Faq from "@/components/Faq.astro";
+import Icon from "@/components/Icon.astro";
 import { SERVICES } from "@/data/services";
 import { SITE } from "@/data/site";
-import { idx } from "@/lib/format";
+
+import imgSiti from "@/assets/illustrazioni/scena-siti-web.png";
+import imgEcom from "@/assets/illustrazioni/scena-ecommerce.png";
+import imgApp from "@/assets/illustrazioni/scena-app.png";
+import imgSoft from "@/assets/illustrazioni/scena-software.png";
+import imgAi from "@/assets/illustrazioni/scena-ai.png";
 
 export function getStaticPaths() {
   return SERVICES.map((service) => ({
@@ -15,7 +22,23 @@ export function getStaticPaths() {
 
 const { service } = Astro.props;
 
-// Gli altri servizi, per il rimando in fondo alla pagina.
+/* Gli import sono statici per forza (Astro li risolve a build time):
+   qui li associamo allo slug con una mappa esplicita. */
+const ILLUSTRATIONS: Record<string, ImageMetadata> = {
+  "siti-web": imgSiti,
+  ecommerce: imgEcom,
+  app: imgApp,
+  "software-su-misura": imgSoft,
+  "intelligenza-artificiale": imgAi,
+};
+const ICONS: Record<string, "globe" | "bag" | "phone" | "dashboard" | "sparkles"> = {
+  "siti-web": "globe",
+  ecommerce: "bag",
+  app: "phone",
+  "software-su-misura": "dashboard",
+  "intelligenza-artificiale": "sparkles",
+};
+
 const others = SERVICES.filter((s) => s.slug !== service.slug);
 
 const schema = [
@@ -46,74 +69,114 @@ const schema = [
   schema={schema}
 >
   <PageHeader
-    index={service.index}
-    label="Servizio"
+    eyebrow={service.title}
     title={service.headline}
     lead={service.intro}
     crumbs={[{ label: "Servizi", href: "/servizi" }, { label: service.title }]}
+    illustration={ILLUSTRATIONS[service.slug]}
+    illustrationAlt={`Illustrazione: ${service.title.toLowerCase()}`}
   >
-    <!-- Scheda tecnica: tempi e tecnologie, dichiarati subito -->
-    <dl class="mt-12 grid gap-px border border-[var(--color-hairline)] bg-[var(--color-hairline)] sm:grid-cols-2">
-      <div class="bg-[var(--color-paper)] p-5">
-        <dt class="t-label">Tempi indicativi</dt>
-        <dd class="t-h3 mt-2 tabular">{service.timeline}</dd>
-      </div>
-      <div class="bg-[var(--color-paper)] p-5">
-        <dt class="t-label">Tecnologie</dt>
-        <dd class="mt-2 flex flex-wrap gap-2">
-          {service.stack.map((t) => <span class="chip">{t}</span>)}
-        </dd>
-      </div>
-    </dl>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a href="/contatti" class="btn btn-primary">
+        Parliamo del tuo progetto
+        <Icon name="arrow-right" size={16} />
+      </a>
+      <span class="btn btn-ghost !cursor-default">
+        <Icon name="clock" size={16} />
+        {service.timeline}
+      </span>
+    </div>
   </PageHeader>
 
   <!-- A chi serve -->
   <section class="section">
     <div class="wrap">
-      <div class="grid gap-10 lg:grid-cols-12 lg:gap-16">
-        <div class="lg:col-span-4">
-          <div class="flex items-baseline gap-3">
-            <span class="t-index">A</span>
-            <span class="t-label">Quando ha senso</span>
-          </div>
-          <h2 class="t-h2 mt-4">A chi serve davvero</h2>
+      <div class="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+        <div>
+          <span class="t-eyebrow">Quando ha senso</span>
+          <h2 class="t-h2 mt-3">A chi serve <span class="t-dim">davvero.</span></h2>
+          <p class="t-lead mt-4">
+            Se non ti riconosci in nessuno di questi casi, probabilmente ti serve
+            altro. Scrivici lo stesso: ti indirizziamo.
+          </p>
         </div>
 
-        <div class="lg:col-span-8">
-          <ul>
-            {
-              service.bestFor.map((item, i) => (
-                <li class="row-tech reveal">
-                  <span class="t-index pt-1">{idx(i + 1)}</span>
-                  <span class="t-lead !text-[var(--color-ink)]">{item}</span>
-                </li>
-              ))
-            }
-          </ul>
+        <ul class="space-y-3">
+          {
+            service.bestFor.map((item) => (
+              <li class="card group flex items-start gap-4 p-5 reveal">
+                <span class="icon-tile icon-tile-sm">
+                  <Icon name="check" size={18} />
+                </span>
+                <span class="pt-1 text-[0.9375rem] leading-relaxed text-[var(--color-ink)]">
+                  {item}
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quando NON serve -->
+  <section class="on-dark section">
+    <div class="wrap">
+      <div class="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+        <div>
+          <span class="t-eyebrow">Onestà</span>
+          <h2 class="t-h2 mt-3">
+            Quando <span class="t-dim">non ti serve.</span>
+          </h2>
+          <p class="t-lead mt-4">
+            Nessun sito di software house scrive questa sezione. Noi sì, perché
+            un progetto sbagliato è un problema per entrambi — e perderci un
+            preventivo costa meno che perderci la reputazione.
+          </p>
         </div>
+
+        <ul class="space-y-4">
+          {
+            service.notFor.map((n, i) => (
+              <li class="card p-6 reveal" style={`--i:${i}`}>
+                <p class="flex items-start gap-3 text-[0.9375rem] font-semibold text-white">
+                  <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-cyan)]" aria-hidden="true" />
+                  {n.case}
+                </p>
+                <p class="t-body mt-2.5 pl-[1.125rem] text-[0.875rem]">{n.instead}</p>
+              </li>
+            ))
+          }
+        </ul>
       </div>
     </div>
   </section>
 
   <!-- Cosa comprende -->
-  <section class="section border-t border-[var(--color-hairline)] bg-[var(--color-paper-2)]">
+  <section class="band-soft section">
     <div class="wrap">
-      <div class="flex items-baseline gap-3">
-        <span class="t-index">B</span>
-        <span class="t-label">Contenuto</span>
+      <div class="mx-auto max-w-2xl text-center">
+        <span class="t-eyebrow">Il contenuto</span>
+        <h2 class="t-h2 mt-3">Cosa <span class="t-dim">comprende.</span></h2>
       </div>
-      <h2 class="t-h2 mt-4 max-w-2xl">Cosa comprende</h2>
 
-      <div class="mt-12 grid gap-px border border-[var(--color-hairline)] bg-[var(--color-hairline)] sm:grid-cols-2">
+      <div class="mt-12 grid gap-5 sm:grid-cols-2">
         {
-          service.includes.map((item, i) => (
-            <div class="bg-[var(--color-paper)] p-7">
-              <span class="t-index">{idx(i + 1)}</span>
-              <h3 class="t-h3 mt-3">{item.title}</h3>
-              <p class="t-body mt-3 text-[0.9375rem]">{item.text}</p>
+          service.includes.map((item) => (
+            <div class="card group flex gap-4 p-6 reveal">
+              <span class="icon-tile"><Icon name={ICONS[service.slug]} size={20} /></span>
+              <span>
+                <span class="t-h3 block">{item.title}</span>
+                <span class="t-body mt-2 block text-[0.875rem]">{item.text}</span>
+              </span>
             </div>
           ))
         }
+      </div>
+
+      <div class="mt-10 flex flex-wrap items-center justify-center gap-2">
+        <span class="t-small mr-2">Tecnologie:</span>
+        {service.stack.map((t) => <span class="chip chip-line">{t}</span>)}
       </div>
     </div>
   </section>
@@ -121,17 +184,12 @@ const schema = [
   <!-- Domande -->
   <section class="section">
     <div class="wrap">
-      <div class="grid gap-10 lg:grid-cols-12 lg:gap-16">
-        <div class="lg:col-span-4">
-          <div class="flex items-baseline gap-3">
-            <span class="t-index">C</span>
-            <span class="t-label">Domande</span>
-          </div>
-          <h2 class="t-h2 mt-4">Quello che ci chiedono</h2>
+      <div class="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+        <div>
+          <span class="t-eyebrow">Le domande</span>
+          <h2 class="t-h2 mt-3">Quello che <span class="t-dim">ci chiedono.</span></h2>
         </div>
-        <div class="lg:col-span-8">
-          <Faq items={service.faq} />
-        </div>
+        <Faq items={service.faq} />
       </div>
     </div>
   </section>
@@ -141,45 +199,35 @@ const schema = [
     <div class="wrap">
       <div class="flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
         <div>
-          <h2 class="t-h2 max-w-xl">Parliamo del tuo caso</h2>
+          <h2 class="t-h2 max-w-xl">
+            Parliamo del <span class="t-dim">tuo caso.</span>
+          </h2>
           <p class="t-lead mt-4 max-w-xl">
             Raccontaci cosa ti serve. Ti diamo una stima chiara, e se pensiamo che
             ti convenga qualcos'altro te lo diciamo.
           </p>
         </div>
-        <a href="/contatti" class="btn btn-on-dark shrink-0">
+        <a href="/contatti" class="btn btn-on-dark btn-lg shrink-0">
           Scrivici
-          <span class="arrow" aria-hidden="true">→</span>
+          <Icon name="arrow-right" size={17} />
         </a>
       </div>
 
-      <hr class="rule my-12" />
+      <hr class="my-12 h-px border-0 bg-[var(--color-line)]" />
 
-      <h3 class="t-label">Altri servizi</h3>
-      <ul class="mt-5 flex flex-wrap gap-x-8 gap-y-3">
+      <h3 class="t-eyebrow">Gli altri servizi</h3>
+      <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {
           others.map((s) => (
-            <li>
-              <a href={`/servizi/${s.slug}`} class="link-underline text-[0.9375rem]">
-                {s.title}
-              </a>
-            </li>
+            <a href={`/servizi/${s.slug}`} class="card group flex items-center gap-3 p-4">
+              <span class="icon-tile icon-tile-sm">
+                <Icon name={ICONS[s.slug]} size={17} />
+              </span>
+              <span class="text-[0.9375rem] font-semibold text-white">{s.title}</span>
+            </a>
           ))
         }
-      </ul>
+      </div>
     </div>
   </section>
 </Base>
-
-<style>
-  .chip {
-    font-family: var(--font-mono);
-    font-size: 0.625rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-ink-3);
-    border: 1px solid var(--color-hairline);
-    border-radius: 2px;
-    padding: 0.25rem 0.5rem;
-  }
-</style>

@@ -2,10 +2,10 @@
 import { getCollection, render } from "astro:content";
 import { Image } from "astro:assets";
 import Base from "@/layouts/Base.astro";
-import PageHeader from "@/components/PageHeader.astro";
+import Breadcrumbs from "@/components/Breadcrumbs.astro";
 import CaseCard from "@/components/CaseCard.astro";
+import Icon from "@/components/Icon.astro";
 import { SITE } from "@/data/site";
-import { idx } from "@/lib/format";
 
 export async function getStaticPaths() {
   const projects = await getCollection("portfolio");
@@ -27,8 +27,8 @@ const related = (await getCollection("portfolio"))
 const isDemo = d.kind === "dimostrativo";
 
 /*
- * Le "metriche" di un progetto dimostrativo non sono risultati misurati:
- * sono obiettivi progettuali. Il titolo della sezione cambia di conseguenza,
+ * Le "metriche" di un progetto dimostrativo non sono risultati misurati ma
+ * obiettivi progettuali: il titolo della sezione cambia di conseguenza,
  * perché chiamarli "risultati" sarebbe falso.
  */
 const metricsTitle = isDemo ? "Obiettivi di progetto" : "Risultati";
@@ -51,54 +51,65 @@ const schema = {
   canonical={`/portfolio/${entry.id}`}
   schema={schema}
 >
-  <PageHeader
-    index={d.year}
-    label={d.category}
-    title={d.title}
-    lead={d.summary}
-    crumbs={[{ label: "Progetti", href: "/portfolio" }, { label: d.client }]}
-  >
-    {
-      isDemo && (
-        <p class="notice mt-8">
-          <strong>Progetto dimostrativo.</strong> Studio realizzato internamente
-          per mostrare metodo e capacità tecniche. Il committente è di fantasia e
-          i dati riportati sono obiettivi progettuali, non risultati commerciali
-          misurati.
-        </p>
-      )
-    }
+  <!-- Testata -->
+  <section class="glow-bg overflow-hidden border-b border-[var(--color-line)]">
+    <div class="wrap pt-6 pb-12 sm:pt-8 sm:pb-14">
+      <Breadcrumbs
+        items={[{ label: "Progetti", href: "/portfolio" }, { label: d.client }]}
+        class="mb-8"
+      />
 
-    <!-- Scheda tecnica -->
-    <dl class="mt-10 grid gap-px border border-[var(--color-hairline)] bg-[var(--color-hairline)] sm:grid-cols-3">
-      <div class="bg-[var(--color-paper)] p-5">
-        <dt class="t-label">Committente</dt>
-        <dd class="t-h3 mt-2">{d.client}</dd>
+      <div class="flex flex-wrap items-center gap-3">
+        <span class="chip">{d.category}</span>
+        <span class="t-small tabular">{d.year}</span>
       </div>
-      <div class="bg-[var(--color-paper)] p-5">
-        <dt class="t-label">Servizi</dt>
-        <dd class="t-body mt-2 text-[0.9375rem]">{d.services.join(", ")}</dd>
-      </div>
-      <div class="bg-[var(--color-paper)] p-5">
-        <dt class="t-label">Tecnologie</dt>
-        <dd class="mt-2 flex flex-wrap gap-2">
-          {d.stack.map((t) => <span class="chip">{t}</span>)}
-        </dd>
-      </div>
-    </dl>
-  </PageHeader>
+
+      <h1 class="t-h1 mt-4 max-w-4xl anim-rise">{d.title}</h1>
+      <p class="t-lead mt-5 max-w-2xl anim-fade-rise delay-2">{d.summary}</p>
+
+      {
+        isDemo && (
+          <p class="notice mt-7">
+            <Icon name="shield" size={17} class="mt-0.5 shrink-0 text-[var(--color-navy)]" />
+            <span>
+              <strong class="font-semibold text-[var(--color-ink)]">Progetto dimostrativo.</strong>{" "}
+              Studio realizzato internamente per mostrare metodo e capacità
+              tecniche. Il committente è di fantasia e i dati riportati sono
+              obiettivi progettuali, non risultati commerciali misurati.
+            </span>
+          </p>
+        )
+      }
+
+      <!-- Scheda tecnica -->
+      <dl class="mt-9 grid gap-4 sm:grid-cols-3">
+        <div class="card p-5">
+          <dt class="t-eyebrow">Committente</dt>
+          <dd class="t-h3 mt-2">{d.client}</dd>
+        </div>
+        <div class="card p-5">
+          <dt class="t-eyebrow">Servizi</dt>
+          <dd class="t-body mt-2 text-[0.875rem]">{d.services.join(", ")}</dd>
+        </div>
+        <div class="card p-5">
+          <dt class="t-eyebrow">Tecnologie</dt>
+          <dd class="mt-2 flex flex-wrap gap-1.5">
+            {d.stack.map((t) => <span class="chip chip-line !text-[0.6875rem]">{t}</span>)}
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </section>
 
   <!-- Immagine principale -->
-  <section class="border-b border-[var(--color-hairline)] bg-[var(--color-paper-2)]">
+  <section class="band-soft">
     <div class="wrap py-10 sm:py-14">
-      <div class="surface overflow-hidden">
-        {/*
-          Caricamento pigro, anche se l'immagine è "importante": su mobile la
-          testata (briciole, titolo, occhiello, nota, scheda tecnica) riempie
-          tutto il primo schermo, quindi questa immagine è sotto la piega.
-          Marcarla prioritaria le farebbe rubare banda al testo che l'utente
-          sta effettivamente leggendo.
-        */}
+      {/*
+        Caricamento pigro: su mobile la testata riempie tutto il primo
+        schermo, quindi questa immagine è sotto la piega. Marcarla prioritaria
+        le farebbe rubare banda al testo che l'utente sta leggendo.
+      */}
+      <div class="overflow-hidden rounded-[var(--radius-xl)] border border-[var(--color-line)] shadow-[var(--shadow-lg)]">
         <Image
           src={d.coverFull ?? d.cover}
           alt={`Interfaccia del progetto ${d.client}`}
@@ -114,54 +125,48 @@ const schema = {
   <!-- Problema / approccio / soluzione -->
   <section class="section">
     <div class="wrap">
-      <div class="grid gap-12 lg:grid-cols-12 lg:gap-16">
-        <div class="lg:col-span-7">
-          <div class="flex items-baseline gap-3">
-            <span class="t-index">001</span>
-            <span class="t-label">Il problema</span>
-          </div>
-          <p class="t-lead mt-5 !text-[var(--color-ink)]">{d.challenge}</p>
+      <div class="grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
+        <div>
+          <span class="t-eyebrow">Il problema</span>
+          <p class="t-lead mt-3 !text-[var(--color-ink)]">{d.challenge}</p>
 
-          <div class="mt-14 flex items-baseline gap-3">
-            <span class="t-index">002</span>
-            <span class="t-label">L'approccio</span>
+          <div class="mt-12">
+            <span class="t-eyebrow">L'approccio</span>
+            <ol class="mt-5 space-y-3">
+              {
+                d.approach.map((step, i) => (
+                  <li class="card group flex items-start gap-4 p-5 reveal">
+                    <span class="icon-tile icon-tile-sm !text-[0.8125rem] font-bold">
+                      {i + 1}
+                    </span>
+                    <span class="t-body pt-1">{step}</span>
+                  </li>
+                ))
+              }
+            </ol>
           </div>
-          <ul class="mt-5">
-            {
-              d.approach.map((step, i) => (
-                <li class="row-tech reveal">
-                  <span class="t-index pt-1">{idx(i + 1)}</span>
-                  <span class="t-body">{step}</span>
-                </li>
-              ))
-            }
-          </ul>
 
-          <div class="mt-14 flex items-baseline gap-3">
-            <span class="t-index">003</span>
-            <span class="t-label">La soluzione</span>
+          <div class="mt-12">
+            <span class="t-eyebrow">La soluzione</span>
+            <p class="t-lead mt-3 !text-[var(--color-ink)]">{d.solution}</p>
           </div>
-          <p class="t-lead mt-5 !text-[var(--color-ink)]">{d.solution}</p>
         </div>
 
-        <!-- Colonna laterale: obiettivi/risultati -->
         {
           d.metrics.length > 0 && (
-            <aside class="lg:col-span-5">
-              <div class="surface p-7 lg:sticky lg:top-24">
-                <h2 class="t-label">{metricsTitle}</h2>
-                <dl class="mt-6 space-y-6">
+            <aside>
+              <div class="card bg-[var(--color-soft)] p-7 lg:sticky lg:top-24">
+                <h2 class="t-eyebrow">{metricsTitle}</h2>
+                <dl class="mt-6 space-y-5">
                   {d.metrics.map((m) => (
-                    <div class="border-t border-[var(--color-hairline)] pt-4 first:border-0 first:pt-0">
-                      <dt class="t-h2 tabular" data-metric>
-                        {m.value}
-                      </dt>
+                    <div class="border-t border-[color-mix(in_srgb,var(--color-navy)_15%,transparent)] pt-4 first:border-0 first:pt-0">
+                      <dt class="t-h2 tabular !text-[1.75rem]">{m.value}</dt>
                       <dd class="t-small mt-1">{m.label}</dd>
                     </div>
                   ))}
                 </dl>
                 {isDemo && (
-                  <p class="t-small mt-6 border-t border-[var(--color-hairline)] pt-4">
+                  <p class="t-small mt-6 border-t border-[color-mix(in_srgb,var(--color-navy)_15%,transparent)] pt-4">
                     Obiettivi definiti in fase di progetto, non misurazioni su
                     traffico reale.
                   </p>
@@ -174,14 +179,11 @@ const schema = {
     </div>
   </section>
 
-  <!-- Approfondimento (markdown) -->
-  <section class="section border-t border-[var(--color-hairline)] bg-[var(--color-paper-2)]">
+  <!-- Approfondimento -->
+  <section class="band-soft section">
     <div class="wrap">
-      <div class="flex items-baseline gap-3">
-        <span class="t-index">004</span>
-        <span class="t-label">In dettaglio</span>
-      </div>
-      <div class="prose mt-8">
+      <span class="t-eyebrow">In dettaglio</span>
+      <div class="prose mt-6">
         <Content />
       </div>
     </div>
@@ -193,12 +195,15 @@ const schema = {
       <section class="section">
         <div class="wrap">
           <div class="flex flex-wrap items-end justify-between gap-6">
-            <h2 class="t-h2">Altri progetti</h2>
-            <a href="/portfolio" class="link-underline pb-2">
-              Tutti i progetti →
+            <h2 class="t-h2">
+              Altri <span class="t-dim">progetti.</span>
+            </h2>
+            <a href="/portfolio" class="link-arrow pb-1">
+              Tutti i progetti
+              <Icon name="arrow-right" size={16} />
             </a>
           </div>
-          <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((p) => (
               <CaseCard entry={p} />
             ))}
@@ -210,37 +215,28 @@ const schema = {
 
   <section class="on-dark section-sm">
     <div class="wrap flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-      <h2 class="t-h2 max-w-xl">Un progetto simile in mente?</h2>
-      <a href="/contatti" class="btn btn-on-dark shrink-0">
+      <h2 class="t-h2 max-w-xl">
+        Un progetto simile <span class="t-dim">in mente?</span>
+      </h2>
+      <a href="/contatti" class="btn btn-on-dark btn-lg shrink-0">
         Parliamone
-        <span class="arrow" aria-hidden="true">→</span>
+        <Icon name="arrow-right" size={17} />
       </a>
     </div>
   </section>
 </Base>
 
 <style>
-  .chip {
-    font-family: var(--font-mono);
-    font-size: 0.625rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-ink-3);
-    border: 1px solid var(--color-hairline);
-    border-radius: 2px;
-    padding: 0.25rem 0.5rem;
-  }
-
   .notice {
+    display: flex;
+    gap: 0.75rem;
     max-width: 44rem;
-    padding: 0.875rem 1rem;
-    border: 1px solid var(--color-hairline);
-    border-left: 2px solid var(--color-cyan);
-    border-radius: 3px;
-    background: var(--color-paper-2);
+    padding: 0.875rem 1.125rem;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+    background: var(--color-soft);
     font-size: 0.875rem;
     line-height: 1.6;
-    color: var(--color-ink-2);
+    color: var(--color-ink-3);
   }
-  .notice strong { color: var(--color-ink); font-weight: 600; }
 </style>

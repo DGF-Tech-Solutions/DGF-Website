@@ -1,39 +1,88 @@
 ---
 import Base from "@/layouts/Base.astro";
 import PageHeader from "@/components/PageHeader.astro";
+import Banner from "@/components/Banner.astro";
+import Icon from "@/components/Icon.astro";
 import { SITE } from "@/data/site";
-import { idx } from "@/lib/format";
+import illustration from "@/assets/illustrazioni/scena-sicurezza.png";
+import scenaProcesso from "@/assets/illustrazioni/scena-processo.png";
+
+/*
+ * Chi siamo, riscritta.
+ *
+ * La versione precedente era una sequenza di elenchi: principi, team, dati.
+ * Corretta ma piatta, e soprattutto non rispondeva alla domanda che si fa
+ * davvero chi arriva qui — "posso fidarmi di voi?".
+ *
+ * Adesso la pagina è costruita su quella domanda: prima cosa siamo (e cosa
+ * NON siamo, detto in chiaro), poi come lavoriamo, poi chi siamo di persona,
+ * infine i dati verificabili. L'onestà sul fatto che siamo agli inizi non è
+ * nascosta in fondo: è il secondo blocco.
+ */
 
 const TEAM = [
-  { name: "Francesco Riccardo Giannetto", role: "Co-fondatore" },
-  { name: "David Moonsmee", role: "Co-fondatore" },
-  { name: "Giacomo Lanza", role: "Co-fondatore" },
+  {
+    name: "Francesco Riccardo Giannetto",
+    role: "Co-fondatore",
+    focus: "AI e automazione",
+    icon: "sparkles",
+  },
+  {
+    name: "David Moonsmee",
+    role: "Co-fondatore",
+    focus: "Sviluppo e architettura",
+    icon: "dashboard",
+  },
+  {
+    name: "Giacomo Lanza",
+    role: "Co-fondatore",
+    focus: "Prodotto e design",
+    icon: "layers",
+  },
+] as const;
+
+/* Quello che siamo, accanto a quello che non siamo. Le due colonne insieme
+   dicono più di qualsiasi elenco di valori. */
+const SIAMO = [
+  "Tre persone che scrivono codice, non un'agenzia con reparti",
+  "Un interlocutore solo, dall'idea al lancio e dopo",
+  "Chiari sui tempi e sui costi, per iscritto e in anticipo",
+  "Disposti a dirti che non ti serve quello che hai chiesto",
+];
+const NON_SIAMO = [
+  "Non siamo una software house con decine di clienti alle spalle",
+  "Non rivendiamo temi preconfezionati spacciandoli per lavoro su misura",
+  "Non ti leghiamo con canoni o codice che resta nostro",
+  "Non prendiamo progetti che non sappiamo portare a casa",
 ];
 
 const PRINCIPLES = [
   {
+    icon: "users",
     title: "Parli con chi scrive il codice",
     text: "Nessuna catena di intermediari. Dal primo confronto al lancio segui sempre le stesse persone: quelle che progettano e sviluppano davvero il prodotto.",
   },
   {
+    icon: "file",
     title: "Trasparenza prima di tutto",
     text: "Tempi, costi e scelte tecniche messi per iscritto prima di iniziare. Nessuna voce a sorpresa in corso d'opera, nessun preventivo generato da un modulo.",
   },
   {
+    icon: "shield",
     title: "Codice che dura",
     text: "Scriviamo software manutenibile, veloce e sicuro. Quello che costruiamo deve reggere fra tre anni, non solo il giorno della consegna.",
   },
   {
+    icon: "package",
     title: "Dall'idea al lancio",
     text: "Strategia, design, sviluppo e messa online: un unico interlocutore per tutto il percorso, e reperibilità anche dopo la consegna.",
   },
-];
+] as const;
 
 /** Iniziali: prima lettera del nome + prima lettera del cognome. */
 function initials(name: string): string {
   const parts = name.split(" ").filter(Boolean);
-  if (parts.length === 0) return "";
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  if (parts.length < 2) return (parts[0] ?? "").slice(0, 2).toUpperCase();
   return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 }
 
@@ -47,70 +96,141 @@ const schema = {
 
 <Base
   title="Chi siamo"
-  description="DGF Tech Solutions è una software house a Messina, attiva in tutta Italia. Niente intermediari: dall'idea al lancio lavori con chi progetta e sviluppa il prodotto."
+  description="DGF Tech Solutions è una software house a Messina, attiva in tutta Italia. Tre persone, nessun intermediario: dall'idea al lancio lavori con chi scrive il codice."
   canonical="/chi-siamo"
   schema={schema}
 >
   <PageHeader
-    index="004"
-    label="Chi siamo"
-    title="Una software house dove non ti perdi mai per strada"
-    lead="Un piccolo team con base a Messina, al lavoro con clienti in tutta Italia. Costruiamo prodotti digitali su misura restando vicini a chi li userà."
+    eyebrow="Chi siamo"
+    title='Tre persone, <span class="t-dim">nessun intermediario.</span>'
+    lead="Siamo una software house con base a Messina, al lavoro con clienti in tutta Italia. Piccoli abbastanza da rispondere noi al telefono, strutturati abbastanza da portare a casa un progetto."
     crumbs={[{ label: "Chi siamo" }]}
+    illustration={illustration}
+    illustrationAlt="Illustrazione: uno scudo con lucchetto"
   />
 
-  <!-- Storia -->
+  <!-- ══════════════════════════════════════════════════════════════════
+       COSA SIAMO / COSA NON SIAMO
+       ══════════════════════════════════════════════════════════════════ -->
   <section class="section">
     <div class="wrap">
-      <div class="grid gap-10 lg:grid-cols-12 lg:gap-16">
-        <div class="lg:col-span-4">
-          <div class="flex items-baseline gap-3">
-            <span class="t-index">001</span>
-            <span class="t-label">Origine</span>
-          </div>
-          <h2 class="t-h2 mt-4">Nati per fare le cose sul serio</h2>
+      <div class="grid gap-5 lg:grid-cols-2">
+        <div class="card p-7 lg:p-9 reveal-left">
+          <span class="icon-tile"><Icon name="check" size={22} /></span>
+          <h2 class="t-h2 mt-5 !text-[1.625rem]">Quello che siamo</h2>
+          <ul class="mt-6 space-y-3.5">
+            {
+              SIAMO.map((s) => (
+                <li class="flex items-start gap-3">
+                  <Icon name="check" size={17} class="mt-1 shrink-0 text-[var(--color-navy)]" />
+                  <span class="text-[0.9375rem] leading-relaxed text-[var(--color-ink-2)]">{s}</span>
+                </li>
+              ))
+            }
+          </ul>
         </div>
 
-        <div class="prose lg:col-span-8">
-          <p>
-            DGF Tech Solutions nasce da un'idea semplice: il software fatto bene non
-            dovrebbe essere un privilegio delle grandi aziende. Troppe realtà si
-            ritrovano con siti lenti, gestionali improvvisati e — soprattutto —
-            nessuno a cui chiedere aiuto quando qualcosa smette di funzionare.
-          </p>
-          <p>
-            Facciamo il contrario: poche persone, molto coinvolte, che seguono ogni
-            progetto dalla prima riga di codice fino al lancio e oltre. Niente reparti
-            che si rimbalzano le richieste, niente preventivi generati automaticamente.
-            Quando ci scrivi rispondiamo noi, le stesse persone che poi costruiranno
-            il tuo prodotto.
-          </p>
-          <p>
-            Lavoriamo con strumenti moderni e una regola sola: ogni scelta tecnica deve
-            avere una ragione che sappiamo spiegarti in parole comprensibili. Se non
-            riusciamo a spiegarla, probabilmente è la scelta sbagliata.
-          </p>
+        <div class="card bg-[var(--color-paper-2)] p-7 lg:p-9 reveal-right">
+          <span class="icon-tile !bg-white"><Icon name="search" size={22} /></span>
+          <h2 class="t-h2 mt-5 !text-[1.625rem]">Quello che non siamo</h2>
+          <ul class="mt-6 space-y-3.5">
+            {
+              NON_SIAMO.map((s) => (
+                <li class="flex items-start gap-3">
+                  <span class="mt-1.5 h-px w-3.5 shrink-0 bg-[var(--color-ink-3)]" aria-hidden="true" />
+                  <span class="text-[0.9375rem] leading-relaxed text-[var(--color-ink-3)]">{s}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+
+      <Banner
+        icon="message"
+        title="Siamo all'inizio, e non lo nascondiamo."
+        class="mx-auto mt-8 max-w-4xl reveal"
+      >
+        <p>
+          Non abbiamo ancora una lista di clienti da esibire. Abbiamo competenze
+          vere, un metodo scritto e progetti costruiti per intero per dimostrarlo
+          — li trovi in <a href="/portfolio">Progetti</a>, dichiarati per quello
+          che sono. Se cerchi una software house con vent'anni di referenze, non
+          siamo noi. Se cerchi qualcuno che si prenda il tuo progetto sul serio
+          perché ci gioca la reputazione, parliamone.
+        </p>
+      </Banner>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       STORIA + METODO
+       ══════════════════════════════════════════════════════════════════ -->
+  <section class="band-soft section">
+    <div class="wrap">
+      <div class="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
+        <div>
+          <span class="t-eyebrow">L'origine</span>
+          <h2 class="t-h2 mt-3">
+            Nati per fare le cose <span class="t-dim">sul serio.</span>
+          </h2>
+          <div class="prose mt-6 !max-w-none">
+            <p>
+              DGF nasce da un'idea semplice: il software fatto bene non dovrebbe
+              essere un privilegio delle grandi aziende. Troppe realtà si
+              ritrovano con siti lenti, gestionali improvvisati e — soprattutto —
+              nessuno a cui chiedere aiuto quando qualcosa smette di funzionare.
+            </p>
+            <p>
+              Facciamo il contrario: poche persone, molto coinvolte, che seguono
+              ogni progetto dalla prima riga di codice fino al lancio e oltre.
+              Quando ci scrivi rispondiamo noi, le stesse persone che poi
+              costruiranno il tuo prodotto.
+            </p>
+            <p>
+              Una regola sola: ogni scelta tecnica deve avere una ragione che
+              sappiamo spiegarti in parole comprensibili. Se non riusciamo a
+              spiegarla, probabilmente è la scelta sbagliata.
+            </p>
+          </div>
+        </div>
+
+        <div class="parallax-slow mx-auto w-full max-w-[22rem] lg:max-w-none">
+          <img
+            src={scenaProcesso.src}
+            width={scenaProcesso.width}
+            height={scenaProcesso.height}
+            alt="Illustrazione: percorso di progetto con quattro tappe"
+            loading="lazy"
+            decoding="async"
+            class="w-full"
+          />
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Principi -->
-  <section class="section border-t border-[var(--color-hairline)] bg-[var(--color-paper-2)]">
+  <!-- ══════════════════════════════════════════════════════════════════
+       PRINCIPI
+       ══════════════════════════════════════════════════════════════════ -->
+  <section class="section">
     <div class="wrap">
-      <div class="flex items-baseline gap-3">
-        <span class="t-index">002</span>
-        <span class="t-label">Metodo</span>
+      <div class="mx-auto max-w-2xl text-center">
+        <span class="t-eyebrow">Il metodo</span>
+        <h2 class="t-h2 mt-3">
+          Quattro principi, <span class="t-dim">zero compromessi.</span>
+        </h2>
       </div>
-      <h2 class="t-h2 mt-4 max-w-2xl">Quattro principi, zero compromessi</h2>
 
-      <div class="mt-12 grid gap-px border border-[var(--color-hairline)] bg-[var(--color-hairline)] md:grid-cols-2">
+      <div class="mt-12 grid gap-5 sm:grid-cols-2">
         {
           PRINCIPLES.map((p, i) => (
-            <div class="bg-[var(--color-paper)] p-7 lg:p-9">
-              <span class="t-index">{idx(i + 1)}</span>
-              <h3 class="t-h3 mt-3">{p.title}</h3>
-              <p class="t-body mt-3">{p.text}</p>
+            <div class="card group flex gap-4 p-6 reveal" style={`--i:${i}`}>
+              <span class="icon-tile"><Icon name={p.icon} size={20} /></span>
+              <span>
+                <span class="t-h3 block">{p.title}</span>
+                <span class="t-body mt-2 block text-[0.875rem]">{p.text}</span>
+              </span>
             </div>
           ))
         }
@@ -118,28 +238,33 @@ const schema = {
     </div>
   </section>
 
-  <!-- Team -->
-  <section class="section">
+  <!-- ══════════════════════════════════════════════════════════════════
+       TEAM
+       ══════════════════════════════════════════════════════════════════ -->
+  <section class="band-soft section">
     <div class="wrap">
-      <div class="flex items-baseline gap-3">
-        <span class="t-index">003</span>
-        <span class="t-label">Team</span>
+      <div class="mx-auto max-w-2xl text-center">
+        <span class="t-eyebrow">Il team</span>
+        <h2 class="t-h2 mt-3">
+          Le persone con cui <span class="t-dim">parlerai.</span>
+        </h2>
+        <p class="t-lead mt-4">
+          Siamo in tre, e il nome dell'azienda sono le nostre iniziali. Significa
+          che non c'è nessuno a cui passare la palla.
+        </p>
       </div>
-      <h2 class="t-h2 mt-4 max-w-2xl">Le persone con cui parlerai</h2>
-      <p class="t-lead mt-5 max-w-2xl">
-        Siamo in tre. Significa che non c'è nessuno a cui passare la palla — e che
-        chi ti risponde è chi il lavoro lo fa.
-      </p>
 
-      <ul class="mt-12 grid gap-px border border-[var(--color-hairline)] bg-[var(--color-hairline)] sm:grid-cols-3">
+      <ul class="mt-12 grid gap-5 sm:grid-cols-3">
         {
-          TEAM.map((member) => (
-            <li class="bg-[var(--color-paper)] p-7">
-              <span class="monogram" aria-hidden="true">
-                {initials(member.name)}
-              </span>
+          TEAM.map((member, i) => (
+            <li class="card group flex flex-col items-center p-7 text-center reveal" style={`--i:${i}`}>
+              <span class="monogram" aria-hidden="true">{initials(member.name)}</span>
               <h3 class="t-h3 mt-5">{member.name}</h3>
-              <p class="t-label mt-2">{member.role}</p>
+              <p class="t-small mt-1">{member.role}</p>
+              <span class="chip mt-4">
+                <Icon name={member.icon} size={13} />
+                {member.focus}
+              </span>
             </li>
           ))
         }
@@ -147,34 +272,41 @@ const schema = {
     </div>
   </section>
 
-  <!-- Dati aziendali: la credibilità passa anche da qui -->
-  <section class="section border-t border-[var(--color-hairline)]">
+  <!-- ══════════════════════════════════════════════════════════════════
+       DATI VERIFICABILI
+       ══════════════════════════════════════════════════════════════════ -->
+  <section class="section">
     <div class="wrap">
-      <div class="flex items-baseline gap-3">
-        <span class="t-index">004</span>
-        <span class="t-label">Dati</span>
+      <div class="mx-auto max-w-2xl text-center">
+        <span class="t-eyebrow">I dati</span>
+        <h2 class="t-h2 mt-3">
+          Verificabili, <span class="t-dim">non dichiarati.</span>
+        </h2>
+        <p class="t-lead mt-4">
+          Partita IVA, ragione sociale e sede: puoi controllarci prima ancora di
+          scriverci.
+        </p>
       </div>
-      <h2 class="t-h2 mt-4">Chi siamo, per l'anagrafe</h2>
 
-      <dl class="mt-10 grid gap-px border border-[var(--color-hairline)] bg-[var(--color-hairline)] sm:grid-cols-2 lg:grid-cols-4">
-        <div class="bg-[var(--color-paper)] p-5">
-          <dt class="t-label">Ragione sociale</dt>
-          <dd class="t-body mt-2 text-[0.9375rem] text-[var(--color-ink)]">{SITE.legalName}</dd>
+      <dl class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="card p-5">
+          <dt class="t-eyebrow">Ragione sociale</dt>
+          <dd class="mt-2 text-[0.9375rem] font-semibold text-[var(--color-ink)]">{SITE.legalName}</dd>
         </div>
-        <div class="bg-[var(--color-paper)] p-5">
-          <dt class="t-label">Partita IVA</dt>
-          <dd class="t-body mt-2 text-[0.9375rem] tabular text-[var(--color-ink)]">{SITE.vatId}</dd>
+        <div class="card p-5">
+          <dt class="t-eyebrow">Partita IVA</dt>
+          <dd class="mt-2 tabular text-[0.9375rem] font-semibold text-[var(--color-ink)]">{SITE.vatId}</dd>
         </div>
-        <div class="bg-[var(--color-paper)] p-5">
-          <dt class="t-label">Sede</dt>
-          <dd class="t-body mt-2 text-[0.9375rem] text-[var(--color-ink)]">
+        <div class="card p-5">
+          <dt class="t-eyebrow">Sede</dt>
+          <dd class="mt-2 text-[0.9375rem] font-semibold text-[var(--color-ink)]">
             {SITE.city} ({SITE.region}), {SITE.countryName}
           </dd>
         </div>
-        <div class="bg-[var(--color-paper)] p-5">
-          <dt class="t-label">Contatto</dt>
+        <div class="card p-5">
+          <dt class="t-eyebrow">Contatto</dt>
           <dd class="mt-2">
-            <a href={`mailto:${SITE.email}`} class="link-underline text-[0.9375rem] break-all">
+            <a href={`mailto:${SITE.email}`} class="link-arrow !text-[0.875rem] break-all">
               {SITE.email}
             </a>
           </dd>
@@ -186,33 +318,37 @@ const schema = {
   <section class="on-dark section-sm">
     <div class="wrap flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
       <div>
-        <h2 class="t-h2 max-w-xl">Lavoriamo insieme?</h2>
+        <h2 class="t-h2 max-w-xl">Lavoriamo <span class="t-dim">insieme?</span></h2>
         <p class="t-lead mt-3 max-w-xl">
           Raccontaci il problema. La prima risposta arriva entro un giorno lavorativo.
         </p>
       </div>
-      <a href="/contatti" class="btn btn-on-dark shrink-0">
+      <a href="/contatti" class="btn btn-on-dark btn-lg shrink-0">
         Scrivici
-        <span class="arrow" aria-hidden="true">→</span>
+        <Icon name="arrow-right" size={17} />
       </a>
     </div>
   </section>
 </Base>
 
 <style>
-  /* Monogramma: un quadrato navy con le iniziali. Niente foto stock,
-     niente avatar generati — se non ci sono ritratti veri, meglio un segno. */
+  /* Monogramma: niente foto stock né ritratti generati. Le iniziali sono
+     anche il nome dell'azienda, quindi il segno ha un senso suo. */
   .monogram {
     display: grid;
     place-items: center;
-    width: 3.25rem;
-    height: 3.25rem;
-    border-radius: 3px;
-    background: var(--color-navy);
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-navy), var(--color-blue));
     color: #fff;
-    font-family: var(--font-mono);
-    font-size: 1rem;
-    font-weight: 500;
-    letter-spacing: 0.04em;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    box-shadow: var(--shadow-md);
+    transition: transform var(--dur) var(--ease-out-quart);
+  }
+  @media (hover: hover) {
+    .card:hover .monogram { transform: scale(1.06); }
   }
 </style>

@@ -38,6 +38,23 @@ export const NAV = [
 /** Voce di azione, separata perché ha un trattamento visivo diverso. */
 export const NAV_CTA = { label: "Contatti", href: "/contatti" } as const;
 
+/**
+ * Profili social, mostrati nel footer.
+ *
+ * Le voci con `href` vuoto vengono rese come icona NON cliccabile: si vede il
+ * segnaposto ma non si va da nessuna parte. È la stessa scelta fatta sul
+ * footer di Nexia per LinkedIn — meglio un'icona spenta che un link che porta
+ * a una pagina inesistente.
+ *
+ * Per attivarne una basta incollare l'indirizzo del profilo.
+ */
+export const SOCIAL = [
+  { name: "LinkedIn", icon: "linkedin", href: "" },
+  { name: "Instagram", icon: "instagram", href: "" },
+  { name: "Facebook", icon: "facebook", href: "" },
+  { name: "GitHub", icon: "github", href: "" },
+] as const;
+
 export const FOOTER_LEGAL = [
   { label: "Privacy", href: "/privacy" },
   { label: "Cookie", href: "/cookie" },

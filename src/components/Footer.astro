@@ -1,107 +1,287 @@
 ---
 import { Image } from "astro:assets";
-import { SITE, NAV, FOOTER_LEGAL } from "@/data/site";
+import Icon from "@/components/Icon.astro";
+import type { IconName } from "@/components/Icon.astro";
+import { SITE, SOCIAL } from "@/data/site";
 import { SERVICES } from "@/data/services";
 import logo from "@/assets/logo-dgf.png";
 
+/*
+ * Footer ricalcato su quello di Nexia: colonna brand larga a sinistra (logo,
+ * chi siamo in tre righe, social in cerchio), poi le colonne di link con
+ * intestazioni maiuscole minuscole e spaziate, filetto, e riga legale in
+ * fondo con la P.IVA.
+ *
+ * Le colonne sono costruite dai dati (SERVICES), non scritte a mano: un
+ * servizio nuovo compare qui da solo, senza che qualcuno se ne ricordi.
+ */
+
 const year = new Date().getFullYear();
+
+const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
+  {
+    title: "Servizi",
+    links: [
+      { label: "Panoramica", href: "/servizi" },
+      ...SERVICES.map((s) => ({ label: s.title, href: `/servizi/${s.slug}` })),
+    ],
+  },
+  {
+    title: "Azienda",
+    links: [
+      { label: "Chi siamo", href: "/chi-siamo" },
+      { label: "Progetti", href: "/portfolio" },
+      { label: "Contatti", href: "/contatti" },
+    ],
+  },
+  {
+    title: "Risorse",
+    links: [
+      { label: "Blog", href: "/blog" },
+      { label: "Mappa del sito", href: "/sitemap-index.xml" },
+    ],
+  },
+  {
+    title: "Legale",
+    links: [
+      { label: "Privacy Policy", href: "/privacy" },
+      { label: "Cookie Policy", href: "/cookie" },
+      { label: "Termini di utilizzo", href: "/termini" },
+    ],
+  },
+];
+
+const activeSocial = SOCIAL.filter((s) => s.href.length > 0);
+const hasAnySocial = SOCIAL.length > 0;
 ---
 
-<footer class="on-dark">
-  <div class="wrap section-sm">
-    <!-- Blocco superiore: identità + colonne di navigazione -->
-    <div class="grid gap-10 md:grid-cols-12 md:gap-8">
-      <div class="md:col-span-4">
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-top">
+      <!-- Colonna brand -->
+      <div>
         <Image
           src={logo}
           alt={SITE.name}
-          width={74}
-          height={36}
+          width={98}
+          height={48}
           densities={[1, 2]}
           loading="lazy"
-          class="h-7 w-auto brightness-0 invert"
+          class="h-9 w-auto brightness-0 invert"
         />
-        <p class="t-body mt-4 max-w-xs">{SITE.tagline}</p>
-        <a
-          href={`mailto:${SITE.email}`}
-          class="link-underline mt-5 inline-block text-[0.9375rem] break-all"
-        >
-          {SITE.email}
-        </a>
+
+        <p class="foot-about">
+          <span class="foot-about-name">{SITE.legalName}</span> è una software
+          house italiana con sede a {SITE.city}. Progettiamo e scriviamo il
+          codice internamente, riga per riga: qui parli con chi costruisce il
+          prodotto, non con un rivenditore.
+        </p>
+
+        {
+          hasAnySocial && (
+            <div class="foot-social">
+              {SOCIAL.map((s) =>
+                s.href ? (
+                  <a
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer nofollow"
+                    aria-label={s.name}
+                    title={s.name}
+                    class="social-dot"
+                  >
+                    <Icon name={s.icon as IconName} size={17} />
+                  </a>
+                ) : (
+                  /*
+                   * Profilo non ancora attivo: si mostra ma NON è un link.
+                   * `role="img"` + `aria-label` è l'unica combinazione valida
+                   * su uno <span>, che altrimenti avrebbe ruolo generico e non
+                   * ammetterebbe attributi ARIA.
+                   */
+                  <span role="img" aria-label={`${s.name} — non ancora attivo`} title={`${s.name} — in arrivo`} class="social-dot is-off">
+                    <Icon name={s.icon as IconName} size={17} />
+                  </span>
+                ),
+              )}
+            </div>
+          )
+        }
       </div>
 
-      <nav class="md:col-span-3" aria-label="Servizi">
-        <h2 class="t-label">Servizi</h2>
-        <ul class="mt-4 space-y-2.5">
-          {
-            SERVICES.map((s) => (
-              <li>
-                <a href={`/servizi/${s.slug}`} class="footer-link">
-                  {s.title}
-                </a>
-              </li>
-            ))
-          }
-        </ul>
-      </nav>
-
-      <nav class="md:col-span-2" aria-label="Azienda">
-        <h2 class="t-label">Azienda</h2>
-        <ul class="mt-4 space-y-2.5">
-          {
-            NAV.map((l) => (
-              <li>
-                <a href={l.href} class="footer-link">
-                  {l.label}
-                </a>
-              </li>
-            ))
-          }
-          <li><a href="/contatti" class="footer-link">Contatti</a></li>
-        </ul>
-      </nav>
-
-      <div class="md:col-span-3">
-        <h2 class="t-label">Sede</h2>
-        <address class="t-body mt-4 not-italic">
-          {SITE.city} ({SITE.region})<br />
-          {SITE.countryName}
-        </address>
-        <p class="t-small mt-4">
-          P. IVA <span class="tabular">{SITE.vatId}</span>
-        </p>
+      <!-- Colonne di link -->
+      <div class="foot-cols">
+        {
+          COLUMNS.map((col) => (
+            <div>
+              <h2 class="foot-col-title">{col.title}</h2>
+              <ul class="mt-4 flex flex-col gap-2.5">
+                {col.links.map((l) => (
+                  <li>
+                    <a href={l.href} class="foot-link">
+                      {l.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
       </div>
     </div>
 
-    <hr class="rule mt-12 mb-6" />
+    <!-- Riga legale. La P.IVA sta qui, unica occorrenza: è il posto corretto
+         per l'identificativo fiscale richiesto per legge. -->
+    <div class="foot-bottom">
+      <div class="flex items-center gap-3">
+        <span class="foot-made">Progettato e sviluppato in Italia</span>
+        <span aria-hidden="true" class="text-[0.875rem]">🇮🇹</span>
+      </div>
 
-    <!-- Blocco inferiore -->
-    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <p class="t-small">
-        © <span class="tabular">{year}</span> {SITE.legalName}. Tutti i diritti riservati.
-      </p>
-      <ul class="flex flex-wrap gap-x-6 gap-y-2">
-        {
-          FOOTER_LEGAL.map((l) => (
-            <li>
-              <a href={l.href} class="footer-link text-[0.8125rem]">
-                {l.label}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
+      <div class="flex flex-col items-start gap-1 sm:items-end">
+        <p class="foot-legal">
+          © <span class="tabular">{year}</span> {SITE.legalName} · P.IVA
+          <span class="tabular">{SITE.vatId}</span>
+        </p>
+        <p class="foot-legal">
+          <a href={`mailto:${SITE.email}`} class="foot-legal-link">{SITE.email}</a>
+          <span aria-hidden="true"> · </span>
+          {SITE.city} ({SITE.region}), {SITE.countryName}
+        </p>
+      </div>
     </div>
   </div>
 </footer>
 
 <style>
-  .footer-link {
-    font-size: 0.9375rem;
-    color: var(--color-ink-2);
+  .site-footer {
+    background: var(--color-navy-deep);
+    padding-block: clamp(3rem, 2rem + 4vw, 4.5rem);
+    color: rgb(255 255 255 / 0.7);
+  }
+
+  .foot-top {
+    display: grid;
+    gap: 2.5rem;
+    margin-bottom: 3rem;
+  }
+  @media (min-width: 1024px) {
+    .foot-top {
+      grid-template-columns: 1.5fr repeat(4, 1fr);
+      gap: 2.5rem 2rem;
+      align-items: start;
+    }
+  }
+
+  .foot-about {
+    margin-top: 1.25rem;
+    max-width: 22rem;
+    font-size: 0.8125rem;
+    line-height: 1.7;
+    color: rgb(255 255 255 / 0.62);
+  }
+  .foot-about-name { font-weight: 600; color: rgb(255 255 255 / 0.92); }
+
+  /* ─── Social ──────────────────────────────────────────────────────── */
+  .foot-social {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+    margin-top: 1.5rem;
+  }
+  .social-dot {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.06);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.1);
+    color: rgb(255 255 255 / 0.75);
+    transition:
+      transform var(--dur) var(--ease-out-quart),
+      background-color var(--dur) var(--ease-out-quart),
+      color var(--dur) var(--ease-out-quart),
+      box-shadow var(--dur) var(--ease-out-quart);
+  }
+  @media (hover: hover) {
+    a.social-dot:hover {
+      transform: translateY(-2px);
+      background: var(--color-cyan);
+      color: var(--color-navy-deep);
+      box-shadow: 0 8px 20px -6px color-mix(in srgb, var(--color-cyan) 55%, transparent);
+    }
+  }
+  /* Profilo non ancora attivo: nessun invito a cliccare. */
+  .social-dot.is-off { opacity: 0.4; cursor: default; }
+
+  /* ─── Colonne ─────────────────────────────────────────────────────── */
+  .foot-cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2.25rem 1.5rem;
+  }
+  @media (min-width: 640px) {
+    .foot-cols { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+  /* Da desktop le colonne entrano DIRETTAMENTE nella griglia esterna:
+     `display: contents` fa sparire questo wrapper dal layout. */
+  @media (min-width: 1024px) {
+    .foot-cols { display: contents; }
+  }
+
+  .foot-col-title {
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: #fff;
+  }
+
+  .foot-link {
+    font-size: 0.8125rem;
+    color: rgb(255 255 255 / 0.62);
     transition: color var(--dur) var(--ease-out-quart);
   }
   @media (hover: hover) {
-    .footer-link:hover { color: #fff; }
+    .foot-link:hover { color: #fff; }
+  }
+
+  /* ─── Riga legale ─────────────────────────────────────────────────── */
+  .foot-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.25rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgb(255 255 255 / 0.1);
+  }
+  @media (min-width: 640px) {
+    .foot-bottom { flex-direction: row; align-items: flex-end; }
+  }
+
+  .foot-made {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgb(255 255 255 / 0.55);
+  }
+
+  /* 0.62 di opacità su questo fondo dà circa 6:1 — sopra la soglia AA anche
+     a 11px, dove il testo è più difficile da leggere. */
+  .foot-legal {
+    font-size: 0.6875rem;
+    line-height: 1.7;
+    color: rgb(255 255 255 / 0.62);
+  }
+  .foot-legal-link {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color var(--dur) var(--ease-out-quart);
+  }
+  @media (hover: hover) {
+    .foot-legal-link:hover { color: #fff; }
   }
 </style>

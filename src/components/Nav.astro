@@ -1,28 +1,40 @@
 ---
 import { Image } from "astro:assets";
-import { NAV, NAV_CTA, SITE } from "@/data/site";
+import Icon from "@/components/Icon.astro";
+import { SITE, NAV, NAV_CTA } from "@/data/site";
+import { SERVICES } from "@/data/services";
 import logo from "@/assets/logo-dgf.png";
 
 /*
- * Barra di navigazione — zero JavaScript.
+ * Barra di navigazione con mega-menu sui Servizi, ricalcato su quello
+ * "Prodotto" di Nexia: colonna panoramica tinta a sinistra, griglia dei
+ * servizi a destra, striscia di scorciatoie in fondo a tutta larghezza.
  *
- * Il menu mobile usa <details>/<summary>: apertura, chiusura, tastiera e
- * semantica ARIA sono native del browser. E poiché il sito è multipagina
- * vero (nessuna SPA), cliccando una voce si naviga e il menu si richiude
- * da solo con il caricamento della pagina. Nessuno script da spedire.
+ * IL BUG CHE RISOLVE. La prima versione era CSS puro (`:hover` sul
+ * contenitore). Problema: fra la voce di menu e il pannello c'è uno stacco
+ * visivo, e attraversandolo col mouse il `:hover` si perdeva → il pannello
+ * si chiudeva mentre ci si stava andando.
+ *
+ * La soluzione è quella di Nexia: un RITARDO di 160 ms alla chiusura, che
+ * copre il tragitto, più i gestori del mouse anche sul pannello. In più qui
+ * il varco è coperto da un ponte invisibile, così nella maggior parte dei
+ * casi il ritardo non serve nemmeno.
+ *
+ * Il pannello resta utilizzabile senza JavaScript: `:focus-within` lo apre
+ * da tastiera, e se lo script non parte la voce "Servizi" è comunque un link
+ * alla pagina indice.
  */
 
-// Percorso corrente normalizzato (senza slash finale) per marcare la voce attiva.
 const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
 const isActive = (href: string) =>
   href === "/" ? path === "/" : path === href || path.startsWith(href + "/");
+
+const SERVICE_ICONS = ["globe", "bag", "phone", "dashboard", "sparkles"] as const;
 ---
 
-<header class="sticky top-0 z-50 border-b border-[var(--color-hairline)] bg-[var(--color-paper)]/92 backdrop-blur-md">
-  <div class="wrap flex h-16 items-center justify-between gap-6">
-    <a href="/" aria-label={`${SITE.name} — home`} class="flex shrink-0 items-center">
-      {/* 82×40 conserva il rapporto reale del file (939×458 = 2,05).
-          Dichiararne uno diverso faceva ritagliare il logo. */}
+<header class="site-nav">
+  <div class="wrap flex h-16 items-center justify-between gap-4 lg:h-[4.5rem]">
+    <a href="/" aria-label={`${SITE.name} — home`} class="shrink-0">
       <Image
         src={logo}
         alt={SITE.name}
@@ -31,52 +43,136 @@ const isActive = (href: string) =>
         densities={[1, 2]}
         loading="eager"
         fetchpriority="high"
-        class="h-7 w-auto sm:h-8"
+        class="h-8 w-auto sm:h-9"
       />
     </a>
 
-    <!-- Navigazione desktop -->
-    <nav aria-label="Navigazione principale" class="hidden items-center gap-8 md:flex">
+    <!-- ─── Navigazione desktop ─────────────────────────────────────────── -->
+    <nav aria-label="Navigazione principale" class="hidden items-center gap-0.5 lg:flex">
+      <div class="mega" data-mega>
+        <a
+          href="/servizi"
+          class="nav-link"
+          data-mega-trigger
+          aria-expanded="false"
+          aria-controls="mega-servizi"
+          aria-current={isActive("/servizi") ? "page" : undefined}
+        >
+          Servizi
+          <Icon name="chevron-down" size={14} class="mega-caret" />
+        </a>
+
+        <!-- Ponte invisibile: copre lo stacco fra voce e pannello, così il
+             mouse non esce mai dall'area sensibile. -->
+        <span class="mega-bridge" aria-hidden="true"></span>
+
+        <div class="mega-panel" id="mega-servizi" data-mega-panel>
+          <div class="mega-inner">
+            <a href="/servizi" class="mega-lead group">
+              <span>
+                <span class="t-eyebrow">I servizi</span>
+                <span class="mt-2 block text-[0.9375rem] font-extrabold text-[var(--color-ink)]">
+                  Panoramica
+                </span>
+                <span class="mt-1.5 block text-[0.75rem] leading-relaxed text-[var(--color-ink-3)]">
+                  Tutti e cinque in una pagina, con i criteri per capire quale ti
+                  serve davvero.
+                </span>
+              </span>
+              <span class="mt-5 inline-flex items-center gap-1.5 text-[0.75rem] font-bold text-[var(--color-navy)]">
+                Vedi tutti i servizi
+                <Icon name="arrow-right" size={14} class="mega-lead-arrow" />
+              </span>
+            </a>
+
+            <div class="mega-grid">
+              {
+                SERVICES.map((s, i) => (
+                  <a
+                    href={`/servizi/${s.slug}`}
+                    class="mega-item group"
+                    aria-current={isActive(`/servizi/${s.slug}`) ? "page" : undefined}
+                  >
+                    <span class="icon-tile icon-tile-sm">
+                      <Icon name={SERVICE_ICONS[i]} size={17} />
+                    </span>
+                    <span class="mega-item-title">{s.title}</span>
+                    <span class="mega-item-desc">{s.summary}</span>
+                  </a>
+                ))
+              }
+            </div>
+          </div>
+
+          <div class="mega-foot">
+            <span class="mega-fact">
+              <Icon name="shield" size={14} /> Il progetto resta tuo
+            </span>
+            <span class="mega-fact">
+              <Icon name="file" size={14} /> Preventivo scritto prima
+            </span>
+            <a href="/contatti" class="mega-cta">
+              Parliamo del tuo progetto
+              <Icon name="arrow-right" size={14} />
+            </a>
+          </div>
+        </div>
+      </div>
+
       {
-        NAV.map((link) => (
-          <a
-            href={link.href}
-            aria-current={isActive(link.href) ? "page" : undefined}
-            class="nav-link text-[0.9375rem] font-medium"
-          >
+        NAV.filter((l) => l.href !== "/servizi").map((link) => (
+          <a href={link.href} class="nav-link" aria-current={isActive(link.href) ? "page" : undefined}>
             {link.label}
           </a>
         ))
       }
-      <a href={NAV_CTA.href} class="btn btn-primary !py-2 !text-[0.875rem]">
-        {NAV_CTA.label}
-      </a>
     </nav>
 
-    <!-- Navigazione mobile: <details> nativo, nessuno script -->
-    <details class="mobile-menu md:hidden">
+    <div class="hidden items-center lg:flex">
+      <a href={NAV_CTA.href} class="btn btn-primary !py-2.5 !text-[0.875rem]">
+        {NAV_CTA.label}
+        <Icon name="arrow-right" size={15} />
+      </a>
+    </div>
+
+    <!-- ─── Navigazione mobile ──────────────────────────────────────────── -->
+    <details class="mobile lg:hidden">
       <summary aria-label="Apri il menu di navigazione">
         <span class="bar" aria-hidden="true"></span>
         <span class="bar" aria-hidden="true"></span>
       </summary>
 
       <nav aria-label="Navigazione principale" class="mobile-panel">
-        <div class="wrap flex flex-col py-3">
+        <div class="wrap flex flex-col gap-1 py-4">
+          <span class="t-eyebrow px-1 pb-2 pt-1">Servizi</span>
           {
-            NAV.map((link, i) => (
-              <a
-                href={link.href}
-                aria-current={isActive(link.href) ? "page" : undefined}
-                class="mobile-link"
-              >
-                <span class="t-index">{String(i + 1).padStart(3, "0")}</span>
-                <span>{link.label}</span>
+            SERVICES.map((s, i) => (
+              <a href={`/servizi/${s.slug}`} class="mobile-service group">
+                <span class="icon-tile icon-tile-sm">
+                  <Icon name={SERVICE_ICONS[i]} size={17} />
+                </span>
+                <span class="font-semibold text-[var(--color-ink)]">{s.title}</span>
               </a>
             ))
           }
-          <a href={NAV_CTA.href} class="btn btn-primary mt-4 justify-center">
+          <a href="/servizi" class="mobile-service group">
+            <span class="icon-tile icon-tile-sm"><Icon name="layers" size={17} /></span>
+            <span class="font-semibold text-[var(--color-navy)]">Tutti i servizi</span>
+          </a>
+
+          <hr class="my-3 h-px border-0 bg-[var(--color-line)]" />
+
+          {
+            NAV.filter((l) => l.href !== "/servizi").map((link) => (
+              <a href={link.href} class="mobile-link" aria-current={isActive(link.href) ? "page" : undefined}>
+                {link.label}
+              </a>
+            ))
+          }
+
+          <a href={NAV_CTA.href} class="btn btn-primary mt-3">
             {NAV_CTA.label}
-            <span class="arrow" aria-hidden="true">→</span>
+            <Icon name="arrow-right" size={15} />
           </a>
         </div>
       </nav>
@@ -85,78 +181,222 @@ const isActive = (href: string) =>
 </header>
 
 <style>
-  /* ── Voce di navigazione desktop ──────────────────────────────────────
-     Il filetto sotto cresce all'hover e resta fisso sulla pagina corrente:
-     lo stato attivo è informazione, quindi merita il cyan. */
-  .nav-link {
-    position: relative;
-    padding-block: 0.25rem;
-    color: var(--color-ink-2);
-    transition: color var(--dur) var(--ease-out-quart);
+  .site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    background: color-mix(in srgb, var(--color-paper) 88%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-line);
   }
-  .nav-link::after {
-    content: "";
-    position: absolute;
-    inset-inline: 0;
-    bottom: -0.125rem;
-    height: 1.5px;
-    background: var(--color-cyan);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform var(--dur) var(--ease-out-quart);
+
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 0.875rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--color-ink-2);
+    transition: background-color var(--dur) var(--ease-out-quart),
+                color var(--dur) var(--ease-out-quart);
   }
   @media (hover: hover) {
-    .nav-link:hover { color: var(--color-ink); }
-    .nav-link:hover::after { transform: scaleX(1); }
+    .nav-link:hover { background: var(--color-soft); color: var(--color-navy); }
   }
-  .nav-link[aria-current="page"] {
+  .nav-link[aria-current="page"] { color: var(--color-navy); }
+
+  /* ─── Mega-menu ───────────────────────────────────────────────────── */
+  .mega { position: static; }
+
+  /* Ponte invisibile che copre lo stacco fra voce e pannello. */
+  .mega-bridge {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% - 1px);
+    height: 1rem;
+    display: none;
+  }
+  .mega[data-open] .mega-bridge { display: block; }
+
+  .mega-panel {
+    position: absolute;
+    left: 50%;
+    top: calc(100% + 0.625rem);
+    transform: translateX(-50%) translateY(-8px);
+    width: 60rem;
+    max-width: calc(100vw - 2.5rem);
+    background: var(--color-paper);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    outline: 1px solid color-mix(in srgb, var(--color-ink) 8%, transparent);
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity 180ms var(--ease-out-quart),
+      transform 180ms var(--ease-out-quart),
+      visibility 0s linear 180ms;
+  }
+
+  /* Aperto: da script (data-open) oppure da tastiera (:focus-within), così
+     il pannello resta usabile anche se lo script non parte. */
+  .mega[data-open] .mega-panel,
+  .mega:focus-within .mega-panel {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+    transition-delay: 0s;
+  }
+
+  .mega-caret { transition: transform var(--dur) var(--ease-out-quart); }
+  .mega[data-open] .mega-caret,
+  .mega:focus-within .mega-caret { transform: rotate(180deg); }
+
+  .mega-inner {
+    display: grid;
+    grid-template-columns: 14rem 1fr;
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  .mega-lead {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.25rem;
+    border-radius: var(--radius-lg);
+    background: var(--color-soft);
+    transition: background-color var(--dur) var(--ease-out-quart);
+  }
+  @media (hover: hover) {
+    .mega-lead:hover { background: var(--color-soft-2); }
+    .mega-lead:hover .mega-lead-arrow { transform: translateX(3px); }
+  }
+  .mega-lead-arrow { transition: transform var(--dur) var(--ease-out-quart); }
+
+  /* Griglia dei servizi: come su Nexia, tessere verticali con icona sopra. */
+  .mega-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.25rem;
+  }
+
+  .mega-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.875rem 0.75rem;
+    border-radius: var(--radius-lg);
+    transition: background-color var(--dur) var(--ease-out-quart);
+  }
+  @media (hover: hover) {
+    .mega-item:hover { background: var(--color-paper-2); }
+  }
+  .mega-item[aria-current="page"] { background: var(--color-soft); }
+
+  .mega-item-title {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    line-height: 1.25;
     color: var(--color-ink);
   }
-  .nav-link[aria-current="page"]::after { transform: scaleX(1); }
+  .mega-item-desc {
+    font-size: 0.6875rem;
+    line-height: 1.45;
+    color: var(--color-ink-3);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 
-  /* ── Menu mobile ──────────────────────────────────────────────────── */
-  .mobile-menu summary {
+  .mega-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.5rem;
+    padding: 0.75rem 1.5rem;
+    border-top: 1px solid var(--color-line);
+    background: var(--color-paper-2);
+  }
+  .mega-fact {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-ink-3);
+  }
+  .mega-fact :global(svg) { color: var(--color-navy); }
+  .mega-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-left: auto;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-navy);
+    transition: color var(--dur) var(--ease-out-quart);
+  }
+  @media (hover: hover) {
+    .mega-cta:hover { color: var(--color-blue); }
+  }
+
+  /* ─── Mobile ──────────────────────────────────────────────────────── */
+  .mobile summary {
     display: flex;
     flex-direction: column;
     justify-content: center;
     gap: 5px;
     width: 2.75rem;
-    height: 2.75rem;      /* area di tocco 44×44, minimo WCAG 2.5.8 */
+    height: 2.75rem;
     margin-right: -0.5rem;
     cursor: pointer;
     list-style: none;
   }
-  .mobile-menu summary::-webkit-details-marker { display: none; }
+  .mobile summary::-webkit-details-marker { display: none; }
 
-  .mobile-menu .bar {
+  .mobile .bar {
     display: block;
     width: 1.25rem;
-    height: 1.5px;
+    height: 2px;
     margin-inline: auto;
+    border-radius: 2px;
     background: var(--color-ink);
     transition: transform var(--dur) var(--ease-out-quart);
   }
-  /* Aperto: le due barre diventano una X. */
-  .mobile-menu[open] .bar:first-of-type { transform: translateY(3.25px) rotate(45deg); }
-  .mobile-menu[open] .bar:last-of-type { transform: translateY(-3.25px) rotate(-45deg); }
+  .mobile[open] .bar:first-of-type { transform: translateY(3.5px) rotate(45deg); }
+  .mobile[open] .bar:last-of-type { transform: translateY(-3.5px) rotate(-45deg); }
 
   .mobile-panel {
     position: absolute;
     inset-inline: 0;
     top: 100%;
+    max-height: calc(100dvh - 4rem);
+    overflow-y: auto;
     background: var(--color-paper);
-    border-bottom: 1px solid var(--color-hairline);
-    box-shadow: var(--shadow-md);
+    border-bottom: 1px solid var(--color-line);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .mobile-service {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 0.25rem;
+    font-size: 0.9375rem;
   }
 
   .mobile-link {
-    display: flex;
-    align-items: baseline;
-    gap: 1rem;
-    padding-block: 0.875rem;
-    border-bottom: 1px solid var(--color-hairline-2);
-    font-size: 1.0625rem;
-    font-weight: 500;
+    padding: 0.75rem 0.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-ink);
   }
   .mobile-link[aria-current="page"] { color: var(--color-navy); }
 
@@ -164,3 +404,64 @@ const isActive = (href: string) =>
     .mobile-panel { animation: fade-rise 220ms var(--ease-out-quart) both; }
   }
 </style>
+
+<script>
+  /*
+   * Apertura/chiusura del mega-menu.
+   *
+   * Il punto delicato è la CHIUSURA RITARDATA (160 ms): senza, spostando il
+   * mouse dalla voce verso il pannello si attraversa uno spazio in cui né
+   * l'una né l'altro sono in hover, e il pannello sparisce sotto il cursore.
+   * È esattamente il difetto che aveva la versione precedente.
+   */
+  const CLOSE_DELAY = 160;
+
+  document.querySelectorAll<HTMLElement>("[data-mega]").forEach((mega) => {
+    const trigger = mega.querySelector<HTMLElement>("[data-mega-trigger]");
+    const panel = mega.querySelector<HTMLElement>("[data-mega-panel]");
+    if (!trigger || !panel) return;
+
+    let timer: number | undefined;
+
+    const open = () => {
+      window.clearTimeout(timer);
+      mega.setAttribute("data-open", "");
+      trigger.setAttribute("aria-expanded", "true");
+    };
+    const close = () => {
+      mega.removeAttribute("data-open");
+      trigger.setAttribute("aria-expanded", "false");
+    };
+    const scheduleClose = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(close, CLOSE_DELAY);
+    };
+
+    // Il contenitore copre voce + ponte; il pannello ha i suoi gestori
+    // perché, essendo posizionato in assoluto, esce dal flusso del genitore.
+    mega.addEventListener("mouseenter", open);
+    mega.addEventListener("mouseleave", scheduleClose);
+    panel.addEventListener("mouseenter", open);
+    panel.addEventListener("mouseleave", scheduleClose);
+
+    // Tastiera: si apre al focus sulla voce, si chiude uscendo dal gruppo.
+    trigger.addEventListener("focus", open);
+    mega.addEventListener("focusout", (event) => {
+      const next = (event as FocusEvent).relatedTarget as Node | null;
+      if (!next || !mega.contains(next)) close();
+    });
+
+    // Esc chiude e riporta il focus sulla voce, così non si perde il segno.
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      if (!mega.hasAttribute("data-open")) return;
+      close();
+      trigger.focus();
+    });
+
+    // Click fuori: chiude.
+    document.addEventListener("pointerdown", (event) => {
+      if (!mega.contains(event.target as Node)) close();
+    });
+  });
+</script>

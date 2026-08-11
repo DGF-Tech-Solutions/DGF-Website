@@ -3,6 +3,7 @@ import { getCollection, render } from "astro:content";
 import Base from "@/layouts/Base.astro";
 import Breadcrumbs from "@/components/Breadcrumbs.astro";
 import ArticleCard from "@/components/ArticleCard.astro";
+import Icon from "@/components/Icon.astro";
 import { SITE } from "@/data/site";
 import { formatDate, isoDate, readingMinutes } from "@/lib/format";
 
@@ -24,7 +25,7 @@ const minutes = d.readingTime ?? readingMinutes(entry.body ?? "");
 const others = (await getCollection("blog", ({ data }) => !data.draft))
   .filter((a) => a.id !== entry.id)
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-  .slice(0, 2);
+  .slice(0, 3);
 
 const schema = {
   "@type": "BlogPosting",
@@ -49,58 +50,66 @@ const schema = {
   ogType="article"
   schema={schema}
 >
+  {/* Barra di avanzamento della lettura: si riempie con lo scroll del
+      documento tramite `animation-timeline: scroll()`. Zero JavaScript. */}
+  <div class="read-progress" aria-hidden="true"></div>
+
   <article>
-    <!-- Testata dell'articolo -->
-    <header class="grid-lines border-b border-[var(--color-hairline)]">
-      <div class="wrap pt-8 pb-12 sm:pt-10 sm:pb-16">
+    <header class="glow-bg overflow-hidden border-b border-[var(--color-line)]">
+      <div class="wrap pt-6 pb-12 sm:pt-8 sm:pb-14">
         <Breadcrumbs
           items={[{ label: "Blog", href: "/blog" }, { label: d.title }]}
-          class="mb-8 sm:mb-12"
+          class="mb-8"
         />
 
-        <div class="flex flex-wrap items-baseline gap-x-4 gap-y-2">
-          <span class="t-label">{d.category}</span>
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="chip">{d.category}</span>
           <time datetime={isoDate(d.date)} class="t-small">{formatDate(d.date)}</time>
           <span class="t-small" aria-hidden="true">·</span>
           <span class="t-small">{minutes} min di lettura</span>
         </div>
 
-        <h1 class="t-h1 mt-6 max-w-4xl anim-rise">{d.title}</h1>
-        <p class="t-lead mt-6 max-w-2xl anim-fade-rise delay-2">{d.excerpt}</p>
+        <h1 class="t-h1 mt-5 max-w-4xl anim-rise">{d.title}</h1>
+        <p class="t-lead mt-5 max-w-2xl anim-fade-rise delay-2">{d.excerpt}</p>
       </div>
     </header>
 
-    <!-- Corpo -->
     <div class="wrap section">
       <div class="prose">
         <Content />
       </div>
 
       <!-- Firma -->
-      <div class="prose-measure mt-16 border-t border-[var(--color-hairline)] pt-6">
-        <p class="t-small">
-          Scritto da <span class="text-[var(--color-ink-2)]">{d.author}</span>.
+      <div class="prose-measure card mt-14 flex flex-col gap-4 bg-[var(--color-soft)] p-6 sm:flex-row sm:items-center">
+        <span class="icon-tile bg-white shrink-0"><Icon name="message" size={20} /></span>
+        <p class="t-body flex-1 !text-[0.9375rem]">
+          Scritto da <strong class="font-semibold text-[var(--color-ink)]">{d.author}</strong>.
           Hai una domanda su questo argomento?
-          <a href="/contatti" class="link-underline">Scrivici</a>.
         </p>
+        <a href="/contatti" class="btn btn-primary shrink-0 !py-2.5 !text-[0.875rem]">
+          Scrivici
+          <Icon name="arrow-right" size={15} />
+        </a>
       </div>
     </div>
   </article>
 
-  <!-- Altri articoli -->
   {
     others.length > 0 && (
-      <section class="section border-t border-[var(--color-hairline)] bg-[var(--color-paper-2)]">
+      <section class="band-soft section">
         <div class="wrap">
           <div class="flex flex-wrap items-end justify-between gap-6">
-            <h2 class="t-h2">Continua a leggere</h2>
-            <a href="/blog" class="link-underline pb-2">
-              Tutti gli articoli →
+            <h2 class="t-h2">
+              Continua <span class="t-dim">a leggere.</span>
+            </h2>
+            <a href="/blog" class="link-arrow pb-1">
+              Tutti gli articoli
+              <Icon name="arrow-right" size={16} />
             </a>
           </div>
-          <div class="mt-8">
-            {others.map((a, i) => (
-              <ArticleCard entry={a} index={i} />
+          <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {others.map((a) => (
+              <ArticleCard entry={a} />
             ))}
           </div>
         </div>

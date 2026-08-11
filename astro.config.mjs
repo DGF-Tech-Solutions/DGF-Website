@@ -56,7 +56,9 @@ export default defineConfig({
       // Con i pesi statici Astro precaricava otto file diversi, che si
       // contendevano la banda proprio mentre il browser doveva dipingere
       // il titolo. Così il preload è uno solo.
-      weights: ["400 700"],
+      // Fino a 800: i titoli di questa direzione sono grassi, e il peso è
+      // uno dei modi in cui si crea gerarchia senza aggiungere colore.
+      weights: ["400 800"],
       styles: ["normal"],
       // Solo `latin`: l'italiano (à è é ì ò ù) sta tutto in U+0000-00FF.
       // `latin-ext` serve alle lingue dell'Europa orientale e raddoppierebbe

@@ -1,14 +1,13 @@
 ---
 import Base from "@/layouts/Base.astro";
+import Icon from "@/components/Icon.astro";
 import { SITE } from "@/data/site";
 
 /*
- * Pagina di conferma. La raggiunge solo chi invia il form SENZA JavaScript
+ * Pagina di conferma. La raggiunge solo chi invia il modulo SENZA JavaScript
  * (Web3Forms reindirizza qui). Con JS attivo la conferma appare in linea e
- * questa pagina non viene mai vista — ma deve esistere, altrimenti chi ha
- * JS disattivato finirebbe su una pagina di Web3Forms.
- *
- * Esclusa dall'indicizzazione: non ha senso su Google.
+ * questa pagina non si vede mai — ma deve esistere, altrimenti chi ha JS
+ * disattivato finirebbe su una pagina di Web3Forms.
  */
 ---
 
@@ -18,33 +17,35 @@ import { SITE } from "@/data/site";
   canonical="/contatti/inviato"
   noindex
 >
-  <section class="section">
+  <section class="glow-bg section">
     <div class="wrap">
-      <div class="max-w-2xl">
-        <div class="flex items-baseline gap-3">
-          <span class="t-index">✓</span>
-          <span class="t-label">Conferma</span>
-        </div>
+      <div class="mx-auto max-w-2xl text-center">
+        <span class="icon-tile mx-auto !h-14 !w-14 !bg-[var(--color-navy)] !text-white">
+          <Icon name="check" size={26} />
+        </span>
 
-        <h1 class="t-h1 mt-5">Richiesta inviata</h1>
+        <h1 class="t-h1 mt-6">
+          Richiesta <span class="t-dim">inviata.</span>
+        </h1>
 
-        <p class="t-lead mt-6">
+        <p class="t-lead mt-5">
           Grazie: l'abbiamo ricevuta. Ti rispondiamo entro un giorno lavorativo
-          all'indirizzo che ci hai lasciato — se non vedi nulla, controlla anche
-          la cartella spam.
+          all'indirizzo che ci hai lasciato — se non vedi nulla, controlla anche la
+          cartella spam.
         </p>
 
-        <p class="t-body mt-6">
+        <p class="t-body mt-5">
           Nel frattempo, se vuoi aggiungere qualcosa puoi scriverci direttamente a
-          <a href={`mailto:${SITE.email}`} class="link-underline">{SITE.email}</a>.
+          <a href={`mailto:${SITE.email}`} class="font-semibold text-[var(--color-navy)] underline underline-offset-2">
+            {SITE.email}</a>.
         </p>
 
-        <div class="mt-10 flex flex-wrap gap-3">
-          <a href="/" class="btn btn-primary">
+        <div class="mt-9 flex flex-wrap justify-center gap-3">
+          <a href="/" class="btn btn-primary btn-lg">
             Torna alla home
-            <span class="arrow" aria-hidden="true">→</span>
+            <Icon name="arrow-right" size={17} />
           </a>
-          <a href="/portfolio" class="btn btn-ghost">Guarda i progetti</a>
+          <a href="/portfolio" class="btn btn-ghost btn-lg">Guarda i progetti</a>
         </div>
       </div>
     </div>

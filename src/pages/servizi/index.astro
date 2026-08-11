@@ -1,9 +1,22 @@
 ---
 import Base from "@/layouts/Base.astro";
 import PageHeader from "@/components/PageHeader.astro";
-import Arrow from "@/components/Arrow.astro";
+import Explorer from "@/components/Explorer.astro";
+import Icon from "@/components/Icon.astro";
 import { SERVICES } from "@/data/services";
 import { SITE } from "@/data/site";
+import illustration from "@/assets/illustrazioni/scena-software.png";
+
+const SERVICE_ICONS = ["globe", "bag", "phone", "dashboard", "sparkles"] as const;
+
+/** Testo su cui lavora la ricerca: titolo, riassunto, tecnologie e casi d'uso. */
+function haystack(i: number): string {
+  const s = SERVICES[i];
+  return `${s.title} ${s.summary} ${s.intro} ${s.stack.join(" ")} ${s.bestFor.join(" ")}`
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "");
+}
 
 const schema = {
   "@type": "ItemList",
@@ -25,70 +38,81 @@ const schema = {
   schema={schema}
 >
   <PageHeader
-    index="001"
-    label="Servizi"
-    title="Cinque cose, fatte bene"
-    lead="Non facciamo tutto. Per ognuno di questi servizi sappiamo dirti anche quando non ti serve — e succede più spesso di quanto immagini."
+    eyebrow="I servizi"
+    title='Cinque cose, <span class="t-dim">fatte bene.</span>'
+    lead="Non facciamo tutto. Per ognuno di questi sappiamo dirti anche quando non ti serve — e succede più spesso di quanto immagini."
     crumbs={[{ label: "Servizi" }]}
+    illustration={illustration}
+    illustrationAlt="Illustrazione: pannello con grafici e tabella"
   />
 
   <section class="section">
     <div class="wrap">
-      <div class="grid gap-px border border-[var(--color-hairline)] bg-[var(--color-hairline)] md:grid-cols-2">
-        {
-          SERVICES.map((s) => (
-            <a href={`/servizi/${s.slug}`} class="group flex flex-col bg-[var(--color-paper)] p-7 transition-colors hover:bg-[var(--color-paper-2)] lg:p-9">
-              <div class="flex items-baseline gap-3">
-                <span class="t-index">{s.index}</span>
-                <span class="t-label">{s.timeline}</span>
-              </div>
+      <Explorer
+        placeholder="Cerca un servizio o una tecnologia…"
+        label="Cerca fra i servizi"
+        noun="servizio"
+      >
+        <div class="grid gap-5 md:grid-cols-2">
+          {
+            SERVICES.map((s, i) => (
+              <a
+                href={`/servizi/${s.slug}`}
+                class="card group relative flex flex-col p-7 reveal lg:p-8"
+                style={`--i:${i}`}
+                data-search={haystack(i)}
+              >
+                <Icon
+                  name="arrow-up-right"
+                  size={18}
+                  class="absolute right-6 top-6 text-[var(--color-line)] transition-colors group-hover:text-[var(--color-navy)]"
+                />
 
-              <h2 class="t-h2 mt-4 transition-colors group-hover:text-[var(--color-navy)]">
-                {s.title}
-              </h2>
+                <span class="icon-tile">
+                  <Icon name={SERVICE_ICONS[i]} size={22} />
+                </span>
 
-              <p class="t-body mt-4 flex-1">{s.summary}</p>
+                <h2 class="t-h2 mt-5 !text-[1.5rem]">{s.title}</h2>
+                <p class="t-body mt-3">{s.summary}</p>
 
-              <ul class="mt-6 flex flex-wrap gap-2">
-                {s.stack.slice(0, 4).map((t) => (
-                  <li class="chip">{t}</li>
-                ))}
-              </ul>
+                <ul class="mt-6 space-y-2">
+                  {s.bestFor.slice(0, 2).map((b) => (
+                    <li class="flex items-start gap-2 text-[0.8125rem] leading-relaxed text-[var(--color-ink-3)]">
+                      <Icon name="check" size={15} class="mt-0.5 shrink-0 text-[var(--color-navy)]" />
+                      {b}
+                    </li>
+                  ))}
+                </ul>
 
-              <span class="t-label mt-7 inline-flex items-center gap-2 text-[var(--color-blue)]">
-                Approfondisci
-                <Arrow size="sm" />
-              </span>
+                <div class="mt-auto pt-6">
+                  <ul class="flex flex-wrap gap-1.5">
+                    {s.stack.slice(0, 4).map((t) => (
+                      <li class="chip chip-line !text-[0.6875rem]">{t}</li>
+                    ))}
+                  </ul>
+                  <span class="mt-4 flex items-center gap-2 border-t border-[var(--color-line)] pt-4 text-[0.8125rem] font-semibold text-[var(--color-ink-3)]">
+                    <Icon name="clock" size={15} />
+                    {s.timeline}
+                  </span>
+                </div>
+              </a>
+            ))
+          }
+
+          <div class="card flex flex-col justify-center bg-[var(--color-soft)] p-7 lg:p-8">
+            <span class="icon-tile bg-white"><Icon name="message" size={22} /></span>
+            <h2 class="t-h2 mt-5 !text-[1.5rem]">Non sai quale ti serve?</h2>
+            <p class="t-body mt-3">
+              È la situazione più comune. Raccontaci il problema e ti diciamo noi da
+              dove conviene partire — anche se la risposta è "per ora, da niente".
+            </p>
+            <a href="/contatti" class="btn btn-primary mt-6 self-start">
+              Scrivici
+              <Icon name="arrow-right" size={16} />
             </a>
-          ))
-        }
-
-        <!-- Cella finale: chiude la griglia e porta al contatto -->
-        <div class="flex flex-col justify-center bg-[var(--color-paper-2)] p-7 lg:p-9">
-          <h2 class="t-h3">Non sai quale ti serve?</h2>
-          <p class="t-body mt-3">
-            È la situazione più comune. Raccontaci il problema e ti diciamo noi
-            da dove conviene partire — anche se la risposta è "per ora, da niente".
-          </p>
-          <a href="/contatti" class="btn btn-primary mt-6 self-start">
-            Scrivici
-            <span class="arrow" aria-hidden="true">→</span>
-          </a>
+          </div>
         </div>
-      </div>
+      </Explorer>
     </div>
   </section>
 </Base>
-
-<style>
-  .chip {
-    font-family: var(--font-mono);
-    font-size: 0.625rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--color-ink-3);
-    border: 1px solid var(--color-hairline);
-    border-radius: 2px;
-    padding: 0.25rem 0.5rem;
-  }
-</style>
