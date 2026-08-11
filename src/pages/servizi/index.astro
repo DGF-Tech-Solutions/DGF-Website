@@ -2,6 +2,7 @@
 import Base from "@/layouts/Base.astro";
 import PageHeader from "@/components/PageHeader.astro";
 import Explorer from "@/components/Explorer.astro";
+import CtaBand from "@/components/CtaBand.astro";
 import Icon from "@/components/Icon.astro";
 import { SERVICES } from "@/data/services";
 import { SITE } from "@/data/site";
@@ -98,21 +99,17 @@ const schema = {
               </a>
             ))
           }
-
-          <div class="card flex flex-col justify-center bg-[var(--color-soft)] p-7 lg:p-8">
-            <span class="icon-tile bg-white"><Icon name="message" size={22} /></span>
-            <h2 class="t-h2 mt-5 !text-[1.5rem]">Non sai quale ti serve?</h2>
-            <p class="t-body mt-3">
-              È la situazione più comune. Raccontaci il problema e ti diciamo noi da
-              dove conviene partire — anche se la risposta è "per ora, da niente".
-            </p>
-            <a href="/contatti" class="btn btn-primary mt-6 self-start">
-              Scrivici
-              <Icon name="arrow-right" size={16} />
-            </a>
-          </div>
         </div>
       </Explorer>
     </div>
   </section>
+
+  {/* La scheda "Non sai quale ti serve?" che stava in fondo alla griglia è
+      confluita qui: restava visibile anche a filtro attivo (non ha un
+      `data-search`), e ripeteva la stessa richiesta della fascia. */}
+  <CtaBand
+    badge="I servizi"
+    title='Non sai <span class="t-dim">quale ti serve?</span>'
+    lead="È la situazione più comune. Raccontaci il problema e ti diciamo noi da dove conviene partire — anche se la risposta è «per ora, da niente»."
+  />
 </Base>

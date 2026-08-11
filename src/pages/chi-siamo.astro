@@ -3,6 +3,7 @@ import { Image } from "astro:assets";
 import Base from "@/layouts/Base.astro";
 import PageHeader from "@/components/PageHeader.astro";
 import Banner from "@/components/Banner.astro";
+import CtaBand from "@/components/CtaBand.astro";
 import Icon from "@/components/Icon.astro";
 import { SITE } from "@/data/site";
 import illustration from "@/assets/illustrazioni/scena-sicurezza.png";
@@ -153,12 +154,13 @@ const schema = {
         class="mx-auto mt-8 max-w-4xl reveal"
       >
         <p>
-          Non abbiamo ancora una lista di clienti da esibire. Abbiamo competenze
-          vere, un metodo scritto e progetti costruiti per intero per dimostrarlo
-          — li trovi in <a href="/portfolio">Progetti</a>, dichiarati per quello
-          che sono. Se cerchi una software house con vent'anni di referenze, non
-          siamo noi. Se cerchi qualcuno che si prenda il tuo progetto sul serio
-          perché ci gioca la reputazione, parliamone.
+          Siamo giovani come azienda e i lavori che possiamo mostrare sono
+          pochi: il principale è <a href="/portfolio/nexia-home">Nexia Home</a>,
+          il gestionale per amministratori di condominio che abbiamo costruito e
+          che manteniamo — un sistema completo, non una demo. Se cerchi una
+          software house con vent'anni di referenze, non siamo noi. Se cerchi
+          qualcuno che si prenda il tuo progetto sul serio perché ci gioca la
+          reputazione, parliamone.
         </p>
       </Banner>
     </div>
@@ -319,20 +321,11 @@ const schema = {
     </div>
   </section>
 
-  <section class="on-dark section-sm">
-    <div class="wrap flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-      <div>
-        <h2 class="t-h2 max-w-xl">Lavoriamo <span class="t-dim">insieme?</span></h2>
-        <p class="t-lead mt-3 max-w-xl">
-          Raccontaci il problema. La prima risposta arriva entro un giorno lavorativo.
-        </p>
-      </div>
-      <a href="/contatti" class="btn btn-on-dark btn-lg shrink-0">
-        Scrivici
-        <Icon name="arrow-right" size={17} />
-      </a>
-    </div>
-  </section>
+  <CtaBand
+    badge="Lavoriamo insieme"
+    title='Adesso che sai <span class="t-dim">chi siamo.</span>'
+    lead="Raccontaci il problema. Rispondiamo noi, le stesse persone che hai appena letto qui sopra — e la prima risposta arriva entro un giorno lavorativo."
+  />
 </Base>
 
 <style>

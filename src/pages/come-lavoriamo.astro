@@ -1,6 +1,7 @@
 ---
 import Base from "@/layouts/Base.astro";
 import HeroBand from "@/components/HeroBand.astro";
+import CtaBand from "@/components/CtaBand.astro";
 import Icon from "@/components/Icon.astro";
 import type { IconName } from "@/components/Icon.astro";
 import { SITE } from "@/data/site";
@@ -238,8 +239,11 @@ const schema = {
 
   <!-- ══════════════════════════════════════════════════════════════════
        COSA CHIEDIAMO A TE
+       Su fondo bianco: l'ultima fase è su `band-soft` e la chiusura è la
+       fascia scura: la sezione scura di prima avrebbe dato due fondi scuri
+       di fila, e la regola è una sola fascia scura per pagina.
        ══════════════════════════════════════════════════════════════════ -->
-  <section class="on-dark section">
+  <section class="section">
     <div class="wrap">
       <div class="mx-auto max-w-2xl text-center">
         <span class="t-eyebrow">La tua parte</span>
@@ -274,35 +278,17 @@ const schema = {
   <!-- ══════════════════════════════════════════════════════════════════
        CHIUSURA
        ══════════════════════════════════════════════════════════════════ -->
-  <section class="section">
-    <div class="wrap">
-      <div class="mx-auto max-w-2xl text-center reveal">
-        <span class="t-eyebrow">Il primo passo</span>
-        <h2 class="t-h2 mt-3">
-          Si parte <span class="t-dim">dall'ascolto.</span>
-        </h2>
-        <p class="t-lead mt-4">
-          Raccontaci il problema, non la soluzione che hai già in mente. La
-          prima risposta arriva entro un giorno lavorativo e la prima
-          conversazione non impegna a nulla.
-        </p>
-
-        <div class="mt-8 flex flex-wrap justify-center gap-3">
-          <a href="/contatti" class="btn btn-primary btn-lg">
-            Scrivici
-            <Icon name="arrow-right" size={17} />
-          </a>
-          <a href="/servizi" class="btn btn-ghost btn-lg">Guarda cosa facciamo</a>
-        </div>
-
-        <div class="mt-7 flex flex-wrap justify-center gap-2">
-          <span class="chip"><Icon name="check" size={13} /> Prima conversazione gratuita</span>
-          <span class="chip"><Icon name="check" size={13} /> Preventivo scritto prima di iniziare</span>
-          <span class="chip"><Icon name="check" size={13} /> Codice e dominio restano tuoi</span>
-        </div>
-      </div>
-    </div>
-  </section>
+  <CtaBand
+    badge="Il primo passo"
+    title={`Si parte <span class="t-dim">dall'ascolto.</span>`}
+    lead="Raccontaci il problema, non la soluzione che hai già in mente. La prima risposta arriva entro un giorno lavorativo e la prima conversazione non impegna a nulla."
+    facts={[
+      "Prima conversazione gratuita",
+      "Preventivo scritto prima di iniziare",
+      "Codice e dominio restano tuoi",
+      "Nessun vincolo dopo la consegna",
+    ]}
+  />
 </Base>
 
 <style>

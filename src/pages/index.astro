@@ -3,11 +3,14 @@ import { getCollection } from "astro:content";
 import { Image } from "astro:assets";
 import Base from "@/layouts/Base.astro";
 import Icon from "@/components/Icon.astro";
+import Globe from "@/components/Globe.astro";
+import Marquee from "@/components/Marquee.astro";
+import VideoLoop from "@/components/VideoLoop.astro";
 import CaseCard from "@/components/CaseCard.astro";
 import ArticleCard from "@/components/ArticleCard.astro";
+import CtaBand from "@/components/CtaBand.astro";
 import { SITE } from "@/data/site";
 import { SERVICES } from "@/data/services";
-import heroIllustration from "@/assets/illustrazioni/scena-progetti.png";
 import processoIllustration from "@/assets/illustrazioni/scena-processo.png";
 
 const projects = (await getCollection("portfolio"))
@@ -25,6 +28,32 @@ const TRUST = [
   "Preventivo scritto prima di iniziare",
   "Codice e dominio restano tuoi",
   "Parli sempre con chi sviluppa",
+];
+
+/* I due nastri scorrono in versi opposti: il contrasto di direzione rende
+   evidente che si muovono, senza che nessuno dei due debba correre. */
+const COSA_COSTRUIAMO = [
+  "Siti web",
+  "E-commerce",
+  "App mobile",
+  "Gestionali su misura",
+  "Portali clienti",
+  "Integrazioni con API",
+  "Automazioni",
+  "Manutenzione continua",
+];
+
+const TECNOLOGIE = [
+  "Next.js",
+  "Astro",
+  "React",
+  "TypeScript",
+  "Django",
+  "PostgreSQL",
+  "Stripe",
+  "Docker",
+  "Tailwind CSS",
+  "Celery",
 ];
 
 const PHASES = [
@@ -79,6 +108,9 @@ const COMMITMENTS = [
        HERO
        Il titolo è l'elemento LCP: si anima solo in `transform`, mai in
        opacità, altrimenti la metrica slitterebbe di tutta l'animazione.
+
+       A destra il globo: è disegnato in CSS, quindi non c'è nessuna
+       immagine da scaricare sopra la piega e l'LCP resta il titolo.
        ══════════════════════════════════════════════════════════════════ -->
   <section class="glow-bg overflow-hidden">
     <div class="wrap">
@@ -120,25 +152,18 @@ const COMMITMENTS = [
         </div>
 
         <!--
-          Illustrazione con i cartellini che galleggiano.
-          Il contenitore è largo quanto l'immagine: così i cartellini si
-          posizionano rispetto ALLA FIGURA e non alla colonna, e sporgono di
+          Globo con i cartellini che galleggiano attorno.
+          Il contenitore è largo quanto il globo: così i cartellini si
+          posizionano rispetto ALLA SFERA e non alla colonna, e sporgono di
           poco senza uscire dalla pagina.
         -->
         {/* `anim-rise` (solo transform) e non una dissolvenza: sopra la piega
-            un'opacità che riparte lascia il vuoto al posto dell'immagine. */}
-        <div class="anim-rise relative mx-auto w-full max-w-[24rem] sm:max-w-[28rem] lg:max-w-[34rem]">
-          <Image
-            src={heroIllustration}
-            alt="Illustrazione: un monitor con l'interfaccia di un sito"
-            widths={[360, 520, 700]}
-            sizes="(min-width: 1024px) 544px, (min-width: 640px) 448px, 85vw"
-            loading="eager"
-            fetchpriority="high"
-            class="w-full"
-          />
+            un'opacità che riparte lascia il vuoto al posto della figura. */}
+        <div class="anim-rise relative mx-auto w-full max-w-[22rem] sm:max-w-[26rem] lg:max-w-[32rem]">
+          <div class="globe-halo" aria-hidden="true"></div>
+          <Globe class="relative" />
 
-          <div class="float absolute -left-4 top-[16%] hidden w-[13.5rem] sm:block lg:-left-10">
+          <div class="float absolute -left-4 top-[14%] hidden w-[13.5rem] sm:block lg:-left-10">
             <div class="card flex items-center gap-3 px-3.5 py-2.5">
               <span class="icon-tile icon-tile-sm"><Icon name="zap" size={16} /></span>
               <span>
@@ -148,7 +173,7 @@ const COMMITMENTS = [
             </div>
           </div>
 
-          <div class="float-slow absolute -right-4 top-[46%] hidden w-[12rem] sm:block lg:-right-8">
+          <div class="float-slow absolute -right-4 top-[45%] hidden w-[12rem] sm:block lg:-right-8">
             <div class="card flex items-center gap-3 px-3.5 py-2.5">
               <span class="icon-tile icon-tile-sm"><Icon name="shield" size={16} /></span>
               <span>
@@ -158,7 +183,7 @@ const COMMITMENTS = [
             </div>
           </div>
 
-          <div class="float-fast absolute bottom-[10%] -left-2 hidden w-[13rem] lg:block lg:-left-6">
+          <div class="float-fast absolute bottom-[8%] -left-2 hidden w-[13rem] lg:block lg:-left-6">
             <div class="card flex items-center gap-3 px-3.5 py-2.5">
               <span class="icon-tile icon-tile-sm"><Icon name="headset" size={16} /></span>
               <span>
@@ -169,6 +194,21 @@ const COMMITMENTS = [
           </div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       NASTRI — cosa costruiamo e con cosa
+       Occupano tutta la larghezza, senza `wrap`: il taglio ai bordi dello
+       schermo è ciò che li fa leggere come un flusso continuo.
+       ══════════════════════════════════════════════════════════════════ -->
+  <section class="border-y border-[var(--color-line)] bg-[var(--color-paper)] py-10 sm:py-12">
+    <p class="t-eyebrow wrap mb-6 text-center">Cosa costruiamo, e con cosa</p>
+    <div class="space-y-3">
+      {/* La riga delle tecnologie ha voci più corte, quindi serve una copia
+          in più per coprire gli schermi larghi. */}
+      <Marquee items={COSA_COSTRUIAMO} duration={46} repeats={4} />
+      <Marquee items={TECNOLOGIE} duration={54} repeats={6} reverse />
     </div>
   </section>
 
@@ -227,9 +267,20 @@ const COMMITMENTS = [
   </section>
 
   <!-- ══════════════════════════════════════════════════════════════════
+       IL PRODOTTO IN MOVIMENTO
+       Registrazione vera di Nexia Home, non un video d'archivio.
+       ══════════════════════════════════════════════════════════════════ -->
+  <VideoLoop
+    eyebrow="Software in funzione"
+    title='Non un mockup: <span class="t-dim">il prodotto vero.</span>'
+    lead="Questa è Nexia Home mentre importa una fattura e la associa da sola al fornitore giusto. L'abbiamo costruita noi, e la manteniamo tutti i giorni."
+    caption="Registrazione dell'applicazione reale, senza montaggio."
+  />
+
+  <!-- ══════════════════════════════════════════════════════════════════
        COME LAVORIAMO
        ══════════════════════════════════════════════════════════════════ -->
-  <section class="section">
+  <section class="band-soft section">
     <div class="wrap">
       <div class="grid items-center gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
         <div class="order-2 lg:order-1">
@@ -261,9 +312,7 @@ const COMMITMENTS = [
                   <span class="pt-0.5">
                     <span class="flex items-baseline gap-2">
                       <span class="t-h3">{p.title}</span>
-                      <span class="text-[0.6875rem] font-bold tracking-wider text-[#cbd5e1]">
-                        0{i + 1}
-                      </span>
+                      <span class="phase-num">0{i + 1}</span>
                     </span>
                     <span class="t-body mt-1 block">{p.text}</span>
                   </span>
@@ -279,7 +328,7 @@ const COMMITMENTS = [
   <!-- ══════════════════════════════════════════════════════════════════
        PROGETTI
        ══════════════════════════════════════════════════════════════════ -->
-  <section class="band-soft section">
+  <section class="section">
     <div class="wrap">
       <div class="flex flex-wrap items-end justify-between gap-6">
         <div class="max-w-2xl">
@@ -288,9 +337,10 @@ const COMMITMENTS = [
             Cosa sappiamo <span class="t-dim">costruire.</span>
           </h2>
           <p class="t-lead mt-4">
-            Non abbiamo ancora lavori consegnati a clienti da mostrare. Questi
-            sono studi che abbiamo costruito noi, per intero, per far vedere
-            come affrontiamo un problema.
+            Nexia Home è il gestionale per amministratori di condominio che
+            abbiamo costruito e che manteniamo: contabilità, adempimenti
+            fiscali, assemblee e portale per i condòmini. La scheda racconta le
+            scelte tecniche, non solo il risultato.
           </p>
         </div>
         <a href="/portfolio" class="link-arrow shrink-0 pb-1">
@@ -348,7 +398,7 @@ const COMMITMENTS = [
        ══════════════════════════════════════════════════════════════════ -->
   {
     articles.length > 0 && (
-      <section class="section">
+      <section class="band-soft section">
         <div class="wrap">
           <div class="flex flex-wrap items-end justify-between gap-6">
             <div class="max-w-2xl">
@@ -373,24 +423,32 @@ const COMMITMENTS = [
     )
   }
 
-  <!-- ══════════════════════════════════════════════════════════════════
-       CHIUSURA
-       ══════════════════════════════════════════════════════════════════ -->
-  <section class="section-sm">
-    <div class="wrap">
-      <div class="card flex flex-col items-center gap-6 bg-[var(--color-soft)] px-6 py-12 text-center sm:px-12">
-        <h2 class="t-h2 max-w-2xl">
-          Hai un progetto, <span class="t-dim">o solo un dubbio?</span>
-        </h2>
-        <p class="t-lead max-w-xl">
-          Scrivici cosa ti serve. Se possiamo aiutarti te lo diciamo, e se non
-          possiamo ti indirizziamo altrove.
-        </p>
-        <a href="/contatti" class="btn btn-primary btn-lg">
-          Scrivici
-          <Icon name="arrow-right" size={17} />
-        </a>
-      </div>
-    </div>
-  </section>
+  <CtaBand />
 </Base>
+
+<style>
+  /* Numero d'ordine della fase. Decorativo, ma resta testo: il colore deve
+     comunque reggere il contrasto sul fondo chiaro della sezione, quindi si
+     usa il grigio di sistema già verificato e non un grigio più tenue. */
+  .phase-num {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-ink-3);
+  }
+
+  /* Alone dietro al globo: dà profondità al reticolo, che altrimenti
+     resterebbe sospeso sul bianco senza appoggio. */
+  .globe-halo {
+    position: absolute;
+    inset: 6%;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 42% 34%,
+      color-mix(in srgb, var(--color-cyan) 16%, transparent),
+      color-mix(in srgb, var(--color-soft) 55%, transparent) 58%,
+      transparent 72%
+    );
+  }
+</style>

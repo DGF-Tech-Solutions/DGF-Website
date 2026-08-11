@@ -3,6 +3,7 @@ import type { ImageMetadata } from "astro";
 import Base from "@/layouts/Base.astro";
 import PageHeader from "@/components/PageHeader.astro";
 import Faq from "@/components/Faq.astro";
+import CtaBand from "@/components/CtaBand.astro";
 import Icon from "@/components/Icon.astro";
 import { SERVICES } from "@/data/services";
 import { SITE } from "@/data/site";
@@ -194,28 +195,12 @@ const schema = [
     </div>
   </section>
 
-  <!-- Chiusura + altri servizi -->
-  <section class="on-dark section">
+  <!-- Gli altri servizi.
+       Sta su fondo chiaro apposta: fa da stacco fra la fascia scura "Quando
+       non ti serve" (più su) e la fascia di chiusura, che è anch'essa scura. -->
+  <section class="band-soft section-sm">
     <div class="wrap">
-      <div class="flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
-        <div>
-          <h2 class="t-h2 max-w-xl">
-            Parliamo del <span class="t-dim">tuo caso.</span>
-          </h2>
-          <p class="t-lead mt-4 max-w-xl">
-            Raccontaci cosa ti serve. Ti diamo una stima chiara, e se pensiamo che
-            ti convenga qualcos'altro te lo diciamo.
-          </p>
-        </div>
-        <a href="/contatti" class="btn btn-on-dark btn-lg shrink-0">
-          Scrivici
-          <Icon name="arrow-right" size={17} />
-        </a>
-      </div>
-
-      <hr class="my-12 h-px border-0 bg-[var(--color-line)]" />
-
-      <h3 class="t-eyebrow">Gli altri servizi</h3>
+      <h2 class="t-eyebrow">Gli altri servizi</h2>
       <div class="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {
           others.map((s) => (
@@ -223,11 +208,19 @@ const schema = [
               <span class="icon-tile icon-tile-sm">
                 <Icon name={ICONS[s.slug]} size={17} />
               </span>
-              <span class="text-[0.9375rem] font-semibold text-white">{s.title}</span>
+              <span class="text-[0.9375rem] font-semibold text-[var(--color-ink)]">
+                {s.title}
+              </span>
             </a>
           ))
         }
       </div>
     </div>
   </section>
+
+  <CtaBand
+    badge={service.title}
+    title='Parliamo del <span class="t-dim">tuo caso.</span>'
+    lead="Raccontaci cosa ti serve. Ti diamo una stima chiara, e se pensiamo che ti convenga qualcos'altro te lo diciamo."
+  />
 </Base>

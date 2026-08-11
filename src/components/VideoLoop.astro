@@ -1,0 +1,200 @@
+---
+import { Image } from "astro:assets";
+import poster from "@/assets/video/nexia-demo-poster.png";
+
+/*
+ * Spezzone in loop di un prodotto vero, non un video stock.
+ *
+ * Il sito precedente moriva perché caricava quattro video in autoplay più due
+ * canvas: qui ce n'è UNO solo, muto, senza audio nel file (traccia rimossa in
+ * fase di codifica, non solo silenziata), e con `preload="none"` così finché
+ * non si arriva alla sezione il browser non scarica nulla.
+ *
+ * La riproduzione parte quando la sezione entra nello schermo e si ferma
+ * quando esce: un video che gira dietro a tre schermate di distanza consuma
+ * batteria per niente. IntersectionObserver, ~500 byte di script.
+ */
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lead?: string;
+  caption?: string;
+}
+
+const { eyebrow, title, lead, caption } = Astro.props;
+---
+
+<section class="section">
+  <div class="wrap">
+    <div class="mx-auto max-w-2xl text-center">
+      {eyebrow && <span class="t-eyebrow">{eyebrow}</span>}
+      <h2 class="t-h2 mt-3" set:html={title} />
+      {lead && <p class="t-lead mt-5">{lead}</p>}
+    </div>
+
+    <figure class="video-frame reveal mt-12">
+      <div class="video-chrome" aria-hidden="true">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="video-url">nexia.app</span>
+      </div>
+
+      <div class="video-stage">
+        {/*
+          Il poster è un'immagine gestita da Astro (quindi compressa e servita
+          in formato moderno) sovrapposta al video: viene nascosta al primo
+          fotogramma riprodotto. Usare l'attributo `poster=""` avrebbe servito
+          il PNG originale non ottimizzato.
+        */}
+        <Image
+          src={poster}
+          alt="Interfaccia di Nexia durante l'importazione di una fattura"
+          widths={[640, 960, 1280]}
+          sizes="(min-width: 1280px) 1100px, 92vw"
+          loading="lazy"
+          class="video-poster"
+          data-poster
+        />
+        <video
+          class="video-el"
+          muted
+          loop
+          playsinline
+          preload="none"
+          disablepictureinpicture
+          tabindex="-1"
+          aria-label="Registrazione dell'interfaccia di Nexia"
+          data-loop
+        >
+          <source src="/video/nexia-demo.webm" type="video/webm" />
+          <source src="/video/nexia-demo.mp4" type="video/mp4" />
+        </video>
+      </div>
+    </figure>
+
+    {caption && <figcaption class="t-small mt-5 text-center">{caption}</figcaption>}
+  </div>
+</section>
+
+<style>
+  .video-frame {
+    max-width: 68rem;
+    margin-inline: auto;
+    overflow: hidden;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-xl);
+    background: var(--color-paper);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Finta barra del browser: chiarisce che si sta guardando un'applicazione
+     web e non un video promozionale. */
+  .video-chrome {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.625rem 0.875rem;
+    border-bottom: 1px solid var(--color-line);
+    background: var(--color-paper-2);
+  }
+  .dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--color-soft-2);
+  }
+  .video-url {
+    margin-left: 0.625rem;
+    padding: 0.125rem 0.625rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-paper);
+    border: 1px solid var(--color-line);
+    font-size: 0.6875rem;
+    color: var(--color-ink-3);
+  }
+
+  /* Rapporto fisso: lo spazio è già riservato prima che il video arrivi,
+     quindi nessuno spostamento di layout (CLS). */
+  .video-stage {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--color-soft);
+  }
+
+  /*
+   * Su telefono l'intera schermata di un gestionale sta in 370 px: le righe
+   * diventano trattini grigi e il video non dice più niente. Meglio entrare
+   * dentro l'inquadratura e mostrare bene UNA parte — l'elenco delle fatture —
+   * piuttosto che mostrare tutto e non far leggere niente.
+   *
+   * Con `scale(1.9)` resta visibile poco più della metà del fotogramma: su uno
+   * schermo a densità doppia i pixel della sorgente bastano ancora, quindi il
+   * testo si legge invece di sgranarsi. Poster e video hanno la stessa
+   * trasformazione, altrimenti l'immagine salterebbe al primo fotogramma.
+   */
+  @media (max-width: 640px) {
+    .video-poster,
+    .video-el {
+      transform: scale(1.9);
+      transform-origin: 45% 52%;
+    }
+  }
+  .video-poster,
+  .video-el {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .video-poster {
+    z-index: 1;
+    transition: opacity 400ms var(--ease-out-quart);
+  }
+  .video-poster[hidden] {
+    opacity: 0;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  const frames = document.querySelectorAll<HTMLElement>(".video-stage");
+
+  for (const stage of frames) {
+    const video = stage.querySelector<HTMLVideoElement>("[data-loop]");
+    const poster = stage.querySelector<HTMLElement>("[data-poster]");
+    if (!video) continue;
+
+    // Chi ha chiesto meno movimento resta sul fotogramma fermo: è comunque
+    // una schermata leggibile del prodotto, non si perde informazione.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) continue;
+
+    let started = false;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            if (!started) {
+              started = true;
+              video.preload = "auto";
+            }
+            /* `play()` restituisce una promise che il browser rifiuta se
+               nega la riproduzione automatica: in quel caso resta il poster,
+               che è già un'immagine sensata. Non c'è niente da recuperare,
+               ma va intercettata o finisce in console come errore. */
+            video.play().then(
+              () => poster?.setAttribute("hidden", ""),
+              () => {},
+            );
+          } else {
+            video.pause();
+          }
+        }
+      },
+      { rootMargin: "200px 0px", threshold: 0.15 },
+    );
+
+    observer.observe(stage);
+  }
+</script>

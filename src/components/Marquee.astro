@@ -1,0 +1,129 @@
+---
+/*
+ * Nastro scorrevole infinito, senza JavaScript.
+ *
+ * Come funziona: la lista viene stampata più volte e il contenitore trasla
+ * del 50% della propria larghezza. A fine corsa la seconda metà si trova
+ * esattamente dove stava la prima all'inizio, e l'animazione riparte senza
+ * che si veda il salto. È l'unico modo di ottenere un ciclo continuo animando
+ * solo `transform`, quindi sulla GPU.
+ *
+ * `repeats` deve essere PARI (altrimenti la metà non cade su una giuntura) e
+ * abbastanza alto perché metà nastro copra tutto lo schermo: se metà nastro è
+ * più stretta della finestra, dopo l'ultima voce resta un buco che attraversa
+ * la sezione. Il CSS non può misurare la riga da solo, quindi il numero di
+ * copie si sceglie a mano in base a quanto è lunga la lista.
+ *
+ * Sfuma ai due lati con una maschera, così le voci non vengono tagliate di
+ * netto sul bordo.
+ */
+interface Props {
+  items: string[];
+  /** Secondi per un giro completo. Più alto = più lento. */
+  duration?: number;
+  /** Verso di scorrimento. */
+  reverse?: boolean;
+  /** Quante copie della lista. Numero pari. Liste corte ne vogliono di più. */
+  repeats?: number;
+  class?: string;
+}
+
+const {
+  items,
+  duration = 42,
+  reverse = false,
+  repeats = 4,
+  class: className = "",
+} = Astro.props;
+
+// Solo la prima copia è leggibile dagli screen reader: le altre esistono per
+// riempire lo spazio e ripeterebbero lo stesso elenco all'infinito.
+const copies = Array.from({ length: Math.max(2, repeats) });
+---
+
+<div class:list={["marquee", className]} style={`--marquee-duration:${duration}s`}>
+  <div class:list={["marquee-track", reverse && "is-reverse"]}>
+    {
+      copies.map((_, copy) => (
+        <ul class="marquee-row" aria-hidden={copy > 0 ? "true" : undefined}>
+          {items.map((item) => (
+            <li class="marquee-item">{item}</li>
+          ))}
+        </ul>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .marquee {
+    overflow: hidden;
+    /* Sfumatura ai lati: il nastro entra ed esce invece di essere tagliato. */
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 8%,
+      #000 92%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 8%,
+      #000 92%,
+      transparent
+    );
+  }
+
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee-scroll var(--marquee-duration, 42s) linear infinite;
+    will-change: transform;
+  }
+  .marquee-track.is-reverse { animation-direction: reverse; }
+
+  @keyframes marquee-scroll {
+    from { transform: translate3d(0, 0, 0); }
+    to   { transform: translate3d(-50%, 0, 0); }
+  }
+
+  /* Fermando l'animazione al passaggio del mouse si può leggere una voce
+     senza rincorrerla. */
+  @media (hover: hover) {
+    .marquee:hover .marquee-track { animation-play-state: paused; }
+  }
+
+  .marquee-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-right: 0.75rem;
+    list-style: none;
+    margin: 0;
+  }
+
+  .marquee-item {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.625rem 1.125rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--color-line);
+    background: var(--color-paper);
+    box-shadow: var(--shadow-xs);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--color-ink-2);
+    white-space: nowrap;
+  }
+
+  /* Chi ha chiesto meno movimento vede un elenco fermo, che resta leggibile
+     perché la riga può scorrere a mano. */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
+    .marquee-track { animation: none; will-change: auto; }
+    /* Ferme, le copie sono solo rumore: resta la lista una volta sola. */
+    .marquee-track > .marquee-row[aria-hidden="true"] { display: none; }
+  }
+</style>

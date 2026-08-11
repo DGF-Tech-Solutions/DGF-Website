@@ -4,7 +4,7 @@ import Base from "@/layouts/Base.astro";
 import HeroBand from "@/components/HeroBand.astro";
 import ArticleCard from "@/components/ArticleCard.astro";
 import Explorer from "@/components/Explorer.astro";
-import Icon from "@/components/Icon.astro";
+import CtaBand from "@/components/CtaBand.astro";
 import { SITE } from "@/data/site";
 import illustration from "@/assets/illustrazioni/scena-blog.png";
 
@@ -81,21 +81,12 @@ const schema = {
           <p class="t-lead text-center">Non ci sono ancora articoli pubblicati.</p>
         )
       }
-
-      <div class="card mt-16 flex flex-col items-center gap-5 bg-[var(--color-soft)] px-6 py-10 text-center">
-        <span class="icon-tile bg-white"><Icon name="message" size={22} /></span>
-        <h2 class="t-h2 max-w-xl !text-[1.75rem]">
-          Hai una domanda <span class="t-dim">che qui non trovi?</span>
-        </h2>
-        <p class="t-body max-w-xl">
-          Scrivicela. Se è utile anche ad altri, probabilmente diventerà il
-          prossimo articolo.
-        </p>
-        <a href="/contatti" class="btn btn-primary">
-          Fai la tua domanda
-          <Icon name="arrow-right" size={16} />
-        </a>
-      </div>
     </div>
   </section>
+
+  <CtaBand
+    badge="Domande"
+    title='Hai una domanda <span class="t-dim">che qui non trovi?</span>'
+    lead="Scrivicela. Se possiamo risponderti lo facciamo, e se è utile anche ad altri probabilmente diventerà il prossimo articolo."
+  />
 </Base>

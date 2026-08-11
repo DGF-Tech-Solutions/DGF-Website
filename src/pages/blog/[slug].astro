@@ -3,6 +3,7 @@ import { getCollection, render } from "astro:content";
 import Base from "@/layouts/Base.astro";
 import Breadcrumbs from "@/components/Breadcrumbs.astro";
 import ArticleCard from "@/components/ArticleCard.astro";
+import CtaBand from "@/components/CtaBand.astro";
 import Icon from "@/components/Icon.astro";
 import { SITE } from "@/data/site";
 import { formatDate, isoDate, readingMinutes } from "@/lib/format";
@@ -116,4 +117,10 @@ const schema = {
       </section>
     )
   }
+
+  <CtaBand
+    badge="Parliamone"
+    title='Ti serve una mano <span class="t-dim">su questo?</span>'
+    lead="Se l'argomento dell'articolo riguarda un problema che hai adesso, scrivici: ti diciamo cosa faremmo noi, anche se la risposta è che non ti serve niente."
+  />
 </Base>
