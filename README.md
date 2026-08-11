@@ -7,37 +7,37 @@ Sito vetrina di [DGF Tech Solutions](https://dgftechsolutions.com).
 
 ## Comandi
 
-### Con Docker (consigliato)
+### Mentre lavori
 
 ```bash
-docker compose up dev       # http://localhost:4321  sviluppo, si ricarica da solo
-docker compose up preview   # http://localhost:8080  il sito COMPILATO, come sarà online
+npm install      # una volta
+npm run dev      # http://localhost:4321
+npm run build    # build statica in ./dist
+npm run check    # controllo dei tipi e dei contenuti
 ```
 
-**Usa `preview` prima di ogni pubblicazione.** Non è la stessa cosa del dev
-server: `preview` compila il sito e lo serve con nginx configurato come
-GitHub Pages, quindi vedi il comportamento reale — indirizzi risolti come su
-Pages (`/admin` funziona, sul dev server dà 404), gzip attivo, pagina 404
-vera, immagini ottimizzate.
+Node 22 (vedi `.nvmrc`).
 
-Verificare che la build passerà su GitHub Actions, prima di fare push:
+### Prima di pubblicare — anteprima fedele
+
+```bash
+docker compose up --build    # http://localhost:8080
+```
+
+Compila il sito e lo serve con nginx configurato come GitHub Pages. **Non è
+la stessa cosa di `npm run dev`**: mostra comportamenti che il dev server
+nasconde —
+
+- indirizzi risolti come su Pages: `/admin` risponde (in sviluppo dà **404**)
+- risposte compresse con gzip
+- pagina 404 del sito, non quella di nginx
+- immagini realmente ottimizzate dalla build
+
+Per verificare che la build passerà su GitHub Actions, prima del push:
 
 ```bash
 docker run --rm -v "${PWD}:/src:ro" node:22-bookworm-slim sh /src/scripts/ci-check.sh
 ```
-
-### Senza Docker
-
-```bash
-npm install      # una volta
-npm run dev      # sviluppo su http://localhost:4321
-npm run build    # build statica in ./dist
-npm run preview  # anteprima locale della build
-npm run check    # controllo dei tipi e dei contenuti
-```
-
-Node 22 (vedi `.nvmrc`). Attenzione: il dev server **non** replica il
-comportamento di GitHub Pages sugli indirizzi di cartella.
 
 ---
 

@@ -1,44 +1,24 @@
 # ============================================================================
-# Ambienti di test locali del sito DGF.
+# Anteprima del sito DGF — un solo comando.
 #
-#   docker compose up dev       ->  http://localhost:4321   sviluppo, si
-#                                   aggiorna da solo quando salvi un file
+#   docker compose up --build     ->  http://localhost:8080
 #
-#   docker compose up preview   ->  http://localhost:8080   il sito COMPILATO,
-#                                   servito come farà GitHub Pages
+# Compila il sito e lo serve con nginx configurato come GitHub Pages. È il
+# modo fedele di vedere cosa succederà online PRIMA di pubblicare.
 #
-# Quale usare:
-#   - "dev"     mentre lavori ai contenuti o alla grafica
-#   - "preview" prima di pubblicare, per vedere il sito com'è davvero:
-#               indirizzi risolti come su Pages (/admin funziona), gzip
-#               attivo, pagina 404 vera, immagini ottimizzate
+# Differenze che solo questo ambiente mostra, e che il server di sviluppo
+# nasconde:
+#   - risoluzione degli indirizzi identica a Pages: /servizi funziona senza
+#     barra finale, e /admin risponde (sul dev server dà 404)
+#   - risposte compresse con gzip, come le serve Pages
+#   - pagina 404 del sito al posto di quella di nginx
+#   - immagini realmente ottimizzate dalla build, non servite al volo
+#
+# Per lavorare ai contenuti usa invece `npm run dev` (più veloce, si ricarica
+# da solo). Questo container serve al controllo finale prima del merge.
 # ============================================================================
 
 services:
-  # ── Sviluppo, con ricaricamento automatico ────────────────────────────────
-  dev:
-    image: node:22-bookworm-slim
-    container_name: dgf-dev
-    working_dir: /app
-    # `--host 0.0.0.0` è indispensabile: senza, il server ascolta solo dentro
-    # il container e dal browser di Windows non lo raggiungi.
-    command: sh -c "npm ci && npx astro dev --host 0.0.0.0 --ignore-lock"
-    ports:
-      - "4321:4321"
-    volumes:
-      - .:/app
-      # node_modules resta DENTRO il container: quelli installati su Windows
-      # contengono binari per Windows (sharp) che su Linux non funzionano.
-      - dgf_node_modules:/app/node_modules
-    environment:
-      # Su volumi montati da Windows gli eventi del filesystem non arrivano:
-      # senza polling il ricaricamento automatico non scatta.
-      - CHOKIDAR_USEPOLLING=true
-      - WATCHPACK_POLLING=true
-    stdin_open: true
-    tty: true
-
-  # ── Anteprima di produzione ───────────────────────────────────────────────
   preview:
     build:
       context: .
@@ -47,6 +27,3 @@ services:
     ports:
       - "8080:80"
     restart: unless-stopped
-
-volumes:
-  dgf_node_modules:
