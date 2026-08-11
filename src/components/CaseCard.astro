@@ -41,9 +41,9 @@ const haystack = `${d.client} ${d.title} ${d.summary} ${d.category} ${d.services
   .replace(/[̀-ͯ]/g, "");
 
 /* La colonna è stretta: oltre una certa quantità i tag diventano un muro e
-   rubano lo spazio al riassunto, quindi si mostrano i primi e si conta il
-   resto. L'elenco completo sta nella scheda tecnica del progetto. */
-const TAG_LIMIT = 4;
+   rubano lo spazio al riassunto, quindi ne sta una riga sola e il resto si
+   conta. L'elenco completo sta nella scheda tecnica del progetto. */
+const TAG_LIMIT = 3;
 const allTags = [...d.services, ...d.stack];
 const shownTags = allTags.slice(0, TAG_LIMIT);
 const hiddenTags = allTags.length - shownTags.length;
@@ -53,9 +53,12 @@ const hiddenTags = allTags.length - shownTags.length;
   href={`/portfolio/${entry.id}`}
   class="card group flex flex-col overflow-hidden"
   data-search={haystack}
-  data-cat={d.category}
+  data-cat={[d.category, ...d.services].join("|")}
 >
-  <div class="ratio-16-10 overflow-hidden border-b border-[var(--color-line)] bg-[var(--color-paper-2)]">
+  <!-- 16:9 e non 16:10: l'anteprima serve a far capire di che tipo di
+       software si tratta, e per quello bastano meno pixel di quanti ne
+       servano a renderla il pezzo più alto della scheda. -->
+  <div class="cover overflow-hidden border-b border-[var(--color-line)] bg-[var(--color-paper-2)]">
     <Image
       src={d.cover}
       alt={`Anteprima del progetto ${d.client}`}
@@ -77,7 +80,7 @@ const hiddenTags = allTags.length - shownTags.length;
       {d.title}
     </Heading>
 
-    <p class="t-body mt-3 flex-1 text-[0.875rem]">{d.summary}</p>
+    <p class="summary t-body mt-3 flex-1 text-[0.875rem]">{d.summary}</p>
 
     <!-- Servizi e tecnologie: i primi pieni, le seconde a filo. Sono due tipi
          di informazione diversi e distinguerli evita di leggerli come un
@@ -100,6 +103,20 @@ const hiddenTags = allTags.length - shownTags.length;
 </a>
 
 <style>
+  .cover { aspect-ratio: 16 / 9; }
+
+  /*
+   * Il riassunto si ferma a tre righe. Serve a tenere la scheda vicina
+   * all'altezza di quella di un articolo: chi scorre l'elenco confronta i
+   * progetti, non li legge, e il testo per intero sta nella pagina del caso.
+   */
+  .summary {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
   /* Chip di categoria: maiuscoletto piccolo su fondo azzurro. */
   .tag {
     display: inline-flex;

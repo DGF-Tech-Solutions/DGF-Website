@@ -6,10 +6,15 @@ import Icon from "@/components/Icon.astro";
  * "explorer" di Nexia.
  *
  * Come funziona: gli elementi da filtrare stanno nello slot e portano due
- * attributi — `data-search` (testo in cui cercare, già in minuscolo) e
- * `data-cat` (categoria). Lo script nasconde e mostra, non ricostruisce
- * niente: il contenuto è tutto nell'HTML, quindi resta indicizzabile da
- * Google e leggibile anche se lo script non parte.
+ * attributi: `data-search` (testo in cui cercare, già in minuscolo) e
+ * `data-cat` (le etichette sotto cui l'elemento ricade, separate da `|`).
+ * Lo script nasconde e mostra, non ricostruisce niente: il contenuto è tutto
+ * nell'HTML, quindi resta indicizzabile da Google e leggibile anche se lo
+ * script non parte.
+ *
+ * Le etichette sono più d'una perché non ogni elenco si filtra per categoria:
+ * un progetto ha una categoria sola ma tre o quattro servizi, e filtrare per
+ * servizio è l'unica cosa che l'utente voglia davvero fare lì.
  *
  * Costo: poco più di un kB, ed è il prezzo giusto per una funzione che
  * l'utente usa davvero.
@@ -25,12 +30,18 @@ interface Props {
    * e confonde.
    */
   categories?: { label: string; count: number }[];
+  /**
+   * Numero mostrato sul chip "Tutti". Va passato quando un elemento ricade
+   * sotto più etichette (i progetti, che hanno più servizi): lì la somma dei
+   * conteggi è maggiore del numero di elementi e direbbe una cosa falsa.
+   */
+  total?: number;
   /** Parola per il messaggio di elenco vuoto ("articoli", "servizi"…). */
   noun: string;
 }
 
-const { placeholder, label, categories = [], noun } = Astro.props;
-const total = categories.reduce((n, c) => n + c.count, 0);
+const { placeholder, label, categories = [], total, noun } = Astro.props;
+const allCount = total ?? categories.reduce((n, c) => n + c.count, 0);
 const showChips = categories.length > 1;
 ---
 
@@ -69,7 +80,7 @@ const showChips = categories.length > 1;
     showChips && (
       <div class="mt-5 flex flex-wrap gap-2">
         <button type="button" class="filter-chip" data-explorer-cat="" aria-pressed="true">
-          Tutti <span class="filter-count">{total}</span>
+          Tutti <span class="filter-count">{allCount}</span>
         </button>
         {categories.map((c) => (
           <button type="button" class="filter-chip" data-explorer-cat={c.label} aria-pressed="false">
@@ -229,9 +240,10 @@ const showChips = categories.length > 1;
       let visible = 0;
       for (const el of items) {
         const haystack = el.dataset.search ?? "";
-        const cat = el.dataset.cat ?? "";
+        const cats = (el.dataset.cat ?? "").split("|");
         const matches =
-          (!query || haystack.includes(query)) && (!category || cat === category);
+          (!query || haystack.includes(query)) &&
+          (!category || cats.includes(category));
         el.hidden = !matches;
         if (matches) visible++;
       }

@@ -12,11 +12,24 @@ const projects = (await getCollection("portfolio")).sort(
   (a, b) => a.data.order - b.data.order,
 );
 
-/* Categorie con il conteggio, ordinate per frequenza: i chip li costruiamo
-   dai contenuti reali, non da un elenco scritto a mano che poi diverge. */
+/*
+ * I chip di questa pagina filtrano per SERVIZIO, non per categoria.
+ *
+ * La categoria di un progetto è una sola e descrive il prodotto finito
+ * ("Software gestionale"): con pochi progetti diventa un filtro con una voce,
+ * che non filtra niente. Il servizio invece è ciò che il visitatore ha in
+ * testa quando arriva qui — cerca chi sa fare la cosa che serve a lui — e un
+ * progetto ne tocca tre o quattro, quindi i chip restano utili anche quando
+ * i lavori sono pochi.
+ *
+ * I conteggi si ricavano dai contenuti, non da un elenco scritto a mano che
+ * prima o poi diverge.
+ */
 const counts = new Map<string, number>();
 for (const p of projects) {
-  counts.set(p.data.category, (counts.get(p.data.category) ?? 0) + 1);
+  for (const service of p.data.services) {
+    counts.set(service, (counts.get(service) ?? 0) + 1);
+  }
 }
 const categories = [...counts.entries()]
   .map(([label, count]) => ({ label, count }))
@@ -62,6 +75,7 @@ const schema = {
             placeholder="Cerca un progetto, un settore o una tecnologia…"
             label="Cerca fra i progetti"
             categories={categories}
+            total={projects.length}
             noun="progetto"
           >
             {/* Il conteggio sta dentro lo slot dell'Explorer, sopra la griglia:
