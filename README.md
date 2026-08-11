@@ -28,7 +28,7 @@ Compila il sito e lo serve con nginx configurato come GitHub Pages. **Non è
 la stessa cosa di `npm run dev`**: mostra comportamenti che il dev server
 nasconde —
 
-- indirizzi risolti come su Pages: `/admin` risponde (in sviluppo dà **404**)
+- indirizzi risolti come su Pages, anche senza barra finale
 - risposte compresse con gzip
 - pagina 404 del sito, non quella di nginx
 - immagini realmente ottimizzate dalla build
@@ -50,7 +50,7 @@ docker run --rm -v "${PWD}:/src:ro" node:22-bookworm-slim sh /src/scripts/ci-che
 | Contenuti | Content collections markdown, validate a build time |
 | Font | Inter + JetBrains Mono, self-hostati e sottoinsiemi da Astro |
 | Immagini | Ottimizzate a build time da sharp (AVIF/WebP, misure multiple) |
-| Redazione | Sveltia CMS su `/admin` |
+| Redazione | File markdown, modificabili da VS Code o dall'editor di GitHub |
 | Hosting | GitHub Pages, dominio custom, deploy via GitHub Actions |
 
 **JavaScript spedito al browser: 0 kB su tutte le pagine tranne `/contatti`,
@@ -99,9 +99,9 @@ src/
 
 ## Modificare i contenuti
 
-**Blog e progetti** → dal pannello su `/admin`, oppure modificando i file in
-`src/content/`. Sono la stessa cosa: vedi
-[docs/PANNELLO-REDAZIONE.md](docs/PANNELLO-REDAZIONE.md).
+**Blog e progetti** → i file markdown in `src/content/blog/` e
+`src/content/portfolio/`. Si modificano da VS Code oppure direttamente
+dall'editor di GitHub: il commit su `main` fa partire il deploy.
 
 **Testi delle pagine fisse** → nei rispettivi file `.astro` in `src/pages/`.
 
@@ -167,16 +167,14 @@ Ogni push su `main` fa partire
 dell'artefatto, pubblicazione su GitHub Pages. Circa un minuto.
 
 Il workflow si interrompe se mancano `CNAME`, `.nojekyll`, `index.html`,
-`404.html`, la sitemap o il pannello: meglio non pubblicare che pubblicare un
-sito rotto.
+`404.html` o la sitemap: meglio non pubblicare che pubblicare un sito rotto.
 
-Salvare un articolo dal pannello è un commit su `main`, quindi fa partire lo
-stesso processo.
+Anche modificare un file dall'editor di GitHub è un commit su `main`, quindi
+fa partire lo stesso processo.
 
 ---
 
 ## Documentazione
 
-- [Pannello di redazione](docs/PANNELLO-REDAZIONE.md) — come scrivere e come creare il token
 - [Design system](docs/DESIGN-SYSTEM.md) — token, tipografia, componenti
 - [Architettura](docs/ARCHITETTURA.md) — scelte tecniche e perché

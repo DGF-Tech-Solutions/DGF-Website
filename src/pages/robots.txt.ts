@@ -11,14 +11,11 @@ import { SITE } from "@/data/site";
  *
  * Bloccato solo Bytespider: scraper aggressivo che consuma banda senza
  * restituire alcuna visibilità.
- *
- * Il pannello CMS è escluso: non ha senso indicizzare una schermata di login.
  */
 export const GET: APIRoute = () => {
   const body = `# ${SITE.name}
 User-agent: *
 Allow: /
-Disallow: /admin
 
 User-agent: Bytespider
 Disallow: /

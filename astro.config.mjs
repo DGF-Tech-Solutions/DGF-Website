@@ -83,8 +83,8 @@ export default defineConfig({
     /*
      * Le citazioni con marcatore `> [!ATTENZIONE]` diventano riquadri colorati.
      * Sta qui e non in un componente perché il corpo dei contenuti è markdown
-     * puro: chi scrive dal pannello /admin non deve conoscere altro che il
-     * markdown, e il marcatore è la stessa convenzione degli avvisi di GitHub.
+     * puro: chi scrive un articolo non deve conoscere altro che il markdown,
+     * e il marcatore è la stessa convenzione degli avvisi di GitHub.
      *
      * Si aggancia al processore Sätteri, che in Astro 7 è quello di serie.
      * La strada alternativa (`markdown.rehypePlugins`) obbligherebbe a
@@ -94,12 +94,7 @@ export default defineConfig({
     processor: satteri({ hastPlugins: [satteriCallout()] }),
   },
 
-  integrations: [
-    sitemap({
-      // Il pannello CMS non deve finire nella sitemap né su Google.
-      filter: (page) => !page.includes("/admin"),
-    }),
-  ],
+  integrations: [sitemap()],
 
   vite: {
     plugins: [tailwindcss()],

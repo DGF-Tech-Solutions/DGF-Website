@@ -1,8 +1,8 @@
 /**
  * Trasforma una citazione markdown in un riquadro colorato.
  *
- * Chi scrive dal pannello /admin non deve imparare nessun componente: scrive
- * una citazione normale e mette un marcatore sulla prima riga.
+ * Chi scrive un articolo non deve imparare nessun componente: scrive una
+ * citazione normale e mette un marcatore sulla prima riga.
  *
  *     > [!ATTENZIONE]
  *     > Usare la tabella sbagliata è la causa numero uno delle contestazioni.

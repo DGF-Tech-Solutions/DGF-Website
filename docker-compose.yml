@@ -9,7 +9,7 @@
 # Differenze che solo questo ambiente mostra, e che il server di sviluppo
 # nasconde:
 #   - risoluzione degli indirizzi identica a Pages: /servizi funziona senza
-#     barra finale, e /admin risponde (sul dev server dà 404)
+#     barra finale
 #   - risposte compresse con gzip, come le serve Pages
 #   - pagina 404 del sito al posto di quella di nginx
 #   - immagini realmente ottimizzate dalla build, non servite al volo

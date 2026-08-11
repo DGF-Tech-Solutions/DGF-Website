@@ -91,15 +91,15 @@ chiusura scura + rimando ai fratelli
 
 | Cosa | Dove | Chi lo modifica |
 |---|---|---|
-| Articoli del blog | `src/content/blog/*.md` | Dal pannello `/admin` |
-| Progetti | `src/content/portfolio/*.md` | Dal pannello `/admin` |
+| Articoli del blog | `src/content/blog/*.md` | Markdown, anche da GitHub |
+| Progetti | `src/content/portfolio/*.md` | Markdown, anche da GitHub |
 | I cinque servizi | `src/data/services.ts` | Nel codice |
 | Contatti, menu, P.IVA | `src/data/site.ts` | Nel codice |
 | Testi delle pagine fisse | I rispettivi `.astro` | Nel codice |
 
-La divisione non è arbitraria: dal pannello si modifica ciò che cambia spesso e
-il cui errore è circoscritto. Un refuso in un articolo si corregge; un refuso
-nella home lo vedono tutti subito.
+La divisione non è arbitraria: nei markdown sta ciò che cambia spesso e il cui
+errore è circoscritto. Un refuso in un articolo si corregge; un refuso nella
+home lo vedono tutti subito.
 
 ---
 

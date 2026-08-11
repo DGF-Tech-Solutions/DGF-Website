@@ -10,6 +10,8 @@ year: "2026"
 kind: interno
 cover: /src/assets/mockups/nexia.webp
 coverFull: /src/assets/mockups/nexia-full.webp
+liveUrl: https://nexiahome.it
+liveLabel: Vai a nexiahome.it
 services:
   - Software su misura
   - UI/UX Design

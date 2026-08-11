@@ -12,8 +12,8 @@ import { z } from "zod";
  *  - lo schema qui sotto è validato a BUILD TIME: se un articolo ha un campo
  *    sbagliato o mancante, la build fallisce invece di pubblicare una pagina
  *    rotta;
- *  - sono gli stessi file che il pannello Sveltia CMS legge e scrive, quindi
- *    scrivere dall'editor o da VS Code è esattamente la stessa cosa.
+ *  - si scrivono da VS Code o direttamente dall'editor di GitHub: sono
+ *    normalissimi file markdown, il commit fa partire il deploy.
  */
 
 const blog = defineCollection({
@@ -51,6 +51,10 @@ const portfolio = defineCollection({
       kind: z.enum(["dimostrativo", "cliente", "interno"]).default("dimostrativo"),
       cover: image(),
       coverFull: image().optional(),
+      /** Indirizzo pubblico del progetto, se è online e visitabile. */
+      liveUrl: z.string().url().optional(),
+      /** Testo del pulsante che porta al sito. */
+      liveLabel: z.string().optional(),
       services: z.array(z.string()).min(1),
       stack: z.array(z.string()).min(1),
       metrics: z

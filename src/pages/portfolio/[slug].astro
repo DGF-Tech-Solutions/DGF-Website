@@ -77,8 +77,8 @@ const schema = {
   <!-- ══════════════════════════════════════════════════════════════════
        TESTATA
        ══════════════════════════════════════════════════════════════════ -->
-  <section class="glow-bg overflow-hidden border-b border-[var(--color-line)]">
-    <div class="wrap pt-6 pb-12 sm:pt-8 sm:pb-16">
+  <section class="band-brand">
+    <div class="wrap relative z-10 pt-6 pb-12 sm:pt-8 sm:pb-16">
       <Breadcrumbs
         items={[{ label: "Progetti", href: "/portfolio" }, { label: d.client }]}
         class="mb-8"
@@ -89,7 +89,7 @@ const schema = {
           sole riempiono il primo schermo. */}
       <div class="grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-14">
         <div>
-          <span class="chip">{d.category}</span>
+          <span class="badge-brand">{d.category}</span>
 
           {/* Titolo più contenuto del `.t-h1` di sistema: i titoli dei casi
               sono frasi lunghe, e a 56px andrebbero su tre righe occupando da
@@ -110,10 +110,27 @@ const schema = {
             <span class="t-small">{kindLabel(d.kind, d.client)}</span>
           </div>
 
+          {/* Il progetto è online: il pulsante ci porta. Su un caso di studio
+              è la prova più forte che esista, più di qualunque schermata.
+              `rel="noopener"` perché apre una scheda nuova. */}
+          {
+            d.liveUrl && (
+              <a
+                href={d.liveUrl}
+                target="_blank"
+                rel="noopener"
+                class="btn btn-on-dark mt-8"
+              >
+                {d.liveLabel ?? "Vedi il progetto online"}
+                <Icon name="arrow-up-right" size={16} />
+              </a>
+            )
+          }
+
           {
             isDemo && (
               <p class="notice mt-7">
-                <Icon name="shield" size={17} class="mt-0.5 shrink-0 text-[var(--color-navy)]" />
+                <Icon name="shield" size={17} class="mt-0.5 shrink-0 text-[var(--color-cyan)]" />
                 <span>
                   <strong class="font-semibold text-[var(--color-ink)]">Progetto dimostrativo.</strong>{" "}
                   Studio realizzato internamente per mostrare metodo e capacità
@@ -129,7 +146,7 @@ const schema = {
           {
             isInternal && (
               <p class="notice mt-7">
-                <Icon name="shield" size={17} class="mt-0.5 shrink-0 text-[var(--color-navy)]" />
+                <Icon name="shield" size={17} class="mt-0.5 shrink-0 text-[var(--color-cyan)]" />
                 <span>
                   <strong class="font-semibold text-[var(--color-ink)]">Progetto interno.</strong>{" "}
                   {d.client} è un prodotto di DGF: l'abbiamo pensato, costruito e
@@ -174,9 +191,14 @@ const schema = {
       <section class="band-soft">
         <div class="wrap py-12 sm:py-16">
           <h2 class="t-eyebrow text-center">{metricsTitle}</h2>
+          {/* Niente `reveal` qui: con la testata più corta questa fascia
+              arriva a ridosso della piega, e una dissolvenza in corso viene
+              misurata come testo a basso contrasto. È la stessa regola
+              annotata in global.css: le animazioni di comparsa solo sotto la
+              piega, senza eccezioni da ricordare a memoria. */}
           <dl class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {d.metrics.map((m) => (
-              <div class="card p-6 text-center reveal">
+              <div class="card p-6 text-center">
                 <dt class="t-h2 tabular !text-[2rem]">{m.value}</dt>
                 <dd class="t-small mt-2">{m.label}</dd>
               </div>
@@ -198,7 +220,7 @@ const schema = {
        ══════════════════════════════════════════════════════════════════ -->
   <section class="section">
     <div class="wrap">
-      <div class="case-body">
+      <div class="case-body reading">
         <Toc items={tocItems} />
 
         <div class="prose !max-w-none">
@@ -281,17 +303,20 @@ const schema = {
 </Base>
 
 <style>
+  /* Sta dentro la fascia blu: il fondo azzurro chiaro del resto del sito qui
+     sparirebbe, quindi è un velo di bianco sul blu. */
   .notice {
     display: flex;
     gap: 0.75rem;
     max-width: 44rem;
+    margin-top: 1.75rem;
     padding: 0.875rem 1.125rem;
-    border: 1px solid var(--color-line);
+    border: 1px solid rgb(255 255 255 / 0.18);
     border-radius: var(--radius-lg);
-    background: var(--color-soft);
+    background: rgb(255 255 255 / 0.1);
     font-size: 0.875rem;
     line-height: 1.6;
-    color: var(--color-ink-3);
+    color: rgb(255 255 255 / 0.78);
   }
 
   /*
@@ -317,13 +342,9 @@ const schema = {
     box-shadow: var(--shadow-lg);
   }
 
-  /* Colonna di lettura centrata sulla misura di sistema: dentro ci sono
-     paragrafi, schede e riquadri, e tenerli tutti sulla stessa larghezza è
-     ciò che fa sembrare la pagina una cosa sola. */
-  .case-body {
-    max-width: var(--measure-text);
-    margin-inline: auto;
-  }
+  /* La larghezza la dà `.reading` (global.css), condivisa con gli articoli
+     del blog: paragrafi, schede e riquadri stanno tutti sulla stessa
+     larghezza, ed è ciò che fa sembrare la pagina una cosa sola. */
   .case-body > :global(.prose) { margin-top: 3rem; }
 
   /* L'ancora dell'indice non deve finire sotto la barra in alto. */

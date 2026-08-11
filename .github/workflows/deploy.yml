@@ -1,9 +1,8 @@
 name: Deploy sito su GitHub Pages
 
 # Si avvia a ogni push sul branch principale, oppure manualmente dalla
-# tab "Actions" del repo. Il pannello di redazione (Sveltia CMS) committa
-# su main: quindi salvare un articolo fa partire automaticamente questo
-# workflow e il sito si aggiorna da solo in circa un minuto.
+# tab "Actions" del repo. Anche una modifica fatta direttamente da GitHub
+# è un push su main: il sito si aggiorna da solo in circa un minuto.
 on:
   push:
     branches: [main]
@@ -46,7 +45,6 @@ jobs:
           test -f dist/index.html || { echo "::error::dist/index.html mancante: export non riuscito"; exit 1; }
           test -f dist/404.html  || { echo "::error::dist/404.html mancante: le pagine inesistenti non mostrerebbero la nostra 404"; exit 1; }
           test -f dist/sitemap-index.xml || { echo "::error::sitemap mancante"; exit 1; }
-          test -f dist/admin/index.html || { echo "::error::pannello di redazione mancante"; exit 1; }
           echo "Artefatto verificato: $(find dist -name '*.html' | wc -l) pagine HTML."
 
       - name: Prepara l'artefatto per Pages

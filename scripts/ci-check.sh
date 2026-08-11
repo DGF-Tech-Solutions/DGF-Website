@@ -32,7 +32,7 @@ npm run build 2>&1 | tail -4
 echo ""
 
 echo "-- verifica artefatto (gli stessi controlli del workflow) --"
-for f in CNAME .nojekyll index.html 404.html sitemap-index.xml admin/index.html; do
+for f in CNAME .nojekyll index.html 404.html sitemap-index.xml; do
   if [ -f "dist/$f" ]; then
     echo "  OK        dist/$f"
   else

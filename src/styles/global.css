@@ -227,8 +227,100 @@
 
 .prose-measure { max-width: var(--measure-text); }
 
+/*
+ * Colonna di lettura. Il testo riempie tutta la larghezza del contenitore
+ * invece di fermarsi a metà pagina lasciando un vuoto a destra: è il
+ * contenitore a essere stretto, non il testo a essere allineato a sinistra.
+ * Dentro va messo `.prose !max-w-none`, altrimenti la misura di `.prose`
+ * restringerebbe una seconda volta.
+ */
+.reading {
+  max-width: var(--measure-text);
+  margin-inline: auto;
+}
+
 /* Fascia alternata: si usa a sezioni alterne, mai due di fila. */
 .band-soft { background: var(--color-paper-2); }
+
+/* ----------------------------------------------------------------------------
+   Fascia blu di testata.
+   Il navy del marchio che sfuma verso il blu, con il testo bianco sopra.
+
+   Si ridefiniscono i TOKEN invece di applicare `text-white` sui singoli
+   elementi, e non è un vezzo: le classi tipografiche del sito (.t-h1, .t-dim…)
+   stanno fuori da @layer, quindi nella cascata battono le utility di Tailwind.
+   `text-white` su un h1 non avrebbe alcun effetto e il titolo resterebbe navy
+   scuro sul fondo blu. Ridefinire le variabili fa adattare tutto da solo.
+   ------------------------------------------------------------------------- */
+.band-brand {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  --color-ink: #ffffff;
+  --color-ink-2: rgb(255 255 255 / 0.82);
+  --color-ink-3: rgb(255 255 255 / 0.7);
+  --color-line: rgb(255 255 255 / 0.18);
+
+  background: linear-gradient(
+    160deg,
+    var(--color-navy) 0%,
+    color-mix(in oklab, var(--color-navy) 78%, var(--color-blue)) 55%,
+    color-mix(in oklab, var(--color-blue) 82%, var(--color-cyan)) 100%
+  );
+  color: rgb(255 255 255 / 0.82);
+}
+
+/* Cerchi appena accennati sul fondo: danno profondità senza immagini. */
+.band-brand::before,
+.band-brand::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  border-radius: 50%;
+  border: 1px solid rgb(255 255 255 / 0.09);
+  pointer-events: none;
+}
+.band-brand::before {
+  width: 26rem;
+  height: 26rem;
+  top: -6rem;
+  right: -4rem;
+}
+.band-brand::after {
+  width: 15rem;
+  height: 15rem;
+  bottom: -5rem;
+  right: 22%;
+  background: rgb(255 255 255 / 0.03);
+  border-color: transparent;
+}
+
+/* Le briciole di pane vivono sul fondo scuro: vanno schiarite. */
+.band-brand nav a,
+.band-brand nav span { color: rgb(255 255 255 / 0.62); }
+@media (hover: hover) {
+  .band-brand nav a:hover { color: #fff; }
+}
+
+.band-brand .t-eyebrow { color: rgb(255 255 255 / 0.72); }
+.band-brand .t-dim { color: rgb(255 255 255 / 0.5); }
+
+/* Pillola sul fondo blu: il `.chip` chiaro qui sparirebbe. */
+.badge-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4375rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: var(--radius-pill);
+  background: rgb(255 255 255 / 0.12);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.16);
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
 
 /* ============================================================================
    COMPONENTI

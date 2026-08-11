@@ -223,8 +223,8 @@ e la voce "Servizi" è comunque un link alla pagina indice.
 
 1. **Validazione a build time.** Un articolo con un campo mancante fa fallire
    la build, invece di pubblicare una pagina rotta.
-2. **Stessi file per il pannello.** Sveltia CMS legge e scrive esattamente
-   quei markdown: scrivere dall'editor o da VS Code è la stessa cosa.
+2. **Nessun livello intermedio.** I contenuti sono normalissimi markdown:
+   si scrivono da VS Code o dall'editor di GitHub, e il commit pubblica.
 
 Il campo `kind` (`dimostrativo` / `cliente`) governa come la pagina presenta i
 numeri: **obiettivi di progetto** oppure **risultati**. Non è un dettaglio
@@ -240,7 +240,7 @@ cosmetico, è una questione di correttezza.
   `BreadcrumbList`)
 - La P.IVA nell'`Organization` è l'identificatore che distingue l'azienda dalle
   omonime estere (DGF Group, DGF Technologies)
-- `sitemap-index.xml` generato, con `/admin` escluso
+- `sitemap-index.xml` generato a build time dalle pagine reali
 - `llms.txt` **generato a build time** dai contenuti reali: un file scritto a
   mano diventa sbagliato al primo contenuto nuovo
 
