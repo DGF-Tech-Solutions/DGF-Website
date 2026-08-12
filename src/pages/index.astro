@@ -92,7 +92,7 @@ const PHASES = [
        documento, quindi non c'è nessuna immagine da scaricare sopra la piega
        e l'LCP resta il titolo.
        ══════════════════════════════════════════════════════════════════ -->
-  <section class="hero glow-bg under-nav overflow-hidden">
+  <section class="hero glow-bg under-nav">
     <div class="wrap">
       <div class="hero-griglia grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
         <div class="hero-testo">
@@ -206,7 +206,7 @@ const PHASES = [
        servizi resterebbero incollati per tutto il resto della pagina.
        ══════════════════════════════════════════════════════════════════ -->
   <div class="pila-parallasse">
-  <section class="section servizi-fondo">
+  <section class="section band-soft servizi-fondo">
     {/*
       Il contenuto arretra mentre la sezione esce dallo schermo: rimpicciolisce
       di poco e si spegne, così il foglio bianco di Nexia sembra passargli
@@ -342,7 +342,7 @@ const PHASES = [
        ══════════════════════════════════════════════════════════════════ -->
   {
     articles.length > 0 && (
-      <section class="blog-fascia section">
+      <section class="blog-fascia band-soft section">
         <div class="wrap">
           <div class="flex flex-wrap items-end justify-between gap-6">
             <div class="max-w-2xl">
@@ -393,9 +393,9 @@ const PHASES = [
      blu della CTA subito sotto, come i servizi preparano la fascia Nexia.
      Prima era il grigio di `band-soft`, fuori dalla famiglia azzurra, e
      per giunta uguale alla sezione precedente. */
-  .blog-fascia {
-    background: color-mix(in srgb, var(--color-soft) 85%, white);
-  }
+  /* Fondo e riga di confine arrivano da `.band-soft` (global.css), la stessa
+     dei servizi: erano due copie dello stesso colore scritte a mano, e una
+     delle due aveva già cominciato a scostarsi. */
 
   .pila-parallasse { position: relative; }
   .pila-parallasse > .servizi-fondo {
@@ -404,20 +404,20 @@ const PHASES = [
     z-index: 0;
   }
 
+  /*
+   * Fondo e riga di confine arrivano da `.band-soft` (global.css), condivisa
+   * con la fascia del blog: là c'è scritta anche la regola dei confini.
+   *
+   * Da non rifare: qui il colore era entrato in dissolvenza sui primi 14rem,
+   * perché nella parte trasparente si vedesse il globo che usciva dalla hero.
+   * Dietro a quella trasparenza però non c'è la hero — che finisce più su —
+   * ma il bianco della pagina, e ne veniva un cuneo biancastro largo mezzo
+   * schermo, ritagliato a destra dal bordo del pianeta. Nemmeno aggiustabile
+   * abbassando l'opacità: o si vede il globo sotto e allora si vede anche il
+   * bianco, o non si vede nessuno dei due. Il globo si spegne da solo dentro
+   * la hero (vedi `--gb-fondo-*`), e qui il colore parte pieno.
+   */
   .servizi-fondo {
-    /*
-     * Azzurro, non il grigio delle fasce alternate: questa sezione resta
-     * ferma dietro mentre Nexia le scorre sopra, e con un fondo quasi bianco
-     * il pannello scuro sembrerebbe apparire dal nulla invece che coprire
-     * qualcosa. Serve un colore che si riconosca dietro.
-     *
-     * L'azzurro è schiarito del 15%: a pieno `--color-soft` il testo delle
-     * schede scendeva a 4,46:1, appena sotto la soglia di leggibilità, e il
-     * punteggio di accessibilità con lui. Così sta a 4,56 e resta comunque
-     * il 12% più scuro del bianco — quattro volte lo stacco che dava il
-     * grigio delle fasce alternate.
-     */
-    background: color-mix(in srgb, var(--color-soft) 85%, white);
     padding-bottom: clamp(8rem, 5rem + 11vw, 15rem);
   }
 
@@ -648,9 +648,37 @@ const PHASES = [
    * indirizzi ritirata, e la testata sborderebbe da subito.
    */
   .hero {
+    /*
+     * Una schermata esatta, non una riga di più.
+     *
+     * Avevo provato ad allungarla con una seconda riga vuota, per far
+     * chiudere il globo dentro la sezione: funzionava, ma la hero diventava
+     * una schermata e mezza e sotto al testo restava mezza pagina di bianco.
+     * E un pianeta che si chiude tutto non si legge più come un pianeta
+     * enorme inquadrato di taglio: sembra un'icona rotonda.
+     */
     min-height: 100svh;
     display: grid;
     align-items: center;
+
+    /*
+     * Taglia su tutti e quattro i bordi. Serve ai lati — la sfera esce di
+     * 6rem oltre il bordo della finestra, e senza il taglio la pagina
+     * scorrerebbe in orizzontale — e sotto non fa danni, perché il pianeta si
+     * spegne da solo un po' prima (vedi `--gb-fondo-*`) e al bordo non ci
+     * arriva più.
+     *
+     * Avevo provato ad aprirlo sotto con `overflow-x: clip; overflow-y:
+     * visible`, per far proseguire il globo nella sezione successiva. Torna
+     * qui perché quella strada portava alla macchia bianca: per vedere il
+     * globo là sotto, quello che gli sta sopra dev'essere trasparente, e
+     * dietro alla trasparenza c'è il bianco della pagina. Da segnare, se mai
+     * dovesse servire di nuovo: `clip` accanto a `visible` è l'unico modo di
+     * tagliare su un asse solo (accanto a `hidden` l'altro asse diventa
+     * `auto`, cioè una barra di scorrimento), e `clip-path` NON è un
+     * sostituto perché nasconde senza togliere l'ingombro.
+     */
+    overflow: hidden;
   }
 
   /*
@@ -711,8 +739,12 @@ const PHASES = [
       /* Dietro al testo va tenuto basso: qui il contrasto conta più
          dell'effetto. */
       opacity: 0.62;
-      --gb-fondo-da: 74%;
-      --gb-fondo-a: 96%;
+      /* NESSUNA dissolvenza in fondo, di proposito. Qui c'era una coppia
+         `--gb-fondo-*` che non ha mai avuto effetto (vedi Globe.astro): a
+         questa larghezza il disco sta tutto dentro la sezione — misurato, dal
+         109% al 210% della sua altezza a seconda del telefono — quindi non
+         c'è nessun taglio da nascondere, e spegnere il fondo di una sfera
+         intera la farebbe solo sembrare storta. */
     }
   }
 
@@ -737,17 +769,44 @@ const PHASES = [
       right: calc(-1 * max(0px, (100vw - var(--measure-page)) / 2) - 6rem);
       width: 62rem;
       translate: 0 -19.09%;
-      /* Il disco è più alto della sezione e ne esce dal fondo: si spegne
-         appena prima del taglio, invece di finire di netto sul cambio di
-         sfondo. La percentuale è la frazione di disco che resta visibile. */
-      --gb-fondo-da: 50%;
-      --gb-fondo-a: 65%;
+
+      /*
+       * Il pianeta si spegne prima del bordo della sezione — MISURATO IN
+       * PIXEL DAL BORDO, non in percentuale del disco.
+       *
+       * È la differenza fra funzionare e sembrare di funzionare. Qui c'era
+       * una percentuale (`50%`, `65%`), e una percentuale del disco non può
+       * essere giusta: il disco è largo una misura fissa mentre la sezione è
+       * alta 100svh, quindi il bordo cade ogni volta a una frazione diversa —
+       * misurato, dal 54% su una finestra bassa e larga all'80% su una alta.
+       * Dove il numero sbagliava restava un residuo di opacità tagliato di
+       * netto, cioè una riga in mezzo alla pagina.
+       *
+       * Il conto qui sotto è misurato sulla pagina vera, non dedotto:
+       *
+       *   il fondo della hero cade a max(604px, 50svh + 200px) sotto il bordo
+       *   alto del disco.
+       *
+       * Il `max()` non è prudenza: sotto gli 880px di finestra la hero non si
+       * accorcia più — ci sta dentro il blocco di testo e quello fa da
+       * pavimento — quindi la distanza smette di seguire l'altezza e si ferma
+       * a 604. Con il solo `50svh + 200px` la dissolvenza finirebbe troppo in
+       * basso proprio sulle finestre più basse, che sono il caso peggiore.
+       *
+       * Da lì tolgo 1,5rem di margine e faccio durare la dissolvenza 12rem.
+       */
+      --gb-fondo-a: calc(max(604px, 50svh + 200px) - 1.5rem);
+      --gb-fondo-da: calc(max(604px, 50svh + 200px) - 13.5rem);
     }
   }
 
   @media (min-width: 1600px) {
     .hero-globo-sfera {
       width: 70rem;
+      /* Disco più grande: il suo bordo alto parte 24px più su, quindi il
+         fondo della hero gli cade 24px più sotto. Stessa misura, +24. */
+      --gb-fondo-a: calc(max(628px, 50svh + 224px) - 1.5rem);
+      --gb-fondo-da: calc(max(628px, 50svh + 224px) - 13.5rem);
     }
   }
 

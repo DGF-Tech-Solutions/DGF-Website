@@ -257,11 +257,16 @@ const ICONE: IconName[] = ["globe", "bag", "phone", "dashboard", "sparkles"];
     animation-delay: 0.1s;
   }
 
+  /* Navy e non `--color-blue`: questa riga sta sull'azzurro della fascia, e
+     su quel fondo il blu era a 4,56:1 — dentro la soglia per un pelo, ma solo
+     finché la fascia restava quasi bianca. Con l'azzurro portato al valore
+     che si vede davvero (vedi `--color-band`) il blu scendeva a 4,2; il navy
+     sta a 7,5 e regge qualunque ritocco futuro del fondo. */
   .pannello-riga {
     margin-top: 0.5rem;
     font-size: 1rem;
     font-style: italic;
-    color: var(--color-blue);
+    color: var(--color-navy);
     animation-delay: 0.16s;
   }
 

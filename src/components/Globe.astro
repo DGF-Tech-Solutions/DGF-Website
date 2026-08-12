@@ -358,10 +358,16 @@ const ETICHETTE = LUOGHI.map((l) => ({ ...l, ...collocaSulGlobo(l.lat, l.lon) })
      * globo ci sta tutto, sfumarlo lo farebbe sembrare storto.
      *
      * Sono maschere e non veli bianchi: funzionano su qualunque sfondo.
+     *
+     * I due valori predefiniti stanno nel `var(…, 100%)` e NON in una coppia
+     * di dichiarazioni qui sopra, come erano prima. Una custom property
+     * dichiarata sull'elemento che poi la consuma batte sempre quella che
+     * arriva per eredità: `--gb-fondo-da: 100%` scritta su `.globo-disco`
+     * rendeva muto il valore che la pagina metteva sull'antenato, e la
+     * dissolvenza del fondo non si è mai accesa — né qui né su mobile. Il
+     * modo giusto di dare un valore predefinito a una variabile che gli
+     * antenati devono poter cambiare è la ricaduta di `var()`.
      */
-    --gb-fondo-da: 100%;
-    --gb-fondo-a: 100%;
-
     --gb-maschera:
       radial-gradient(
         closest-side circle at 50% 50%,
@@ -373,8 +379,8 @@ const ETICHETTE = LUOGHI.map((l) => ({ ...l, ...collocaSulGlobo(l.lat, l.lon) })
       linear-gradient(
         to bottom,
         #000 0%,
-        #000 var(--gb-fondo-da),
-        rgb(0 0 0 / 0) var(--gb-fondo-a)
+        #000 var(--gb-fondo-da, 100%),
+        rgb(0 0 0 / 0) var(--gb-fondo-a, 100%)
       );
 
     -webkit-mask-image: var(--gb-maschera);

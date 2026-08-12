@@ -4,6 +4,7 @@ import { SITE } from "@/data/site";
 import Nav from "@/components/Nav.astro";
 import Footer from "@/components/Footer.astro";
 import "@/styles/global.css";
+import "lenis/dist/lenis.css";
 
 interface Props {
   title: string;
@@ -156,5 +157,36 @@ const jsonLd = {
       <slot />
     </main>
     <Footer />
+
+    <script>
+      /*
+       * Lenis — lo scroll fluido di TUTTO il sito. È il "metodo award" già
+       * validato su BVEX (SmoothScroll.tsx, stessa durata): ogni colpo di
+       * rotella diventa una corsa ammortizzata, e tutte le scene
+       * scroll-driven in CSS — la fascia Nexia, i reveal, le parallassi —
+       * ereditano la fluidità gratis, perché inseguono uno scroll che ora è
+       * fluido di suo.
+       *
+       * Ha SOSTITUITO il "volo a colpo unico" (lock della rotella): quello
+       * dirottava la pagina per un secondo a ogni cambio di direzione, e per
+       * quanto reggesse i test, alla mano dava la sensazione di comando
+       * strappato. Qui non c'è nessun intercetto e nessuno stato: non può
+       * combattere con niente, per costruzione.
+       *
+       * Rispetta prefers-reduced-motion (non parte). Sul touch resta lo
+       * scorrimento nativo: smoothWheel agisce solo sulla rotella. ~8 kB:
+       * è il costo, dichiarato, del feel — deciso da David (ago 2026).
+       */
+      import Lenis from "lenis";
+
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        const lenis = new Lenis({ duration: 1.1, smoothWheel: true });
+        const raf = (time: number) => {
+          lenis.raf(time);
+          requestAnimationFrame(raf);
+        };
+        requestAnimationFrame(raf);
+      }
+    </script>
   </body>
 </html>

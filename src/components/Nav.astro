@@ -318,7 +318,22 @@ const SERVICE_ICONS = ["globe", "bag", "phone", "dashboard", "sparkles"] as cons
     transition: background-color var(--dur) var(--ease-out-quart);
   }
   @media (hover: hover) {
-    .mega-lead:hover { background: var(--color-soft-2); }
+    /*
+     * soft-3 e non soft-2: il passaggio a soft-2 valeva 1,14:1, meno di
+     * quanto stacca un bordo capello.
+     *
+     * Con il fondo più deciso però il testo secondario scendeva a 3,98:1,
+     * cioè sotto soglia PROPRIO NELLO STATO ATTIVO — il difetto che sfugge
+     * sempre, perché nessuno misura i contrasti col mouse sopra. Si
+     * ridefinisce il token invece di aggiungere una classe: il testo scende
+     * di un gradino insieme al fondo e torna a 6,44:1. Come effetto
+     * collaterale l'hover si legge meglio, perché a muoversi sono due cose
+     * invece di una.
+     */
+    .mega-lead:hover {
+      background: var(--color-soft-3);
+      --color-ink-3: var(--color-ink-2);
+    }
     .mega-lead:hover .mega-lead-arrow { transform: translateX(3px); }
   }
   .mega-lead-arrow { transition: transform var(--dur) var(--ease-out-quart); }

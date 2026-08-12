@@ -102,6 +102,35 @@ const {
     color: var(--color-ink-2);
   }
 
+  /*
+   * LA DISCESA NEL FOOTER.
+   *
+   * Il gradiente del marchio scende verso il ciano, quindi il fondo di questa
+   * fascia è il suo punto più CHIARO — e subito sotto attacca il footer, che
+   * è navy quasi nero. Ne veniva il salto più brusco della pagina, per giunta
+   * fra due blu di famiglie diverse: sembrava un quarto colore che partiva di
+   * colpo. Con questo velo il blu del marchio atterra sul navy del footer, e
+   * il footer diventa la continuazione della fascia invece che un blocco
+   * appiccicato sotto.
+   *
+   * Sta in un `::after` e non nel `background` perché deve passare SOPRA la
+   * fotografia (che è un elemento figlio, a z-index 0) e sotto al testo (che
+   * sta a 10): messo nel fondo, la metà destra della fascia sarebbe rimasta
+   * chiara e il salto sarebbe sopravvissuto proprio dove si vede di più.
+   */
+  .cta-band::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      transparent 45%,
+      var(--color-navy-deep) 100%
+    );
+  }
+
   /* Alone appena accennato dietro il titolo. */
   .cta-band::before {
     content: "";

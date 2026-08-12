@@ -171,6 +171,7 @@ const {
     </div>
       </div>
     </div>
+
   </div>
 </section>
 
@@ -214,19 +215,18 @@ const {
     isolation: isolate;
     overflow: clip;
 
-    /* NESSUN BORDO, NESSUN ANGOLO: la fascia è la continuazione della
-       pagina, non un foglio appoggiato sopra. Il primo strato del fondo è
-       lo stesso azzurro su cui poggiano i servizi e sfuma nel blu del
-       gradiente della CTA: cambia il colore, mai la superficie. C'era una
-       versione con angoli arrotondati, morso e ombra — a schermo gli
-       angoli si leggevano come un ritaglio, non come profondità. */
-    background:
-      linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--color-soft) 85%, white) 0,
-        transparent 12svh
-      ),
-      var(--gradient-brand);
+    /* NESSUN ANGOLO, NESSUNA OMBRA: c'era una versione con angoli
+       arrotondati, morso e ombra — a schermo gli angoli si leggevano come un
+       ritaglio, non come profondità.
+
+       BORDO NETTO in cima, però. Qui il blu partiva con una dissolvenza di
+       12svh dall'azzurro dei servizi, per non "appoggiarsi" sopra la pagina.
+       L'effetto era il contrario: sfumata, la fascia sembra incollata al
+       fondo invece che sovrapposta, e proprio qui deve leggersi come un
+       pannello che SALE A COPRIRE la sezione ferma sotto — è tutta la
+       parallasse di questo pezzo. Il bordo netto è anche la regola generale
+       dei confini fra colori lontani (vedi `.band-soft` in global.css). */
+    background: var(--gradient-brand);
   }
 
   /* ═══════════════════════════════════════════════════════════════════════
@@ -742,29 +742,36 @@ const {
     pointer-events: none;
   }
 
+
   /* ═══════════════════════════════════════════════════════════════════════
-     LA SCENA AGGANCIATA (pin + scrub) — solo da 1100px in su
+     LA SCENA (pin nativo + scrub CSS) — da 1100px in su
 
-     Il contenitore alto (`.cine-alt`, 280svh) è la durata della scena; il
-     palco (`.cine-stage`) resta fermo a schermo pieno mentre lo si
-     attraversa. Tutto quello che succede dentro è agganciato alla timeline
-     `--cine` con `animation-range` a fette:
+     Il contenitore alto è la durata della scena, il palco sticky è
+     l'inquadratura, la timeline `--cine` è la traversata del contenitore
+     (view-timeline): lo scrub lo fa il browser, sul compositore.
 
-       entry ......... la fascia copre i servizi, il titolo si compone
-       0%  → ~56% .... il video cresce dalla miniatura alla misura piena
-       56% → ~80% .... i tre cartellini si posano uno alla volta
-       70% → ~85% .... la didascalia e il collegamento chiudono la scena
+     La FLUIDITÀ arriva da fuori: Lenis, montato a livello di sito in
+     Base.astro, ammorbidisce lo scroll di tutta la pagina, e la scena —
+     che lo insegue — diventa burrosa senza sapere niente di lui.
 
-     Il fondale (fx-*) passa dalla propria traversata alla timeline della
-     scena: con il palco fermo, i suoi strati che scorrono a velocità
-     diverse sono finalmente leggibili come profondità — è l'ancoraggio
-     che mancava a tutti i tentativi precedenti.
+     STORIA, per chi ci rimette mano: qui prima c'erano uno snap CSS e poi
+     un "volo a colpo unico" (lock della rotella alla revolut.com, portato
+     da BVEX/HeroRevolut). Lo snap era interrompibile a metà; il lock
+     reggeva ogni stress test ma alla mano dava comando strappato — ogni
+     cambio di direzione era un dirottamento di un secondo. La lezione:
+     su una sezione a metà pagina l'intercetto della rotella non perdona;
+     lo scroll resta dell'utente, la morbidezza si mette SOTTO (Lenis),
+     non sopra.
+
+     Le fette della corsa (percentuali della fase `contain`):
+
+       0%  → ~60% .... il video cresce dalla miniatura alla misura piena
+       45% → ~76% .... i tre cartellini si posano uno alla volta
+       68% → ~82% .... la didascalia e il collegamento chiudono la scena
+
+     Il titolo non si anima: parte composto, la scena è leggibile in ogni
+     stato intermedio — che ora è un posto legittimo dove fermarsi.
      ═══════════════════════════════════════════════════════════════════════ */
-
-  @keyframes cine-riga {
-    from { opacity: 0; transform: translate3d(0, var(--p, 48px), 0); }
-    to   { opacity: 1; transform: none; }
-  }
   /* Il video non è mai fermo: cresce veloce fino alla sua misura (60% della
      corsa), poi continua ad avvicinarsi piano — fino a 1.1 — salendo di un
      soffio. Il respiro sotto lo garantisce la misura di partenza ridotta
@@ -787,9 +794,39 @@ const {
 
   @media (prefers-reduced-motion: no-preference) and (min-width: 1100px) {
     @supports (animation-timeline: view()) {
+      .video-sezione {
+        /* Il respiro blu DOPO la scena: la fascia continua sotto il palco
+           prima di passare al bianco del metodo. */
+        padding-bottom: clamp(4rem, 12svh, 9rem);
+      }
+
+      /*
+       * Il contenitore alto è la durata della scena.
+       *
+       * Era 300svh (tre schermi di corsa agganciata). Sceso a 220 per una
+       * ragione che non è di animazione ma di PAGINA: con 300 questa fascia
+       * blu pesava 3594px, cioè il 37% dell'intera home — e i fondi della
+       * home dovrebbero leggersi come un'onda bianco → azzurro → blu ripetuta
+       * due volte, mentre così era un blocco enorme e poi un'eco (il blu
+       * della chiusura è 616px). Non era il colore a essere sbagliato, erano
+       * le proporzioni.
+       *
+       * Cosa si perde: la corsa a mano è più rapida di un terzo. Il "volo"
+       * (l'intercettazione della rotella, in fondo al file) la completa in un
+       * gesto solo comunque, quindi la lunghezza serve solo allo scrub
+       * manuale. Sotto i ~180svh la corsa comincia davvero a saltare.
+       */
       .cine-alt {
-        height: 280svh;
+        height: 220svh;
         view-timeline: --cine block;
+        /* Il nome della timeline passa da una variabile, e non è un vezzo:
+           il minificatore di produzione accorpa `animation-timeline` dentro
+           la scorciatoia `animation`, che non la ammette, e il browser
+           scarta la dichiarazione INTERA — in dev tutto si muoveva, in
+           produzione la scena era un fermo immagine. Stesso inciampo già
+           annotato su .read-progress in global.css. La variabile eredita:
+           tutti i discendenti la usano senza ridichiararla. */
+        --ctl: --cine;
       }
 
       .cine-stage {
@@ -805,25 +842,8 @@ const {
 
       /* Il fondale segue la scena, non la propria traversata. */
       .fx-fondo, .fx-lento, .fx-medio, .fx-veloce {
-        animation-timeline: --cine;
+        animation-timeline: var(--ctl);
         animation-range: normal;
-      }
-
-      /* Il titolo si compone già durante l'ingresso della fascia, così il
-         palco non resta vuoto mentre copre i servizi; quando l'aggancio
-         parte è quasi tutto in scena. */
-      .video-testo > * {
-        display: block;
-        animation: cine-riga linear both;
-        animation-timeline: --cine;
-      }
-      .video-testo > .t-eyebrow { --p: 40px; animation-range: entry 55% contain 6%; }
-      .video-testo > h2 { --p: 60px; animation-range: entry 65% contain 10%; }
-      .video-testo > .video-lead { --p: 80px; animation-range: entry 75% contain 14%; }
-      .video-testo > .video-etichetta {
-        --p: 100px;
-        display: inline-block;
-        animation-range: entry 85% contain 18%;
       }
 
       /* Il numero del riferimento: il prodotto parte miniatura e CRESCE
@@ -832,8 +852,8 @@ const {
       .video-scena {
         transform-origin: 50% 42%;
         animation: cine-video linear both;
-        animation-timeline: --cine;
-        animation-range: contain 6% contain 94%;
+        animation-timeline: var(--ctl);
+        animation-range: contain 0% contain 90%;
         will-change: transform;
       }
 
@@ -851,16 +871,16 @@ const {
          scroll, un moto a tempo remerebbe contro. */
       .volante {
         animation: cine-volante linear both;
-        animation-timeline: --cine;
+        animation-timeline: var(--ctl);
       }
-      .volante-1 { animation-range: contain 56% contain 68%; }
-      .volante-2 { animation-range: contain 62% contain 74%; }
-      .volante-3 { animation-range: contain 68% contain 80%; }
+      .volante-1 { animation-range: contain 45% contain 58%; }
+      .volante-2 { animation-range: contain 54% contain 67%; }
+      .volante-3 { animation-range: contain 63% contain 76%; }
 
       .video-piede {
         animation: cine-piede linear both;
-        animation-timeline: --cine;
-        animation-range: contain 70% contain 85%;
+        animation-timeline: var(--ctl);
+        animation-range: contain 68% contain 82%;
       }
     }
   }

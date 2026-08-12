@@ -39,8 +39,55 @@
 
   /* Superfici azzurre: la firma del linguaggio Nexia.
      Il riquadro dietro le icone, i badge, gli hover leggeri. */
-  --color-soft: #e8f1f8;        /* navy al 6% su bianco */
-  --color-soft-2: #d4e6f2;      /* un gradino più marcato */
+  --color-soft: #e8f1f8;        /* navy al 6% su bianco   — L* 95 */
+  --color-soft-2: #d4e6f2;      /* un gradino più marcato — L* 90 */
+
+  /*
+   * IL GRADINO CHE MANCAVA.
+   *
+   * Misurando la chiarezza percepita di tutta la palette è saltato fuori un
+   * buco: sei valori stipati fra L* 90 e 100, poi VENTINOVE punti di vuoto,
+   * poi i blu (cyan 61, blue 46, navy 30, navy-deep 12). Fra le superfici
+   * chiare e i blu non c'era niente.
+   *
+   * Non è un difetto teorico, si vedeva: su una fascia azzurra (`.band-soft`,
+   * L* 90) l'unico tono da bordo disponibile era `--color-line` a L* 92, cioè
+   * PIÙ CHIARO del fondo — 1,039:1, un bordo invisibile e per giunta
+   * invertito. Mancava il tono, quindi si usava quello sbagliato.
+   *
+   * Questo sta a L* 82: contro le superfici azzurre dà 1,25:1 (il sito usa
+   * 1,20:1 per i bordi su bianco, quindi è in linea) e serve anche agli stati
+   * hover, dove il passaggio soft → soft-2 valeva 1,14:1 — meno di un filetto,
+   * cioè un hover che bisogna cercare.
+   *
+   * Fermo qui e non riempio anche il tratto 82 → 61: un token che nessuno usa
+   * è peso morto, e in quella fascia il disegno non chiede niente.
+   */
+  --color-soft-3: #b2d0e6;      /* bordi e hover sull'azzurro — L* 82 */
+
+  /*
+   * L'azzurro delle FASCE (non delle superfici piccole): il gradino di mezzo
+   * fra il bianco della pagina e il blu pieno.
+   *
+   * Era `color-mix(--color-soft 85%, white)`, cioè #ECF3F9: contro il bianco
+   * sono venti livelli su 255, e solo sul rosso. In una pagina che alterna
+   * bianco → azzurro → blu quel gradino non si legge come un passaggio, si
+   * legge come bianco venuto male — e l'onda dei fondi sparisce.
+   *
+   * Il limite non è arbitrario: il testo blu che ci sta sopra. A #ECF3F9 il
+   * `--color-blue` stava a 4,56:1, cioè già sul filo dei 4,5 richiesti. Per
+   * scendere di colore bisognava alzare quel testo, e infatti l'unico che ci
+   * stava (il sottotitolo delle schede servizi) è passato al navy. Con il
+   * navy il margine è largo: 7,5:1.
+   *
+   * È un ALIAS e non un valore nuovo, e la differenza conta. Ci avevo messo
+   * un #DEEAF4 inventato: in chiarezza percepita (L*) cadeva a 92, cioè
+   * INFILATO FRA `--color-soft` (95) e `--color-soft-2` (90). Quattro nomi
+   * per quello che l'occhio legge come un colore solo — una palette che
+   * dichiara più gamma di quanta ne abbia. Meglio il valore che c'era già:
+   * un token in meno e la fascia due punti più decisa.
+   */
+  --color-band: var(--color-soft-2);
 
   /* Il blu delle fasce piene, definito una volta sola.
      Lo usano la testata delle pagine di progetto (.band-brand) e la fascia
@@ -284,6 +331,61 @@ main { padding-top: var(--nav-h); }
 .band-soft { background: var(--color-paper-2); }
 
 /* ----------------------------------------------------------------------------
+   Fascia azzurra chiara — e LA REGOLA DEI CONFINI.
+
+   La home alterna tre superfici: bianco, questo azzurro, blu pieno. I passaggi
+   fra l'una e l'altra erano cuciti in quattro modi diversi (una dissolvenza
+   qui, un gradino là, una riga altrove), e bastava questo a far sembrare rotta
+   una palette che rotta non era. La regola, adesso, è una sola e dipende solo
+   da quanto distano i due colori:
+
+     · colori LONTANI (chiaro ↔ blu pieno) → bordo netto.
+       Una fascia piena è una fascia, e le fasce hanno i bordi. Sfumarla la fa
+       sembrare incollata invece che sovrapposta — ed è anche ciò che serve
+       alla parallasse, dove il pannello scuro deve leggersi come qualcosa che
+       sale a COPRIRE la sezione ferma sotto.
+
+     · colori VICINI (bianco ↔ azzurro) → riga capello, sfumata agli estremi.
+       Qui il colore da solo non basta a dichiarare il cambio: fra #fff e
+       #DEEAF4 il salto è troppo piccolo perché l'occhio lo legga come un
+       confine, e senza un segno le due sezioni si impastano. La riga lo dice.
+       Piena al centro e trasparente ai due capi, perché una riga appoggiata
+       sulla pagina è un filetto mentre una incollata da bordo a bordo è il
+       bordo di un riquadro.
+
+     · il FOOTER non è un confine ma una continuazione: il gradiente della
+       fascia di chiusura ci scende dentro (vedi CtaBand).
+   ------------------------------------------------------------------------- */
+.band-soft {
+  position: relative;
+  background: var(--color-band);
+
+  /* Si ridefinisce il TOKEN del bordo invece di correggere i singoli
+     elementi, esattamente come fa `.band-brand` con i suoi. Su questo fondo
+     il `--color-line` di serie è più chiaro del fondo stesso: ogni bordo
+     tracciato qui dentro sparisce, e non c'è modo che chi scrive un
+     componente lo sappia in anticipo. Ridefinendolo qui, qualunque bordo
+     entri in questa fascia — oggi la cornice dei disegni e la riga sotto le
+     linguette, domani chissà — si adatta da solo. */
+  --color-line: var(--color-soft-3);
+}
+
+.band-soft::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    color-mix(in srgb, var(--color-navy) 22%, transparent) 22%,
+    color-mix(in srgb, var(--color-navy) 22%, transparent) 78%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* ----------------------------------------------------------------------------
    Fascia blu di testata.
    Il navy del marchio che sfuma verso il blu, con il testo bianco sopra.
 
@@ -459,7 +561,11 @@ main { padding-top: var(--nav-h); }
   color: var(--color-navy);
 }
 @media (hover: hover) {
-  .btn-soft:hover { background: var(--color-soft-2); }
+  /* soft-3 e non soft-2: da `--color-soft` a `--color-soft-2` il salto è
+     1,14:1, cioè meno di quanto stacca un bordo capello (1,20:1) — e qui il
+     fondo è l'unica cosa che cambia al passaggio del mouse. Un hover deve
+     vedersi senza cercarlo. */
+  .btn-soft:hover { background: var(--color-soft-3); }
 }
 
 .btn-on-dark {
