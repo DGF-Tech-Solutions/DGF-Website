@@ -46,16 +46,16 @@ const TEAM = [
 /* Quello che siamo, accanto a quello che non siamo. Le due colonne insieme
    dicono più di qualsiasi elenco di valori. */
 const SIAMO = [
-  "Tre persone che scrivono codice, non un'agenzia con reparti",
-  "Un interlocutore solo, dall'idea al lancio e dopo",
-  "Chiari sui tempi e sui costi, per iscritto e in anticipo",
-  "Disposti a dirti che non ti serve quello che hai chiesto",
+  "Tre persone che scrivono codice ogni giorno, non un'agenzia che smista lavori",
+  "Un interlocutore solo: chi ti risponde al primo messaggio è chi scriverà il tuo codice",
+  "Cifra, tempi e cosa è incluso: nero su bianco prima di iniziare, non a metà progetto",
+  "Capaci di dirti «non ti serve»: se una scheda Google basta, non ti vendiamo un gestionale",
 ];
 const NON_SIAMO = [
-  "Non siamo una software house con decine di clienti alle spalle",
-  "Non rivendiamo temi preconfezionati spacciandoli per lavoro su misura",
-  "Non ti leghiamo con canoni o codice che resta nostro",
-  "Non prendiamo progetti che non sappiamo portare a casa",
+  "Non siamo la software house con cento loghi in home: quello che mostriamo l'abbiamo costruito davvero",
+  "Non rivendiamo un tema comprato a sessanta euro chiamandolo «design su misura»",
+  "Non ti leghiamo: codice, dominio e accessi sono tuoi, e puoi andartene quando vuoi",
+  "Non accettiamo progetti che non sapremmo portare in fondo, nemmeno quando i soldi farebbero comodo",
 ];
 
 const PRINCIPLES = [
@@ -148,13 +148,13 @@ const schema = {
         class="mx-auto mt-8 max-w-4xl reveal"
       >
         <p>
-          Siamo giovani come azienda e i lavori che possiamo mostrare sono
-          pochi: il principale è <a href="/portfolio/nexia-home">Nexia Home</a>,
-          il gestionale per amministratori di condominio che abbiamo costruito e
-          che manteniamo: un sistema completo, non una demo. Se cerchi una
-          software house con vent'anni di referenze, non siamo noi. Se cerchi
-          qualcuno che si prenda il tuo progetto sul serio perché ci gioca la
-          reputazione, parliamone.
+          L'azienda è giovane e il portfolio è corto: è un fatto, non un
+          segreto. Quello che c'è, però, è vero: <a href="/portfolio/nexia-home">Nexia Home</a>,
+          il gestionale per amministratori di condominio che abbiamo progettato,
+          scritto e che teniamo in produzione ogni giorno — un sistema completo,
+          non una demo. Se cerchi vent'anni di referenze, non siamo noi. Se
+          cerchi tre persone che sul tuo progetto si giocano tutta la
+          reputazione che devono ancora costruirsi, parliamone.
         </p>
       </Banner>
     </div>
@@ -173,21 +173,23 @@ const schema = {
           </h2>
           <div class="prose mt-6 !max-w-none">
             <p>
-              DGF nasce da un'idea semplice: il software fatto bene non dovrebbe
-              essere un privilegio delle grandi aziende. Troppe realtà si
-              ritrovano con siti lenti, gestionali improvvisati e, soprattutto,
-              nessuno a cui chiedere aiuto quando qualcosa smette di funzionare.
+              DGF nasce da un'osservazione fatta da vicino: le piccole imprese
+              italiane il software lo pagano due volte. La prima quando lo
+              comprano, la seconda quando scoprono che nessuno risponde più.
+              Siti lenti, gestionali improvvisati, fornitori spariti — non è
+              sfortuna: è il modello di chi vende e passa al cliente successivo.
             </p>
             <p>
-              Facciamo il contrario: poche persone, molto coinvolte, che seguono
-              ogni progetto dalla prima riga di codice fino al lancio e oltre.
-              Quando ci scrivi rispondiamo noi, le stesse persone che poi
-              costruiranno il tuo prodotto.
+              Noi siamo costruiti al contrario: pochi progetti alla volta,
+              seguiti dalla prima riga di codice al lancio, e reperibili dopo.
+              Quando scrivi ti risponde una delle tre persone che il tuo
+              prodotto lo sta costruendo — non un commerciale che «gira la
+              richiesta al tecnico».
             </p>
             <p>
-              Una regola sola: ogni scelta tecnica deve avere una ragione che
-              sappiamo spiegarti in parole comprensibili. Se non riusciamo a
-              spiegarla, probabilmente è la scelta sbagliata.
+              E una regola sola: ogni scelta tecnica deve avere una ragione
+              spiegabile in italiano corrente. Se non sappiamo spiegartela, è
+              la scelta sbagliata.
             </p>
           </div>
         </div>
@@ -288,24 +290,29 @@ const schema = {
         </p>
       </div>
 
-      <dl class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      {/* Colonne A MISURA DI CONTENUTO (`auto`), non quinti uguali: con le
+          frazioni fisse "DGF Tech Solutions S.r.l." finiva su due righe e le
+          quattro schede avevano tutte un a-capo diverso. Così ogni scheda è
+          larga quanto il suo dato, l'ultima assorbe lo spazio che avanza, e
+          `whitespace-nowrap` garantisce la riga unica. */}
+      <dl class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-[auto_auto_auto_1fr]">
         <div class="card p-5">
           <dt class="t-eyebrow">Ragione sociale</dt>
-          <dd class="mt-2 text-[0.9375rem] font-semibold text-[var(--color-ink)]">{SITE.legalName}</dd>
+          <dd class="mt-2 whitespace-nowrap text-[0.9375rem] font-semibold text-[var(--color-ink)]">{SITE.legalName}</dd>
         </div>
         <div class="card p-5">
           <dt class="t-eyebrow">Partita IVA</dt>
-          <dd class="mt-2 tabular text-[0.9375rem] font-semibold text-[var(--color-ink)]">{SITE.vatId}</dd>
+          <dd class="mt-2 tabular whitespace-nowrap text-[0.9375rem] font-semibold text-[var(--color-ink)]">{SITE.vatId}</dd>
         </div>
         <div class="card p-5">
           <dt class="t-eyebrow">Sede</dt>
-          <dd class="mt-2 text-[0.9375rem] font-semibold text-[var(--color-ink)]">
+          <dd class="mt-2 whitespace-nowrap text-[0.9375rem] font-semibold text-[var(--color-ink)]">
             {SITE.city} ({SITE.region}), {SITE.countryName}
           </dd>
         </div>
-        <div class="card p-5 lg:col-span-2">
+        <div class="card p-5">
           <dt class="t-eyebrow">Contatto</dt>
-          <dd class="mt-2">
+          <dd class="mt-2 whitespace-nowrap">
             <a href={`mailto:${SITE.email}`} class="link-arrow !text-[0.875rem]">
               {SITE.email}
             </a>

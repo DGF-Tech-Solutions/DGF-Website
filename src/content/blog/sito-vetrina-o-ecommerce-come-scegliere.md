@@ -5,6 +5,8 @@ date: 2026-03-04
 category: Strategia
 author: DGF Tech Solutions
 readingTime: 5
+cover: ../../assets/foto/ecommerce.webp
+coverAlt: Mani che chiudono una scatola da spedire accanto a un portatile con un ordine aperto
 ---
 
 Molte attività ci chiedono direttamente un e-commerce, convinte che "vendere online" sia sempre il passo giusto. A volte lo è davvero. Più spesso conviene partire da una vetrina solida e costruire le vendite per gradi. Il motivo non è il costo, è il tempo che serve a far arrivare le persone.

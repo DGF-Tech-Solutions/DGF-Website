@@ -19,6 +19,17 @@ import BandPhoto from "@/components/BandPhoto.astro";
 interface Props {
   eyebrow?: string;
   title: string;
+  /**
+   * Scala del titolo.
+   *   "hero" — quella di sistema (fino a 56px), giusta per i titoli brevi
+   *            delle pagine ("Chi siamo", "Servizi");
+   *   "long" — più contenuta, per i titoli che sono frasi intere. A 56px,
+   *            nella colonna stretta che lascia libera la fotografia, un
+   *            titolo di articolo va su quattro righe e riempie da solo il
+   *            primo schermo. È la stessa scala della pagina di progetto,
+   *            adottata lì per la stessa ragione.
+   */
+  titleScale?: "hero" | "long";
   lead?: string;
   crumbs: { label: string; href?: string }[];
   /** Illustrazione a destra. Se manca, il testo occupa tutta la larghezza. */
@@ -36,6 +47,7 @@ interface Props {
 const {
   eyebrow,
   title,
+  titleScale = "hero",
   lead,
   crumbs,
   illustration,
@@ -53,7 +65,14 @@ const {
 
     <div class:list={["ph-testo", illustration && "ph-testo-con-foto"]}>
       {eyebrow && <span class="t-eyebrow">{eyebrow}</span>}
-      <h1 class:list={["t-h1 anim-rise", eyebrow && "mt-3"]} set:html={title} />
+      <h1
+        class:list={[
+          "t-h1 anim-rise",
+          eyebrow && "mt-3",
+          titleScale === "long" && "ph-titolo-lungo",
+        ]}
+        set:html={title}
+      />
       {lead && <p class="t-lead mt-5 anim-fade-rise delay-2">{lead}</p>}
       <slot />
       {illustrationAi && <AiCredit />}
@@ -80,6 +99,14 @@ const {
      centrato o a tutta larghezza finirebbe sopra la fotografia. */
   .ph-testo { position: relative; z-index: 1; }
   .ph-testo :global(.t-lead) { max-width: 42rem; }
+
+  /* Titolo che è una frase intera. Stessa scala del titolo di progetto: due
+     righe invece di quattro, e sotto ci restano il sommario e i metadati. */
+  .ph-titolo-lungo {
+    font-size: clamp(1.75rem, 1.3rem + 1.9vw, 2.5rem);
+    line-height: 1.14;
+    letter-spacing: -0.028em;
+  }
 
   @media (min-width: 1024px) {
     .ph-testo-con-foto { max-width: 36rem; }

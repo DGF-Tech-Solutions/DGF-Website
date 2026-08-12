@@ -18,17 +18,36 @@ import { z } from "zod";
 
 const blog = defineCollection({
   loader: glob({ pattern: "**/*.md", base: "./src/content/blog" }),
-  schema: z.object({
-    title: z.string().max(120),
-    excerpt: z.string().max(320),
-    date: z.coerce.date(),
-    category: z.string(),
-    author: z.string().default("DGF Tech Solutions"),
-    /** Minuti di lettura. Se assente lo stimiamo dal testo. */
-    readingTime: z.number().int().positive().optional(),
-    /** Nasconde l'articolo dal sito senza cancellarlo. */
-    draft: z.boolean().default(false),
-  }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string().max(120),
+      excerpt: z.string().max(320),
+      date: z.coerce.date(),
+      category: z.string(),
+      author: z.string().default("DGF Tech Solutions"),
+      /** Minuti di lettura. Se assente lo stimiamo dal testo. */
+      readingTime: z.number().int().positive().optional(),
+      /**
+       * Fotografia della testata, tagliata sul bordo destro della fascia blu
+       * come nelle altre pagine interne. Facoltativa: un articolo che non la
+       * dichiara riceve comunque quella generica del blog, così la testata
+       * non cambia forma da un pezzo all'altro.
+       */
+      cover: image().optional(),
+      /**
+       * Descrizione della fotografia. Se manca, l'immagine resta decorativa e
+       * viene tolta dalla lettura assistita: meglio muta che descritta male.
+       */
+      coverAlt: z.string().default(""),
+      /**
+       * Le fotografie del sito sono generate con IA e vanno dichiarate
+       * (art. 50 AI Act). Sta a `true` di default perché è il caso normale
+       * qui: chi pubblica uno scatto reale lo mette a `false`.
+       */
+      coverAi: z.boolean().default(true),
+      /** Nasconde l'articolo dal sito senza cancellarlo. */
+      draft: z.boolean().default(false),
+    }),
 });
 
 const portfolio = defineCollection({

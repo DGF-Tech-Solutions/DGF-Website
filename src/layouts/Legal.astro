@@ -284,9 +284,13 @@ const DOCUMENTI = [
     font-weight: 600;
   }
 
+  /* `--color-line` e non `--color-line-2`: su bianco il secondo dà 1,096:1,
+     cioè meno della riga standard del sito (1,196) — un separatore che non
+     separa. Era anche l'unico punto del sito a usare quel token su fondo
+     chiaro. */
   .legale-nota {
     margin-top: 2.5rem;
     padding-top: 1.5rem;
-    border-top: 1px solid var(--color-line-2);
+    border-top: 1px solid var(--color-line);
   }
 </style>

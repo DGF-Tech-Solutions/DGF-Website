@@ -1,12 +1,13 @@
 ---
 import { getCollection, render } from "astro:content";
 import Base from "@/layouts/Base.astro";
-import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import PageHeader from "@/components/PageHeader.astro";
 import ArticleCard from "@/components/ArticleCard.astro";
 import CtaBand from "@/components/CtaBand.astro";
 import Icon from "@/components/Icon.astro";
 import { SITE } from "@/data/site";
 import { formatDate, isoDate, readingMinutes } from "@/lib/format";
+import coverDefault from "@/assets/foto/blog.webp";
 
 export async function getStaticPaths() {
   const articles = await getCollection("blog", ({ data }) => !data.draft);
@@ -22,6 +23,14 @@ const { Content } = await render(entry);
 
 // Se il frontmatter non dichiara i minuti, li stimiamo dal testo.
 const minutes = d.readingTime ?? readingMinutes(entry.body ?? "");
+
+/*
+ * Fotografia della testata. Se l'articolo non ne dichiara una, prende quella
+ * generica del blog: la fascia blu con la foto tagliata a destra dev'essere
+ * la stessa su ogni pezzo, non un privilegio di chi ha ricordato il campo.
+ */
+const cover = d.cover ?? coverDefault;
+const coverAlt = d.cover ? d.coverAlt : "";
 
 const others = (await getCollection("blog", ({ data }) => !data.draft))
   .filter((a) => a.id !== entry.id)
@@ -56,24 +65,32 @@ const schema = {
   <div class="read-progress" aria-hidden="true"></div>
 
   <article>
-    <header class="glow-bg under-nav overflow-hidden border-b border-[var(--color-line)]">
-      <div class="wrap pt-6 pb-12 sm:pt-8 sm:pb-14">
-        <Breadcrumbs
-          items={[{ label: "Blog", href: "/blog" }, { label: d.title }]}
-          class="mb-8"
-        />
-
-        <div class="flex flex-wrap items-center gap-3">
-          <span class="chip">{d.category}</span>
-          <time datetime={isoDate(d.date)} class="t-small">{formatDate(d.date)}</time>
-          <span class="t-small" aria-hidden="true">·</span>
-          <span class="t-small">{minutes} min di lettura</span>
-        </div>
-
-        <h1 class="t-h1 mt-5 max-w-4xl anim-rise">{d.title}</h1>
-        <p class="t-lead mt-5 max-w-2xl anim-fade-rise delay-2">{d.excerpt}</p>
+    {/* Stessa testata delle altre pagine interne (/chi-siamo, /servizi):
+        fascia blu piena e fotografia tagliata sul bordo destro. Prima qui
+        c'era una testata chiara senza immagine, ed era l'unica pagina del
+        sito a presentarsi in un modo tutto suo. */}
+    <PageHeader
+      eyebrow={d.category}
+      title={d.title}
+      titleScale="long"
+      lead={d.excerpt}
+      crumbs={[{ label: "Blog", href: "/blog" }, { label: d.title }]}
+      illustration={cover}
+      illustrationAlt={coverAlt}
+      illustrationAi={d.cover ? d.coverAi : true}
+    >
+      {/* Data e durata sotto il sommario, non sopra il titolo: la prima cosa
+          che si legge dev'essere di cosa si parla, non quando è stato
+          scritto. Stessa scelta della pagina di progetto. */}
+      <div class="mt-7 flex flex-wrap items-center gap-x-3 gap-y-2">
+        <time datetime={isoDate(d.date)} class="t-small">{formatDate(d.date)}</time>
+        <span class="t-small" aria-hidden="true">·</span>
+        <span class="t-small inline-flex items-center gap-1.5">
+          <Icon name="clock" size={14} />
+          {minutes} min di lettura
+        </span>
       </div>
-    </header>
+    </PageHeader>
 
     <div class="wrap section">
       {/* Il testo arriva ai bordi del contenitore, gli stessi di ogni altra

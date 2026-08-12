@@ -7,6 +7,8 @@ date: 2026-05-12
 category: Guide
 author: DGF Tech Solutions
 readingTime: 6
+cover: ../../assets/foto/siti-web.webp
+coverAlt: Due persone guardano insieme la pagina di un sito su un portatile
 ---
 
 "Quanto costa un sito?" è la domanda che ci sentiamo fare più spesso. La risposta onesta è: dipende, ma non è una scappatoia. Il prezzo riflette scelte precise, e capire quali ti permette di leggere qualsiasi preventivo con occhi diversi, anche quelli che non arrivano da noi.

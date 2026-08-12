@@ -66,6 +66,20 @@
   --color-soft-3: #b2d0e6;      /* bordi e hover sull'azzurro — L* 82 */
 
   /*
+   * La "seconda voce" dei titoli sulle fasce blu.
+   *
+   * Era `--color-cyan` puro. Misurato sul gradiente vero, nel punto dove il
+   * titolo sta davvero: 2,76:1 sulla fascia di chiusura e 2,85:1 su quella di
+   * Nexia, contro i 3:1 che servono a un testo grande. Sotto soglia su ogni
+   * pagina del sito, perché la fascia di chiusura c'è dappertutto.
+   *
+   * Il ciano schiarito del 20% porta il rapporto a ~3,5:1 e resta comunque
+   * più spento del bianco della prima metà — che è tutto quello che la
+   * seconda voce deve fare.
+   */
+  --color-cyan-soft: #64b0d2;
+
+  /*
    * L'azzurro delle FASCE (non delle superfici piccole): il gradino di mezzo
    * fra il bianco della pagina e il blu pieno.
    *
@@ -327,11 +341,17 @@ main { padding-top: var(--nav-h); }
   padding-top: var(--nav-h);
 }
 
-/* Fascia alternata: si usa a sezioni alterne, mai due di fila. */
-.band-soft { background: var(--color-paper-2); }
-
 /* ----------------------------------------------------------------------------
    Fascia azzurra chiara — e LA REGOLA DEI CONFINI.
+
+   Si usa a sezioni alterne, mai due di fila. Vale su tutto il sito: oltre alla
+   home ci sono nove sezioni fra schede progetto, schede servizio, chi siamo,
+   contatti e articoli.
+
+   Era `background: var(--color-paper-2)`, cioè #f8fafc: DUE punti di chiarezza
+   sotto il bianco. Una fascia alternata che non si distingue dalla pagina non
+   sta alternando niente — è lo stesso difetto per cui l'azzurro della home non
+   si leggeva, solo peggio. Adesso è il colore vero della famiglia.
 
    La home alterna tre superfici: bianco, questo azzurro, blu pieno. I passaggi
    fra l'una e l'altra erano cuciti in quattro modi diversi (una dissolvenza
@@ -402,7 +422,9 @@ main { padding-top: var(--nav-h); }
 
   --color-ink: #ffffff;
   --color-ink-2: rgb(255 255 255 / 0.82);
-  --color-ink-3: rgb(255 255 255 / 0.7);
+  /* 0.8 e non 0.7: su questo gradiente il testo minuto (la dichiarazione
+     dell'AI Act, fra gli altri) misurava 3,9:1 contro i 4,5 richiesti. */
+  --color-ink-3: rgb(255 255 255 / 0.8);
   --color-line: rgb(255 255 255 / 0.18);
 
   background: var(--gradient-brand);
@@ -435,14 +457,26 @@ main { padding-top: var(--nav-h); }
 }
 
 /* Le briciole di pane vivono sul fondo scuro: vanno schiarite. */
+/*
+ * Le tre opacità qui sotto sono state alzate dopo averle MISURATE sul
+ * gradiente vero, nel punto in cui ogni testo sta davvero. Erano tutte sotto
+ * soglia, su ogni pagina interna del sito:
+ *
+ *   briciole di pane   0,62 -> 4,1:1   (ne servono 4,5)
+ *   seconda voce h1    0,50 -> 2,9:1   (ne servono 3,0 a 56px)
+ *   testo minuto       0,70 -> 3,9:1   (ne servono 4,5)
+ *
+ * Erano tutte "quasi", ed è il modo peggiore di sbagliare: nessuno se ne
+ * accorge guardando, e il testo resta illeggibile per chi ha poca vista.
+ */
 .band-brand nav a,
-.band-brand nav span { color: rgb(255 255 255 / 0.62); }
+.band-brand nav span { color: rgb(255 255 255 / 0.72); }
 @media (hover: hover) {
   .band-brand nav a:hover { color: #fff; }
 }
 
 .band-brand .t-eyebrow { color: rgb(255 255 255 / 0.72); }
-.band-brand .t-dim { color: rgb(255 255 255 / 0.5); }
+.band-brand .t-dim { color: rgb(255 255 255 / 0.62); }
 
 /* Pillola sul fondo blu: il `.chip` chiaro qui sparirebbe. */
 .badge-brand {

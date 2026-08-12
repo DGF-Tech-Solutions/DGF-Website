@@ -190,16 +190,25 @@ const {
     .cta-azioni, .cta-fatti { justify-content: center; }
   }
 
-  /* La dichiarazione richiesta dall'art. 50 dell'AI Act. Minuta e appoggiata
-     al testo, non sopra la fotografia: lì sarebbe illeggibile. */
+  /*
+   * La dichiarazione richiesta dall'art. 50 dell'AI Act. Minuta e appoggiata
+   * al testo, non sopra la fotografia: lì sarebbe illeggibile.
+   *
+   * Minuta, non invisibile. Era bianco al 45% e sul gradiente misurava
+   * 2,39:1 — a 11px ne servono 4,5. La norma chiede che la dichiarazione sia
+   * "chiara e distinguibile": un contrasto sotto soglia la rende esattamente
+   * il contrario, ed è in fondo a ogni pagina del sito.
+   */
   .cta-credito {
     margin-top: 2rem;
     font-size: 0.6875rem;
     letter-spacing: 0.02em;
-    color: rgb(255 255 255 / 0.45);
+    color: rgb(255 255 255 / 0.82);
   }
 
-  .cta-band :global(.t-dim) { color: var(--color-cyan); }
+  /* Ciano schiarito: quello pieno stava a 2,76:1 sul gradiente, sotto i 3:1
+     di un testo grande — e questa fascia è in fondo a ogni pagina. */
+  .cta-band :global(.t-dim) { color: var(--color-cyan-soft); }
 
   .cta-band :global(h2) { color: #fff; }
 
