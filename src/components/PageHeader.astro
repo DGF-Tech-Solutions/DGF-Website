@@ -122,7 +122,33 @@ const {
       width: 56%;
       padding: 0;
       pointer-events: none;
-      opacity: 0.62;
+      opacity: 0.85;
+      /* La maschera sta QUI, sul contenitore, e non sull'immagine.
+         Sull'immagine mascherava solo la fotografia: il velo blu sopra
+         restava un rettangolo pieno, e il suo bordo sinistro era la riga
+         dritta che si vedeva in pagina. Sul contenitore, foto e velo si
+         dissolvono insieme. */
+      -webkit-mask-image: radial-gradient(155% 195% at 100% 50%, #000 0%, #000 20%, rgb(0 0 0 / 0.3) 58%, transparent 100%);
+      mask-image: radial-gradient(155% 195% at 100% 50%, #000 0%, #000 20%, rgb(0 0 0 / 0.3) 58%, transparent 100%);
+    }
+
+    /* Il velo che tinge la fotografia del blu della fascia.
+       Prima avevo provato `mix-blend-mode: luminosity`: sulla carta è la
+       soluzione elegante, in pagina faceva sparire l'immagine — la fusione
+       non regge bene insieme alla maschera. Un velo vero, sopra la foto e
+       dentro la stessa maschera, fa lo stesso lavoro e si comporta sempre
+       allo stesso modo.
+
+       Con la foto desaturata sotto, il risultato è un'immagine monocroma nel
+       blu del marchio: non è più una fotografia appoggiata sopra la fascia,
+       è la fascia che prende rilievo. */
+    .ph-foto::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--gradient-brand);
+      opacity: 0.38;
+      pointer-events: none;
     }
     .ph-foto :global(img) {
       width: 100%;
@@ -130,14 +156,7 @@ const {
       object-fit: cover;
       object-position: center right;
       border-radius: 0;
-      /* Dissolvenza ELLITTICA, non lineare.
-         Una sfumatura dritta lascia comunque una linea verticale, e l'occhio
-         la legge come il bordo di un rettangolo. Un'ellisse ancorata al bordo
-         destro dissolve a sinistra, in alto e in basso insieme: non esiste
-         nessun lato dritto, quindi non si capisce più che la foto è
-         rettangolare. */
-      -webkit-mask-image: radial-gradient(130% 158% at 100% 50%, #000 0%, #000 44%, rgb(0 0 0 / 0.45) 72%, transparent 94%);
-      mask-image: radial-gradient(130% 158% at 100% 50%, #000 0%, #000 44%, rgb(0 0 0 / 0.45) 72%, transparent 94%);
+      filter: grayscale(1) contrast(1.3) brightness(0.82);
     }
   }
 </style>
