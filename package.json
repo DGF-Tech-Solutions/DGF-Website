@@ -10,7 +10,9 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
+    "preview": "astro build && docker compose up -d --wait preview && echo Anteprima pronta su http://localhost:7000",
+    "preview:stop": "docker compose down",
+    "verifica": "docker compose --profile verifica up --build --abort-on-container-exit verifica",
     "check": "astro check"
   },
   "dependencies": {

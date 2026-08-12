@@ -1,10 +1,15 @@
 # ============================================================================
-# Immagine di ANTEPRIMA del sito DGF.
+# Immagine di VERIFICA del sito DGF.
 #
-# Compila il sito e lo serve con nginx configurato come GitHub Pages: è il
-# modo più fedele di vedere cosa succederà online prima di pubblicare.
+# Compila il sito dentro un container Linux pulito, come fa GitHub Actions, e
+# lo serve con nginx. Non è l'anteprima di tutti i giorni: quella è
+# `npm run preview`, che monta la cartella dist/ del computer ed è immediata.
 #
-#   docker compose up preview   ->  http://localhost:8080
+# Questa serve a una cosa sola, ma importante: accorgersi di dipendenze
+# mancanti per Linux nel package-lock, un errore che sul computer non si vede
+# e che fa fallire il deploy.
+#
+#   npm run verifica   ->  http://localhost:7001
 #
 # Nota: questa immagine NON serve al deploy. Il deploy vero lo fa GitHub
 # Actions, che compila e carica la cartella dist/ su Pages. Questo container

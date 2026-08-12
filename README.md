@@ -21,7 +21,8 @@ Node 22 (vedi `.nvmrc`).
 ### Prima di pubblicare — anteprima fedele
 
 ```bash
-docker compose up --build    # http://localhost:8080
+npm run preview        # compila e apre http://localhost:7000
+npm run preview:stop   # spegne l'anteprima
 ```
 
 Compila il sito e lo serve con nginx configurato come GitHub Pages. **Non è
