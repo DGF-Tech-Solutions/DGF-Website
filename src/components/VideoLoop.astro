@@ -46,8 +46,34 @@ const {
 } = Astro.props;
 ---
 
-<section class="video-sezione on-dark section">
-  <div class="wrap">
+<section class="video-sezione on-dark">
+  {/*
+    IL CINEMA: da schermo largo la sezione si AGGANCIA a schermo pieno e lo
+    scroll comanda la scena — il titolo si compone, il video cresce fino
+    alla sua misura, i cartellini si posano, il fondale scorre a strati.
+    È il `pin + scrub` delle pagine prodotto (Apple docet): il contenitore
+    alto è il "tempo" della scena, il palco sticky è l'inquadratura.
+
+    Sotto i 1100px e dove le scroll-driven animations non ci sono, questi
+    due div non fanno nulla e la sezione resta quella normale.
+  */}
+  <div class="cine-alt">
+    <div class="cine-stage section">
+      {/*
+        La scenografia dietro al contenuto: quattro PIANI di profondità
+        (quadrettatura in fondo, aloni, anelli davanti — il sistema `fx-*`).
+        Con la scena agganciata il parallasse ha finalmente un ancoraggio
+        fermo contro cui misurarsi: è quello che gli mancava per leggersi.
+      */}
+      <div class="fondale" aria-hidden="true">
+        <span class="fondale-griglia fx-fondo"></span>
+        <span class="fondale-alone fondale-alone-1 fx-lento"></span>
+        <span class="fondale-alone fondale-alone-2 fx-lento"></span>
+        <span class="fondale-anello fondale-anello-1 fx-veloce"></span>
+        <span class="fondale-anello fondale-anello-2 fx-medio"></span>
+      </div>
+
+      <div class="wrap">
     {/* Un contenitore solo per titolo, spiegazione e video: prima erano tre
         blocchi appoggiati sulla pagina uno sotto l'altro, e il video sembrava
         capitato lì. Dentro una cornice si legge come una vetrina. */}
@@ -143,6 +169,8 @@ const {
         }
       </div>
     </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -179,8 +207,167 @@ const {
   .video-sezione {
     position: relative;
     z-index: 1;
-    box-shadow: 0 -14px 34px -10px rgb(10 34 51 / 0.45);
-    border-top: 1px solid rgb(255 255 255 / 0.10);
+    /* `isolate` tiene gli z-index del fondale dentro la sezione; `clip` e non
+       `hidden` per lo stesso motivo annotato nella sezione metodo: `hidden`
+       creerebbe un contenitore di scorrimento — e qui dentro lo sticky c'è
+       davvero (il palco della scena). */
+    isolation: isolate;
+    overflow: clip;
+
+    /* NESSUN BORDO, NESSUN ANGOLO: la fascia è la continuazione della
+       pagina, non un foglio appoggiato sopra. Il primo strato del fondo è
+       lo stesso azzurro su cui poggiano i servizi e sfuma nel blu del
+       gradiente della CTA: cambia il colore, mai la superficie. C'era una
+       versione con angoli arrotondati, morso e ombra — a schermo gli
+       angoli si leggevano come un ritaglio, non come profondità. */
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--color-soft) 85%, white) 0,
+        transparent 12svh
+      ),
+      var(--gradient-brand);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     IL FONDALE — la scenografia in parallasse dietro al contenuto
+
+     Tre lingue già usate dal sito, sovrapposte: gli aloni sfumati (come nella
+     sezione metodo), gli anelli capello (come su .band-brand) e la
+     quadrettatura tecnica (come sotto i disegni dei servizi). Ogni strato ha
+     una velocità diversa — lento, veloce, con una deriva che ruota appena —
+     ed è lo scarto fra le velocità a dare la profondità, non i singoli pezzi.
+
+     Tutto sta a `z-index: -1` dentro la sezione isolata: sopra il fondo
+     sfumato, sotto ogni contenuto. Costa zero byte di immagini e si muove
+     sul compositore; su Firefox e con meno movimento resta una scenografia
+     ferma, che è comunque corretta.
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  .fondale {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* ── I quattro piani di profondità ─────────────────────────────────────
+     Il parallasse si legge solo se lo scarto fra i piani è grande: il piano
+     in fondo quasi fermo, quello davanti che percorre centinaia di pixel.
+     Ogni elemento è legato alla PROPRIA traversata dello schermo (view()),
+     solo transform, quindi tutto sul compositore.
+
+     `--tl` dietro una variabile per il solito inciampo del minificatore
+     (vedi .read-progress in global.css): dentro la scorciatoia `animation`
+     una timeline non è ammessa e la dichiarazione verrebbe scartata. */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      /* La timeline va dichiarata DOPO la scorciatoia `animation`, che
+         azzera anche `animation-timeline` e `animation-range` (il range
+         di default, l'intera traversata, è proprio quello che serve). */
+      .fx-fondo,
+      .fx-lento,
+      .fx-medio,
+      .fx-veloce {
+        --tl: view();
+        will-change: transform;
+      }
+      .fx-fondo  { animation: fx-fondo linear both;  animation-timeline: var(--tl); }
+      .fx-lento  { animation: fx-lento linear both;  animation-timeline: var(--tl); }
+      .fx-medio  { animation: fx-medio linear both;  animation-timeline: var(--tl); }
+      .fx-veloce { animation: fx-veloce linear both; animation-timeline: var(--tl); }
+    }
+  }
+
+  @keyframes fx-fondo {
+    from { transform: translate3d(0, 70px, 0); }
+    to   { transform: translate3d(0, -70px, 0); }
+  }
+  @keyframes fx-lento {
+    from { transform: translate3d(0, 180px, 0); }
+    to   { transform: translate3d(0, -180px, 0); }
+  }
+  @keyframes fx-medio {
+    from { transform: translate3d(0, 280px, 0); }
+    to   { transform: translate3d(0, -280px, 0); }
+  }
+  @keyframes fx-veloce {
+    from { transform: translate3d(0, 400px, 0); }
+    to   { transform: translate3d(0, -400px, 0); }
+  }
+
+  /* Come per le classi globali: su schermo piccolo lo spazio verticale è
+     poco e il movimento largo diventa fastidio, non profondità. */
+  @media (max-width: 767px) {
+    .fx-fondo, .fx-lento, .fx-medio, .fx-veloce {
+      animation: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* La quadrettatura: la stessa dei disegni dei servizi, qui in bianco
+     tenue e mascherata al centro. Sborda dai lati apposta: con la deriva
+     che la muove e la inclina, i bordi non devono mai entrare in scena. */
+  .fondale-griglia {
+    position: absolute;
+    inset: -12% -6%;
+    background-image:
+      linear-gradient(to right, rgb(255 255 255 / 0.055) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.055) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(closest-side ellipse at 50% 42%, #000 25%, transparent 85%);
+  }
+
+  .fondale-alone {
+    position: absolute;
+    border-radius: 50%;
+  }
+
+  /* Ciano in alto a sinistra, dove il gradiente è ancora navy scuro e il
+     colore si vede; bianco in basso a destra, dove il fondo è già chiaro
+     e serve solo un respiro di luce. */
+  .fondale-alone-1 {
+    top: -14rem;
+    left: -12rem;
+    width: 42rem;
+    height: 42rem;
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--color-cyan) 32%, transparent) 0%,
+      transparent 66%
+    );
+  }
+
+  .fondale-alone-2 {
+    bottom: -16rem;
+    right: -10rem;
+    width: 36rem;
+    height: 36rem;
+    background: radial-gradient(circle, rgb(255 255 255 / 0.09) 0%, transparent 65%);
+  }
+
+  /* Gli anelli capello di .band-brand, ma a velocità diverse: è il pezzo
+     che si nota di più mentre si scorre, perché una linea netta che si
+     sfila da un alone sfumato misura il movimento meglio di due sfumature. */
+  .fondale-anello {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgb(255 255 255 / 0.13);
+  }
+
+  .fondale-anello-1 {
+    top: -9rem;
+    right: -7rem;
+    width: 32rem;
+    height: 32rem;
+  }
+
+  .fondale-anello-2 {
+    bottom: 8%;
+    left: 3%;
+    width: 13rem;
+    height: 13rem;
+    border-color: rgb(255 255 255 / 0.09);
   }
 
 
@@ -196,11 +383,41 @@ const {
     text-align: center;
   }
 
+  /* La stessa correzione di CtaBand: `.t-dim` nasce per il fondo chiaro e su
+     questo blu esce spento, come disattivato. Sul gradiente la seconda voce
+     del titolo va in ciano, identica alla fascia di chiusura. */
+  .video-sezione :global(.t-dim) {
+    color: var(--color-cyan);
+  }
+
+  /* Il ciano dei link su fondo scuro (regola di `.on-dark`) qui non regge:
+     in basso a destra il gradiente diventa proprio ciano-blu e il link ci
+     spariva sopra. Bianco, come i bottoni della CTA sullo stesso fondo. */
+  .video-sezione :global(.link-arrow) {
+    color: #fff;
+  }
+  @media (hover: hover) {
+    .video-sezione :global(.link-arrow:hover) {
+      color: color-mix(in srgb, var(--color-cyan) 45%, white);
+    }
+  }
+
+  /* Bianco quasi pieno, non `--color-ink-3` (che dentro `.on-dark` vale
+     bianco al 66%): sul gradiente, più chiaro del navy-deep per cui quel
+     valore era nato, il sommario si impastava col fondo. Stessa voce del
+     sommario della CTA, che sta sullo stesso blu. */
   .video-lead {
     margin-top: 1rem;
     font-size: 1rem;
     line-height: 1.65;
-    color: var(--color-ink-3);
+    color: rgb(255 255 255 / 0.85);
+  }
+
+  /* L'occhiello di `.on-dark` è ciano, pensato per staccare sul navy-deep
+     pieno: qui il fondo È già ciano-blu, e ci si mimetizzava. Bianco spento,
+     come l'occhiello di .band-brand sullo stesso gradiente. */
+  .video-sezione :global(.t-eyebrow) {
+    color: rgb(255 255 255 / 0.8);
   }
 
   /* Etichetta che introduce i cartellini: senza, "01 Vive sul web" appare
@@ -210,16 +427,18 @@ const {
     margin-top: 1.5rem;
     padding: 0.3125rem 0.875rem;
     border-radius: var(--radius-pill);
-    /* Qui invece `--color-soft` va bene anche sul fondo scuro: la pillola sta
-       sul navy, non sopra un'immagine, e il bianco al 10% le dà il rilievo
-       giusto senza diventare un elemento pesante. */
-    background: var(--color-soft);
+    /* La stessa pillola del badge della CTA (`.cta-badge`): bianco al 14%
+       con l'anello interno e il testo pieno. La versione precedente —
+       bianco al 10% e testo al 66% — era tarata sul navy-deep e sul
+       gradiente non si leggeva quasi più. */
+    background: rgb(255 255 255 / 0.14);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.18);
     font-family: var(--font-mono);
     font-size: 0.6875rem;
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--color-ink-3);
+    color: #fff;
   }
 
   /* ═══════════════════════════════════════════════════════════════════════
@@ -246,7 +465,10 @@ const {
     to   { transform: translate3d(0, calc(var(--p) * -0.55), 0); }
   }
 
-  @media (prefers-reduced-motion: no-preference) {
+  /* Solo SOTTO i 1100px: da lì in su comanda la scena agganciata (--cine,
+     in fondo al foglio) e queste righe legate a `view()` resterebbero
+     congelate a metà corsa dentro il palco sticky, che non si muove. */
+  @media (prefers-reduced-motion: no-preference) and (max-width: 1099.98px) {
     @supports (animation-timeline: view()) {
       .video-testo > * {
         --p: 0px;
@@ -257,12 +479,15 @@ const {
         animation-range: entry 15% exit 85%;
         will-change: transform;
       }
-      .video-testo > .t-eyebrow { --p: 10px; }
-      .video-testo > h2 { --p: 26px; }
-      .video-testo > .video-lead { --p: 44px; }
+      /* Scarti raddoppiati rispetto alla prima versione (10/26/44/62):
+         insieme ai piani del fondale, sono quello che fa leggere l'arrivo
+         come strati a profondità diverse e non come una dissolvenza. */
+      .video-testo > .t-eyebrow { --p: 20px; }
+      .video-testo > h2 { --p: 48px; }
+      .video-testo > .video-lead { --p: 80px; }
       /* L'etichetta resta `inline-block`: da `block` la pillola si stirerebbe
          per tutta la riga invece di stare stretta sul testo. */
-      .video-testo > .video-etichetta { --p: 62px; display: inline-block; }
+      .video-testo > .video-etichetta { --p: 110px; display: inline-block; }
     }
   }
 
@@ -283,7 +508,8 @@ const {
    * continuasse fino in fondo il fotogramma respirerebbe mentre si prova a
    * leggere la tabella, che è il difetto di metà delle parallassi in giro.
    */
-  @media (prefers-reduced-motion: no-preference) {
+  /* Anche questa vale solo sotto i 1100px, per lo stesso motivo di sopra. */
+  @media (prefers-reduced-motion: no-preference) and (max-width: 1099.98px) {
     @supports (animation-timeline: view()) {
       /* Sulla SCENA, non sul solo riquadro: i cartellini sono posizionati
          rispetto a lei, e animando il riquadro da solo resterebbero fermi
@@ -299,8 +525,10 @@ const {
       }
     }
   }
+  /* Più profondo di prima (0.94 / 26px): il video è il piano più vicino
+     della scena e deve percorrere più strada di tutti gli altri. */
   @keyframes video-arriva {
-    from { transform: scale(0.94) translate3d(0, 26px, 0); }
+    from { transform: scale(0.9) translate3d(0, 90px, 0); }
     to   { transform: scale(1) translate3d(0, 0, 0); }
   }
 
@@ -313,29 +541,34 @@ const {
   }
 
   /*
-   * Fondo SOLIDO, scritto per esteso e non con `--color-soft`.
+   * Cartellini BIANCHI, come le schede del resto del sito.
    *
-   * Dentro `.on-dark` quel token diventa bianco al dieci per cento: i
-   * cartellini erano diventati trasparenti e sopra il video ci si leggeva
-   * attraverso la tabella delle fatture. Un cartellino che spiega qualcosa
-   * deve essere opaco, sempre, perché sta appoggiato su un'immagine.
+   * La versione scura (navy schiarito) era nata per il fondo navy-deep
+   * piatto; sul gradiente della fascia, che scende verso il ciano chiaro,
+   * diventava un rettangolo fangoso e il testo non si leggeva più. Bianco
+   * pieno e opaco: i cartellini stanno appoggiati sopra il video, e sotto
+   * non deve trasparire la tabella delle fatture.
    *
-   * Navy schiarito e non bianco: bianchi ruberebbero l'occhio al video, che
-   * è la cosa da guardare.
+   * I colori del testo sono scritti per esteso e non con i token, perché
+   * dentro `.on-dark` i token sono rimappati sul bianco: `--color-ink` qui
+   * vale #fff, e un titolo bianco su cartellino bianco sparirebbe.
    */
   .volante {
     display: flex;
     gap: 0.75rem;
     padding: 0.875rem 1rem;
     border-radius: var(--radius-md);
-    background: color-mix(in srgb, var(--color-navy-deep) 84%, white);
-    border: 1px solid rgb(255 255 255 / 0.14);
+    background: #fff;
+    /* Bordo capello scuro, non `--color-line` (rimappato su bianco/0.14):
+       serve dove il cartellino passa sopra il video, che è chiaro anche lui. */
+    border: 1px solid rgb(15 23 42 / 0.08);
+    box-shadow: var(--shadow-md);
   }
-  .volante .volante-titolo { color: #fff; }
-  .volante .volante-testo { color: rgb(255 255 255 / 0.72); }
-  /* Cyan schiarito, non `--color-cyan`: sul fondo del cartellino il cyan pieno
-     dà 3,21:1, sotto la soglia. Schiarito verso il bianco arriva a 5,15. */
-  .volante .volante-num { color: color-mix(in srgb, var(--color-cyan) 55%, white); }
+  .volante .volante-titolo { color: #0f172a; }
+  .volante .volante-testo { color: #526074; }
+  /* Il blu dei collegamenti: su bianco tiene il contrasto (4,8:1) anche a
+     questa misura, e lega i numeri agli accenti del resto della pagina. */
+  .volante .volante-num { color: var(--color-blue); }
   .volante-num {
     flex-shrink: 0;
     font-family: var(--font-mono);
@@ -416,7 +649,9 @@ const {
   .video-nota {
     font-size: 0.8125rem;
     line-height: 1.6;
-    color: var(--color-ink-3);
+    /* Come il sommario: sul gradiente il bianco al 66% dei token non basta,
+       e questa riga è piccola — le serve più contrasto, non meno. */
+    color: rgb(255 255 255 / 0.82);
   }
 
   .video-frame {
@@ -505,6 +740,129 @@ const {
   .video-poster[hidden] {
     opacity: 0;
     pointer-events: none;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     LA SCENA AGGANCIATA (pin + scrub) — solo da 1100px in su
+
+     Il contenitore alto (`.cine-alt`, 280svh) è la durata della scena; il
+     palco (`.cine-stage`) resta fermo a schermo pieno mentre lo si
+     attraversa. Tutto quello che succede dentro è agganciato alla timeline
+     `--cine` con `animation-range` a fette:
+
+       entry ......... la fascia copre i servizi, il titolo si compone
+       0%  → ~56% .... il video cresce dalla miniatura alla misura piena
+       56% → ~80% .... i tre cartellini si posano uno alla volta
+       70% → ~85% .... la didascalia e il collegamento chiudono la scena
+
+     Il fondale (fx-*) passa dalla propria traversata alla timeline della
+     scena: con il palco fermo, i suoi strati che scorrono a velocità
+     diverse sono finalmente leggibili come profondità — è l'ancoraggio
+     che mancava a tutti i tentativi precedenti.
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  @keyframes cine-riga {
+    from { opacity: 0; transform: translate3d(0, var(--p, 48px), 0); }
+    to   { opacity: 1; transform: none; }
+  }
+  /* Il video non è mai fermo: cresce veloce fino alla sua misura (60% della
+     corsa), poi continua ad avvicinarsi piano — fino a 1.1 — salendo di un
+     soffio. Il respiro sotto lo garantisce la misura di partenza ridotta
+     del riquadro (50rem, vedi sotto): a crescita finita occupa MENO di
+     quanto occupava il riquadro pieno da fermo, e la didascalia non viene
+     mai raggiunta. */
+  @keyframes cine-video {
+    0%   { transform: scale(0.55) translate3d(0, 9svh, 0); }
+    60%  { transform: scale(1) translate3d(0, 0, 0); }
+    100% { transform: scale(1.1) translate3d(0, -1svh, 0); }
+  }
+  @keyframes cine-volante {
+    from { opacity: 0; transform: translate3d(0, 28px, 0) scale(0.92); }
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes cine-piede {
+    from { opacity: 0; transform: translate3d(0, 16px, 0); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  @media (prefers-reduced-motion: no-preference) and (min-width: 1100px) {
+    @supports (animation-timeline: view()) {
+      .cine-alt {
+        height: 280svh;
+        view-timeline: --cine block;
+      }
+
+      .cine-stage {
+        position: sticky;
+        top: var(--nav-h);
+        height: calc(100svh - var(--nav-h));
+        overflow: clip;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding-block: 1.5rem;
+      }
+
+      /* Il fondale segue la scena, non la propria traversata. */
+      .fx-fondo, .fx-lento, .fx-medio, .fx-veloce {
+        animation-timeline: --cine;
+        animation-range: normal;
+      }
+
+      /* Il titolo si compone già durante l'ingresso della fascia, così il
+         palco non resta vuoto mentre copre i servizi; quando l'aggancio
+         parte è quasi tutto in scena. */
+      .video-testo > * {
+        display: block;
+        animation: cine-riga linear both;
+        animation-timeline: --cine;
+      }
+      .video-testo > .t-eyebrow { --p: 40px; animation-range: entry 55% contain 6%; }
+      .video-testo > h2 { --p: 60px; animation-range: entry 65% contain 10%; }
+      .video-testo > .video-lead { --p: 80px; animation-range: entry 75% contain 14%; }
+      .video-testo > .video-etichetta {
+        --p: 100px;
+        display: inline-block;
+        animation-range: entry 85% contain 18%;
+      }
+
+      /* Il numero del riferimento: il prodotto parte miniatura e CRESCE
+         fino a riempire la sua misura mentre si scorre. Solo transform,
+         quindi la crescita gira sul compositore. */
+      .video-scena {
+        transform-origin: 50% 42%;
+        animation: cine-video linear both;
+        animation-timeline: --cine;
+        animation-range: contain 6% contain 94%;
+        will-change: transform;
+      }
+
+      /* Dentro la scena il riquadro parte più contenuto: 50rem × 1.1 di
+         crescita finale = 55rem, cioè il video finisce grande quanto era
+         prima DA FERMO — tutta la crescita resta dentro lo spazio che il
+         riquadro pieno già occupava, senza schiacciarsi sulla didascalia. */
+      .video-frame {
+        max-width: 50rem;
+      }
+
+      /* I cartellini si posano quando il video ha finito di crescere.
+         La scorciatoia `animation` qui SOSTITUISCE anche l'oscillazione
+         float-y del blocco più su: dentro una scena comandata dallo
+         scroll, un moto a tempo remerebbe contro. */
+      .volante {
+        animation: cine-volante linear both;
+        animation-timeline: --cine;
+      }
+      .volante-1 { animation-range: contain 56% contain 68%; }
+      .volante-2 { animation-range: contain 62% contain 74%; }
+      .volante-3 { animation-range: contain 68% contain 80%; }
+
+      .video-piede {
+        animation: cine-piede linear both;
+        animation-timeline: --cine;
+        animation-range: contain 70% contain 85%;
+      }
+    }
   }
 </style>
 

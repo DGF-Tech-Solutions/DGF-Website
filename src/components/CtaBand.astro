@@ -1,6 +1,6 @@
 ---
-import { Image } from "astro:assets";
 import Icon from "@/components/Icon.astro";
+import BandPhoto from "@/components/BandPhoto.astro";
 import foto from "@/assets/foto/parliamone.webp";
 
 /*
@@ -8,15 +8,9 @@ import foto from "@/assets/foto/parliamone.webp";
  * badge in pillola, titolo bianco, occhiello, due bottoni e una riga di
  * rassicurazioni con le spunte.
  *
- * L'IMMAGINE NON È UN RIQUADRO, È UN TAGLIO.
- *
- * Una fotografia messa in una cornice dentro una fascia piena sembra sempre
- * appiccicata: due rettangoli uno dentro l'altro, con un bordo a dividerli.
- * Qui invece la foto occupa la metà destra fino al bordo della finestra e si
- * dissolve verso sinistra con una maschera sfumata, così il blu e la
- * fotografia diventano la stessa superficie e il taglio non esiste come
- * linea. Il testo, che passa da centrato ad allineato a sinistra, resta
- * sempre sopra la parte piena.
+ * La fotografia è un taglio, non un riquadro: se ne occupa BandPhoto, la
+ * stessa componente delle due testate. Il testo, che passa da centrato ad
+ * allineato a sinistra, resta sempre sopra la parte piena.
  *
  * Sotto i 1024 px la foto sparisce e il testo torna centrato: su una colonna
  * stretta non c'è spazio per due cose affiancate.
@@ -54,15 +48,7 @@ const {
 <section class="cta-band">
   {/* Fuori dal `wrap`: deve arrivare al bordo della finestra, non fermarsi
       alla colonna di testo. */}
-  <div class="cta-foto" aria-hidden="true">
-    <Image
-      src={foto}
-      alt=""
-      widths={[640, 960, 1280]}
-      sizes="(min-width: 1024px) 55vw, 0px"
-      loading="lazy"
-    />
-  </div>
+  <BandPhoto src={foto} mobile="hidden" />
 
   <div class="wrap relative z-10">
     <div class="cta-testo py-16 sm:py-20">
@@ -162,37 +148,10 @@ const {
    * qui sotto nelle spunte e nelle frecce dei collegamenti su fondo scuro:
    * così la frase resta a due voci senza spegnersi.
    */
-  /* ── Il taglio ──────────────────────────────────────────────────────────
-     La foto sta sotto al testo (`z-index` 0 contro l'1 del `wrap`) e si
-     spegne verso sinistra. La maschera fa il lavoro che farebbe una sfumatura
-     sovrapposta, ma senza aggiungere un elemento: il pixel diventa
-     trasparente e sotto resta il blu della fascia. */
-  .cta-foto { display: none; }
-
   @media (min-width: 1024px) {
-    .cta-foto {
-      display: block;
-      position: absolute;
-      inset: 0 0 0 auto;
-      z-index: 0;
-      width: 58%;
-      opacity: 0.5;
-      mask-image: linear-gradient(
-        100deg,
-        transparent 0%,
-        rgb(0 0 0 / 0.35) 26%,
-        #000 62%
-      );
-    }
-    .cta-foto :global(img) {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center right;
-    }
-
-    /* Il testo lascia libera la metà destra e si allinea a sinistra: centrato
-       finirebbe sopra la fotografia. */
+    /* La foto sta sotto al testo: `z-index` 0 dentro BandPhoto contro l'1 del
+       `wrap`. Il testo lascia libera la metà destra e si allinea a sinistra —
+       centrato finirebbe sopra la fotografia. */
     .cta-testo { max-width: 34rem; text-align: left; }
   }
 

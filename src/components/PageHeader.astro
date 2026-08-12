@@ -1,29 +1,20 @@
 ---
-import { Image } from "astro:assets";
 import type { ImageMetadata } from "astro";
 import Breadcrumbs from "@/components/Breadcrumbs.astro";
 import AiCredit from "@/components/AiCredit.astro";
+import BandPhoto from "@/components/BandPhoto.astro";
 
 /*
  * Testata delle pagine interne.
  *
- * LA FOTOGRAFIA È UN TAGLIO, NON UN RIQUADRO — stessa idea della fascia di
- * chiusura (CtaBand): la foto occupa la metà destra fino al bordo della
- * finestra e si dissolve verso sinistra con una maschera sfumata, così non
- * c'è nessuna linea di confine fra l'immagine e la pagina.
+ * La fotografia è un taglio, non un riquadro: se ne occupa BandPhoto, che fa
+ * lo stesso lavoro qui, su HeroBand e sulla fascia di chiusura. Il perché
+ * della dissolvenza sta scritto lì.
  *
  * Prima era un'immagine dentro una colonna della griglia: funzionava con i
  * disegni piatti su fondo bianco, che si fondevano con la carta da soli. Una
  * fotografia in quella stessa posizione resta un rettangolo appoggiato sopra
  * la pagina, e si vede.
- *
- * Il fondo resta chiaro. La fascia scura per pagina è una sola — la regola
- * sta scritta in global.css — ed è quella di chiusura: due blocchi blu, uno
- * in cima e uno in fondo, schiaccerebbero il contenuto in mezzo.
- *
- * Sotto i 1024 px la foto lascia il posizionamento assoluto e torna nel
- * flusso, a tutta larghezza sotto al testo, senza maschera: su una colonna
- * stretta la dissolvenza mangerebbe metà soggetto.
  */
 interface Props {
   eyebrow?: string;
@@ -74,15 +65,12 @@ const {
       testo e non sopra. */}
   {
     illustration && (
-      <div class="ph-foto anim-fade delay-2">
-        <Image
-          src={illustration}
-          alt={illustrationAlt}
-          widths={[520, 780, 1100]}
-          sizes="(min-width: 1024px) 52vw, 100vw"
-          loading="eager"
-        />
-      </div>
+      <BandPhoto
+        src={illustration}
+        alt={illustrationAlt}
+        eager
+        class="anim-fade delay-2"
+      />
     )
   }
 </section>
@@ -96,67 +84,5 @@ const {
   @media (min-width: 1024px) {
     .ph-testo-con-foto { max-width: 36rem; }
     .ph-testo-con-foto :global(.t-lead) { max-width: 34rem; }
-  }
-
-  /* ── La fotografia ──────────────────────────────────────────────────────
-     Su schermo stretto: blocco normale sotto al testo, angoli arrotondati.
-     Da 1024 px in su: appoggiata al bordo destro della finestra e dissolta
-     verso sinistra. La maschera rende trasparenti i pixel invece di coprirli
-     con una sfumatura sovrapposta, così sotto resta il fondo chiaro della
-     pagina qualunque esso sia. */
-  .ph-foto {
-    margin: 0 auto;
-    width: min(100%, 34rem);
-    padding: 0 1.25rem 2.5rem;
-  }
-  .ph-foto :global(img) {
-    width: 100%;
-    border-radius: var(--radius-lg);
-  }
-
-  @media (min-width: 1024px) {
-    .ph-foto {
-      position: absolute;
-      inset: 0 0 0 auto;
-      z-index: 0;
-      width: 56%;
-      padding: 0;
-      pointer-events: none;
-      opacity: 0.85;
-      /* La maschera sta QUI, sul contenitore, e non sull'immagine.
-         Sull'immagine mascherava solo la fotografia: il velo blu sopra
-         restava un rettangolo pieno, e il suo bordo sinistro era la riga
-         dritta che si vedeva in pagina. Sul contenitore, foto e velo si
-         dissolvono insieme. */
-      -webkit-mask-image: radial-gradient(155% 195% at 100% 50%, #000 0%, #000 20%, rgb(0 0 0 / 0.3) 58%, transparent 100%);
-      mask-image: radial-gradient(155% 195% at 100% 50%, #000 0%, #000 20%, rgb(0 0 0 / 0.3) 58%, transparent 100%);
-    }
-
-    /* Il velo che tinge la fotografia del blu della fascia.
-       Prima avevo provato `mix-blend-mode: luminosity`: sulla carta è la
-       soluzione elegante, in pagina faceva sparire l'immagine — la fusione
-       non regge bene insieme alla maschera. Un velo vero, sopra la foto e
-       dentro la stessa maschera, fa lo stesso lavoro e si comporta sempre
-       allo stesso modo.
-
-       Con la foto desaturata sotto, il risultato è un'immagine monocroma nel
-       blu del marchio: non è più una fotografia appoggiata sopra la fascia,
-       è la fascia che prende rilievo. */
-    .ph-foto::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: var(--gradient-brand);
-      opacity: 0.38;
-      pointer-events: none;
-    }
-    .ph-foto :global(img) {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center right;
-      border-radius: 0;
-      filter: grayscale(1) contrast(1.3) brightness(0.82);
-    }
   }
 </style>

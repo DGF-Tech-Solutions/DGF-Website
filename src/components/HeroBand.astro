@@ -1,9 +1,10 @@
 ---
-import { Image } from "astro:assets";
 import type { ImageMetadata } from "astro";
 import Icon from "@/components/Icon.astro";
 import type { IconName } from "@/components/Icon.astro";
 import Breadcrumbs from "@/components/Breadcrumbs.astro";
+import BandPhoto from "@/components/BandPhoto.astro";
+import AiCredit from "@/components/AiCredit.astro";
 
 /*
  * Testata a fascia blu piena, ricalcata sugli hero interni di Nexia
@@ -25,6 +26,17 @@ interface Props {
   crumbs: { label: string; href?: string }[];
   illustration?: ImageMetadata;
   illustrationAlt?: string;
+  /**
+   * Da attivare quando l'immagine è una fotografia generata con IA: stampa
+   * la dichiarazione richiesta dall'art. 50 dell'AI Act. Vedi AiCredit.astro
+   * per il perché della forma.
+   *
+   * PageHeader lo accettava, questa componente no — e /blog e /portfolio lo
+   * passavano lo stesso. Astro ignora in silenzio una prop non dichiarata,
+   * quindi su quelle due pagine la dichiarazione non usciva e nessuno se ne
+   * accorgeva guardando il codice della pagina.
+   */
+  illustrationAi?: boolean;
   /** Azione principale. */
   cta?: { label: string; href: string };
   /** Azione secondaria. */
@@ -39,6 +51,7 @@ const {
   crumbs,
   illustration,
   illustrationAlt = "",
+  illustrationAi = false,
   cta,
   ctaAlt,
 } = Astro.props;
@@ -86,6 +99,8 @@ const {
             </div>
           )
         }
+
+        {illustrationAi && <AiCredit />}
       </div>
 
       <!--
@@ -101,16 +116,7 @@ const {
       nel flusso, a tutta larghezza, dove deve stare DOPO il testo. */}
   {
     illustration && (
-      <div class="hb-foto">
-        <Image
-          src={illustration}
-          alt={illustrationAlt}
-          widths={[520, 780, 1100]}
-          sizes="(min-width: 1024px) 56vw, 100vw"
-          loading="eager"
-          fetchpriority="high"
-        />
-      </div>
+      <BandPhoto src={illustration} alt={illustrationAlt} eager />
     )
   }
 </section>
@@ -125,61 +131,6 @@ const {
     .hero-band :global(h1) { max-width: 34rem; }
   }
 
-  /* Stessa ricetta di PageHeader: dissolvenza orizzontale sull'immagine,
-     verticale sul contenitore. Due maschere sullo stesso elemento il browser
-     le somma invece di intersecarle, e il taglio netto ricompare. */
-  .hb-foto {
-    margin: 0 auto;
-    width: min(100%, 32rem);
-    padding: 0 1.25rem 3rem;
-  }
-  .hb-foto :global(img) { width: 100%; border-radius: var(--radius-lg); }
-
-  @media (min-width: 1024px) {
-    .hb-foto {
-      position: absolute;
-      inset: 0 0 0 auto;
-      z-index: 0;
-      width: 56%;
-      padding: 0;
-      pointer-events: none;
-      opacity: 0.85;
-      /* La maschera sta QUI, sul contenitore, e non sull'immagine.
-         Sull'immagine mascherava solo la fotografia: il velo blu sopra
-         restava un rettangolo pieno, e il suo bordo sinistro era la riga
-         dritta che si vedeva in pagina. Sul contenitore, foto e velo si
-         dissolvono insieme. */
-      -webkit-mask-image: radial-gradient(155% 195% at 100% 50%, #000 0%, #000 20%, rgb(0 0 0 / 0.3) 58%, transparent 100%);
-      mask-image: radial-gradient(155% 195% at 100% 50%, #000 0%, #000 20%, rgb(0 0 0 / 0.3) 58%, transparent 100%);
-    }
-
-    /* Il velo che tinge la fotografia del blu della fascia.
-       Prima avevo provato `mix-blend-mode: luminosity`: sulla carta è la
-       soluzione elegante, in pagina faceva sparire l'immagine — la fusione
-       non regge bene insieme alla maschera. Un velo vero, sopra la foto e
-       dentro la stessa maschera, fa lo stesso lavoro e si comporta sempre
-       allo stesso modo.
-
-       Con la foto desaturata sotto, il risultato è un'immagine monocroma nel
-       blu del marchio: non è più una fotografia appoggiata sopra la fascia,
-       è la fascia che prende rilievo. */
-    .hb-foto::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: var(--gradient-brand);
-      opacity: 0.38;
-      pointer-events: none;
-    }
-    .hb-foto :global(img) {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center right;
-      border-radius: 0;
-      filter: grayscale(1) contrast(1.3) brightness(0.82);
-    }
-  }
   /* Il fondo blu, i token bianchi, i cerchi e le briciole di pane stanno in
      `.band-brand` (global.css), condivisa con la testata delle pagine di
      progetto. Qui restano solo le parti proprie di questo componente. */

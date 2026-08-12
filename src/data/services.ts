@@ -146,7 +146,7 @@ export const SERVICES: readonly Service[] = [
         text: "Testi e foto pensati per rispondere ai dubbi che fanno abbandonare il carrello.",
       },
     ],
-    stack: ["Next.js", "Stripe", "PostgreSQL", "Tailwind CSS"],
+    stack: ["Shopify", "Next.js", "Stripe", "PostgreSQL", "Tailwind CSS"],
     faq: [
       {
         q: "Meglio partire da un e-commerce o da una vetrina?",

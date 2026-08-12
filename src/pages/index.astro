@@ -250,7 +250,7 @@ const PHASES = [
     caption="Schermo registrato dall'applicazione in funzione. Nessun montaggio, nessuna accelerazione."
     href="/portfolio/nexia-home"
     hrefLabel="Come l'abbiamo costruita"
-    pointsTitle="Cos'è un software SaaS"
+    pointsTitle="Il nostro più grande prodotto interno"
     points={SAAS}
   />
   </div>
@@ -258,7 +258,11 @@ const PHASES = [
   <!-- ══════════════════════════════════════════════════════════════════
        COME LAVORIAMO
        ══════════════════════════════════════════════════════════════════ -->
-  <section class="metodo band-soft section">
+  {/* Bianco, non più grigio: dopo la fascia blu la pagina "riparte" dal
+      bianco, come dopo la CTA. L'onda dei fondi della home è
+      bianco → azzurro → blu, ripetuta due volte: ogni blu è preparato
+      dall'azzurro e seguito dal bianco. */}
+  <section class="metodo section">
     {/* Due aloni che scorrono più lenti della pagina: danno profondità al
         fondo senza una sola immagine da scaricare. */}
     <span class="metodo-alone metodo-alone-1 parallax-slow" aria-hidden="true"></span>
@@ -338,7 +342,7 @@ const PHASES = [
        ══════════════════════════════════════════════════════════════════ -->
   {
     articles.length > 0 && (
-      <section class="band-soft section">
+      <section class="blog-fascia section">
         <div class="wrap">
           <div class="flex flex-wrap items-end justify-between gap-6">
             <div class="max-w-2xl">
@@ -385,6 +389,14 @@ const PHASES = [
    * Lo `z-index` esplicito serve: senza, i due elementi si impilano
    * nell'ordine del documento e il pannello che sale finirebbe dietro.
    */
+  /* Lo stesso azzurro della sezione servizi: è il gradino che prepara il
+     blu della CTA subito sotto, come i servizi preparano la fascia Nexia.
+     Prima era il grigio di `band-soft`, fuori dalla famiglia azzurra, e
+     per giunta uguale alla sezione precedente. */
+  .blog-fascia {
+    background: color-mix(in srgb, var(--color-soft) 85%, white);
+  }
+
   .pila-parallasse { position: relative; }
   .pila-parallasse > .servizi-fondo {
     position: sticky;
@@ -421,9 +433,20 @@ const PHASES = [
       }
     }
   }
+  /* È QUESTO il parallasse d'arrivo della fascia blu, non lo sticky.
+     Misurato alla mano: `bottom: 0` sul primo figlio del contenitore non ha
+     spazio in cui agganciarsi (il suo bordo alto È il bordo del contenitore),
+     quindi non è mai scattato — l'aggancio documentato più su è di fatto
+     inerte, e restava solo il rimpicciolimento.
+
+     Qui il contenuto SCENDE (translateY positivo) mentre la pagina sale:
+     rispetto alla finestra si muove più lento della fascia che arriva, e
+     affonda spegnendosi nell'azzurro. Gli 88px restano dentro i ~240px di
+     respiro basso della sezione: il contenuto non raggiunge mai il cambio
+     di colore. */
   @keyframes servizi-arretra {
-    from { transform: scale(1); opacity: 1; }
-    to { transform: scale(0.955); opacity: 0.62; }
+    from { transform: scale(1) translate3d(0, 0, 0); opacity: 1; }
+    to { transform: scale(0.94) translate3d(0, 88px, 0); opacity: 0.45; }
   }
 
   /* ═══════════════════════════════════════════════════════════════════════
