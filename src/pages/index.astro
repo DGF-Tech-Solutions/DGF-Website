@@ -55,28 +55,28 @@ const PHASES = [
     title: "Ascolto",
     text: "Capiamo il problema prima di parlare di soluzioni. Spesso quello che serve è diverso da quello che si era immaginato, e dirlo è parte del lavoro.",
     photo: fase1,
-    photoAlt: "Una mano prende appunti su un taccuino, di fronte le mani di chi parla",
+    photoAlt: "Due persone sedute a un tavolo davanti a una grande vetrata, in conversazione",
   },
   {
     icon: "file",
     title: "Proposta",
     text: "Ambito, tempi e costo messi per iscritto prima di iniziare. Nessuna voce a sorpresa a metà progetto.",
     photo: fase2,
-    photoAlt: "Una mano sfoglia un documento rilegato appoggiato sul tavolo",
+    photoAlt: "Un taccuino aperto con schemi di interfaccia disegnati a matita, accanto una tazza di caffè",
   },
   {
     icon: "wrench",
     title: "Costruzione",
     text: "Ti mostriamo il lavoro mentre procede, non alla fine. Se qualcosa non convince si corregge quando costa poco.",
     photo: fase3,
-    photoAlt: "Mani su una tastiera davanti a un monitor in controluce",
+    photoAlt: "Due persone al lavoro davanti allo stesso monitor",
   },
   {
     icon: "package",
     title: "Consegna",
     text: "Il progetto è tuo: codice, dominio, accessi. Ti spieghiamo come funziona e restiamo raggiungibili.",
     photo: fase4,
-    photoAlt: "Un portatile aperto viene fatto scorrere sul tavolo verso due mani",
+    photoAlt: "Una stretta di mano sopra un tavolo, accanto un portatile e dei documenti",
   },
 ] as const;
 
@@ -192,10 +192,31 @@ const PHASES = [
   </section>
 
   <!-- ══════════════════════════════════════════════════════════════════
-       SERVIZI
+       SERVIZI + NEXIA — parallasse a scorrimento
+
+       I servizi restano fermi e Nexia ci scivola sopra, come un pannello che
+       sale a coprire lo sfondo. Il riferimento classico lo fa con `position:
+       fixed` sullo sfondo e un po' di JavaScript per spostarlo a ogni evento
+       di scorrimento; qui basta `position: sticky` sul primo dei due, che
+       ottiene la stessa cosa senza una riga di script e senza far ricalcolare
+       niente al browser a ogni fotogramma.
+
+       I due elementi devono stare nello STESSO contenitore: `sticky` si
+       muove solo dentro il proprio genitore, e senza questo involucro i
+       servizi resterebbero incollati per tutto il resto della pagina.
        ══════════════════════════════════════════════════════════════════ -->
-  <section class="band-soft section">
-    <div class="wrap">
+  <div class="pila-parallasse">
+  <section class="section servizi-fondo">
+    {/*
+      Il contenuto arretra mentre la sezione esce dallo schermo: rimpicciolisce
+      di poco e si spegne, così il foglio bianco di Nexia sembra passargli
+      SOPRA invece di seguirlo in fila.
+
+      L'animazione sta sul contenuto e non sulla sezione, ed è una differenza
+      che si vede: rimpicciolendo la sezione si rimpicciolirebbe anche la sua
+      fascia grigia, scoprendo due strisce bianche ai lati.
+    */}
+    <div class="wrap servizi-uscita">
       <!-- Testata su due colonne invece che centrata: dà alla sezione un asse
            verticale a sinistra, lo stesso del resto della pagina, e lascia al
            blocco sotto tutta la larghezza. Una testata centrata sopra una
@@ -232,6 +253,7 @@ const PHASES = [
     pointsTitle="Cos'è un software SaaS"
     points={SAAS}
   />
+  </div>
 
   <!-- ══════════════════════════════════════════════════════════════════
        COME LAVORIAMO
@@ -345,6 +367,65 @@ const PHASES = [
 </Base>
 
 <style>
+  /*
+   * Uscita di scena dei servizi. Il movimento è tutto nell'ultimo tratto,
+   * quando la sezione sta già lasciando lo schermo: mentre la si legge non
+   * succede niente, ed è la condizione perché un effetto del genere non
+   * dia fastidio.
+   */
+  /*
+   * Il parallasse a scorrimento.
+   *
+   * `bottom: 0` e non `top`: la sezione dei servizi è più alta di uno
+   * schermo, e agganciandola in ALTO se ne vedrebbe solo la testa mentre il
+   * resto sparisce fuori. Agganciata in BASSO resta ferma con il piede
+   * appoggiato al bordo della finestra, e Nexia le sale davanti coprendola —
+   * che è esattamente il movimento del riferimento.
+   *
+   * Lo `z-index` esplicito serve: senza, i due elementi si impilano
+   * nell'ordine del documento e il pannello che sale finirebbe dietro.
+   */
+  .pila-parallasse { position: relative; }
+  .pila-parallasse > .servizi-fondo {
+    position: sticky;
+    bottom: 0;
+    z-index: 0;
+  }
+
+  .servizi-fondo {
+    /*
+     * Azzurro, non il grigio delle fasce alternate: questa sezione resta
+     * ferma dietro mentre Nexia le scorre sopra, e con un fondo quasi bianco
+     * il pannello scuro sembrerebbe apparire dal nulla invece che coprire
+     * qualcosa. Serve un colore che si riconosca dietro.
+     *
+     * L'azzurro è schiarito del 15%: a pieno `--color-soft` il testo delle
+     * schede scendeva a 4,46:1, appena sotto la soglia di leggibilità, e il
+     * punteggio di accessibilità con lui. Così sta a 4,56 e resta comunque
+     * il 12% più scuro del bianco — quattro volte lo stacco che dava il
+     * grigio delle fasce alternate.
+     */
+    background: color-mix(in srgb, var(--color-soft) 85%, white);
+    padding-bottom: clamp(8rem, 5rem + 11vw, 15rem);
+  }
+
+  .servizi-uscita { transform-origin: 50% 100%; }
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .servizi-uscita {
+        --tl: view();
+        animation: servizi-arretra linear both;
+        animation-timeline: var(--tl);
+        animation-range: exit 15% exit 100%;
+        will-change: transform, opacity;
+      }
+    }
+  }
+  @keyframes servizi-arretra {
+    from { transform: scale(1); opacity: 1; }
+    to { transform: scale(0.955); opacity: 0.62; }
+  }
+
   /* ═══════════════════════════════════════════════════════════════════════
      IL METODO — quattro pannelli che si sostituiscono scorrendo
      ═══════════════════════════════════════════════════════════════════════ */

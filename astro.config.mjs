@@ -25,6 +25,21 @@ export default defineConfig({
   site: "https://dgftechsolutions.com",
   ...(base ? { base } : {}),
 
+  /*
+   * Pagine ritirate.
+   *
+   * /come-lavoriamo è stata eliminata, ma il dominio è pubblico e l'indirizzo
+   * può essere già indicizzato o citato altrove. Senza questa riga chi ci
+   * arriva trova un 404; con questa arriva in home, dove le quattro fasi ci
+   * sono comunque nella sezione del metodo.
+   *
+   * In build statica Astro genera una paginetta con il rimando: non è un 301
+   * lato server, ma è quanto di meglio si possa fare su GitHub Pages.
+   */
+  redirects: {
+    "/come-lavoriamo": "/",
+  },
+
   build: {
     // `directory` → ogni pagina diventa /percorso/index.html: GitHub Pages
     // serve gli URL senza estensione e senza 404.

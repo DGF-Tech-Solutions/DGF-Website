@@ -35,10 +35,15 @@ const SCELTE = [
   // testa alla pagina dei contatti, non ridotta a decorazione da 180 px.
   ["02-serie-A/contatti-a.png", "contatti", "contatti"],
   ["03-ascolto/ascolto-c.png", "ascolto", "come lavoriamo"],
-  ["04-metodo/metodo-01-ascolto.png", "fase-1-ascolto", "home, metodo"],
-  ["04-metodo/metodo-02-proposta.png", "fase-2-proposta", "home, metodo"],
-  ["04-metodo/metodo-03-costruzione.png", "fase-3-costruzione", "home, metodo"],
-  ["04-metodo/metodo-04-consegna.png", "fase-4-consegna", "home, metodo"],
+  // Le quattro fasi le ha scelte David una per una, guardando i provini.
+  // La fascia di chiusura: una conversazione a un tavolo, tono freddo che
+  // si sposa con il blu della fascia invece di litigarci.
+  ["00-prove/prova-ufficio.png", "parliamone", "fascia di chiusura, ogni pagina"],
+
+  ["03-ascolto/ascolto-c.png", "fase-1-ascolto", "home, metodo"],
+  ["07-giro2/V1b-scrivania-vissuta.png", "fase-2-proposta", "home, metodo"],
+  ["03-ascolto/software-a2.png", "fase-3-costruzione", "home, metodo"],
+  ["05-consegna/consegna-stretta.png", "fase-4-consegna", "home, metodo"],
 ];
 
 const esiste = async (p) => access(p).then(() => true).catch(() => false);

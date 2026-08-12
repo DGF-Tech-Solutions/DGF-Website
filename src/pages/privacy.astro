@@ -1,127 +1,206 @@
 ---
+/*
+ * Privacy policy.
+ *
+ * Struttura e ordine dei capitoli presi dall'informativa di Nexia Home™ (stessa
+ * società, stesso titolare), ma i FATTI sono quelli di questo sito: nessun
+ * account, nessun pagamento, nessun dato di condominio. Copiare anche il
+ * contenuto avrebbe prodotto un documento che descrive un servizio che qui non
+ * esiste — cioè un'informativa falsa, che è peggio di non averla.
+ */
 import Legal from "@/layouts/Legal.astro";
 import { SITE } from "@/data/site";
+
+const DOMINIO = SITE.url.replace(/^https?:\/\//, "");
+const GARANTE = "https://www.garanteprivacy.it";
 ---
 
 <Legal
   title="Privacy policy"
-  description="Come DGF Tech Solutions tratta i dati personali raccolti tramite il sito e il modulo di contatto."
+  description="Informativa sul trattamento dei dati personali ai sensi del GDPR per il sito di DGF Tech Solutions."
   canonical="/privacy"
-  updated="2026-08-11"
+  updated="2026-08-12"
 >
   <p>
-    Questa informativa descrive come <strong>{SITE.legalName}</strong> tratta i dati
-    personali raccolti attraverso il sito <strong>{SITE.url.replace("https://", "")}</strong>,
-    ai sensi del Regolamento UE 2016/679 (GDPR).
+    Questa informativa descrive come <strong>{SITE.legalName}</strong> tratta i
+    dati personali raccolti attraverso il sito <strong>{DOMINIO}</strong>, ai
+    sensi del Regolamento UE 2016/679 (GDPR). Riguarda esclusivamente il sito:
+    i trattamenti legati a un progetto affidato a noi sono regolati dal
+    contratto e, dove previsto, da un accordo separato ai sensi dell'art. 28
+    GDPR.
   </p>
 
   <h2>Titolare del trattamento</h2>
+  <div class="legale-titolare">
+    <strong>{SITE.legalName}</strong><br />
+    {SITE.street}, {SITE.zip} {SITE.city} ({SITE.region}), {SITE.countryName}<br />
+    P. IVA {SITE.vatId}<br />
+    E-mail: <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+  </div>
   <p>
-    {SITE.legalName}, con sede a {SITE.city} ({SITE.region}), {SITE.countryName},
-    P. IVA {SITE.vatId}.<br />
-    Contatto: <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+    Non è stato nominato un Responsabile della protezione dei dati (DPO): non
+    ricorrono i casi previsti dall'art. 37 GDPR. Per qualunque questione sui
+    dati personali il riferimento è l'indirizzo qui sopra.
   </p>
 
-  <h2>Quali dati raccogliamo</h2>
-  <p>
-    Il sito è statico e non richiede registrazione. L'unico punto in cui
-    raccogliamo dati personali è il modulo di contatto, dove ci fornisci:
-  </p>
+  <h2>Categorie di dati trattati</h2>
   <ul>
-    <li><strong>Obbligatori:</strong> nome, indirizzo email e testo del messaggio.</li>
-    <li><strong>Facoltativi:</strong> cognome, numero di telefono, nome dell'azienda.</li>
+    <li>
+      <strong>Dati che ci fornisci tu, dal modulo di contatto:</strong> nome,
+      indirizzo e-mail e testo del messaggio (obbligatori); cognome, telefono e
+      nome dell'azienda (facoltativi).
+    </li>
+    <li>
+      <strong>Dati tecnici generati dalla connessione:</strong> indirizzo IP,
+      tipo di browser e pagina richiesta, registrati dai server che ospitano il
+      sito e dai servizi usati dal modulo. Non li consultiamo se non in caso di
+      abuso o malfunzionamento.
+    </li>
   </ul>
   <p>
-    Non raccogliamo dati di navigazione a fini statistici o pubblicitari: il sito
-    non usa Google Analytics né alcun altro sistema di misurazione del pubblico.
+    Non raccogliamo dati di navigazione a fini statistici o pubblicitari:
+    <strong>il sito non usa Google Analytics né alcun altro sistema di
+    misurazione del pubblico</strong>. Non trattiamo categorie particolari di
+    dati (art. 9 GDPR): ti chiediamo di non inserirne nel messaggio.
   </p>
 
-  <h2>Perché li trattiamo e su quale base giuridica</h2>
+  <h2>Finalità e basi giuridiche</h2>
+  <ul>
+    <li>
+      Leggere la tua richiesta, risponderti e, se il contatto prosegue,
+      formulare una proposta — <strong>misure precontrattuali adottate su tua
+      richiesta</strong> (art. 6.1.b GDPR).
+    </li>
+    <li>
+      Sicurezza del sito e prevenzione degli abusi del modulo, compresa la
+      verifica anti-bot — <strong>legittimo interesse</strong> del titolare
+      (art. 6.1.f GDPR), rispetto al quale puoi esercitare il diritto di
+      opposizione.
+    </li>
+    <li>
+      Adempimenti di legge, quando la richiesta si trasforma in un rapporto
+      contrattuale — <strong>obbligo legale</strong> (art. 6.1.c GDPR).
+    </li>
+  </ul>
   <p>
-    Usiamo i dati esclusivamente per <strong>leggere la tua richiesta e risponderti</strong>,
-    e se il contatto prosegue per formulare una proposta.
-  </p>
-  <p>
-    La base giuridica è l'esecuzione di misure precontrattuali adottate su tua
-    richiesta (art. 6, par. 1, lett. b del GDPR). Non usiamo i tuoi dati per
-    invio di comunicazioni commerciali non richieste.
+    Non inviamo comunicazioni commerciali non richieste e non c'è alcuna
+    iscrizione a newsletter: se un domani la introdurremo, sarà su
+    <strong>consenso</strong> separato e revocabile (art. 6.1.a GDPR).
   </p>
 
-  <h2>A chi vengono comunicati</h2>
+  <h2>Natura del conferimento</h2>
   <p>
-    Per far funzionare il sito e il modulo ci appoggiamo a fornitori che agiscono
-    come responsabili del trattamento o titolari autonomi:
+    Nome, e-mail e messaggio sono necessari per poterti rispondere: senza, il
+    modulo non può essere inviato. Gli altri campi sono facoltativi e servono
+    solo a inquadrare meglio la richiesta; non fornirli non cambia la risposta
+    che riceverai.
+  </p>
+
+  <h2>Conservazione dei dati</h2>
+  <ul>
+    <li>
+      <strong>Richieste che non proseguono:</strong> conserviamo il messaggio
+      per <strong>24 mesi</strong> dall'ultimo scambio, per poter ricostruire
+      la conversazione se ci ricontatti, poi lo cancelliamo.
+    </li>
+    <li>
+      <strong>Richieste che diventano un progetto:</strong> per la durata del
+      rapporto e, dopo, per i termini di legge (di norma 10 anni per la
+      documentazione contabile e fiscale).
+    </li>
+    <li>
+      <strong>Log tecnici dei fornitori:</strong> secondo le loro politiche di
+      conservazione, di norma non oltre 90 giorni.
+    </li>
+  </ul>
+
+  <h2>Destinatari e responsabili del trattamento</h2>
+  <p>
+    I dati non sono venduti né ceduti a terzi. Per far funzionare il sito e il
+    modulo ci appoggiamo ai fornitori qui elencati, che agiscono come
+    responsabili del trattamento o come titolari autonomi per i propri log
+    tecnici:
   </p>
   <ul>
     <li>
-      <strong>Web3Forms</strong>: riceve i dati del modulo e ce li recapita via
-      email. I dati transitano dai loro server per il tempo tecnico necessario
+      <strong>GitHub, Inc.</strong> — ospita le pagine del sito (GitHub Pages).
+      Tratta i dati tecnici di connessione.
+    </li>
+    <li>
+      <strong>Web3Forms</strong> — riceve i dati del modulo e ce li recapita via
+      e-mail. I dati transitano dai suoi server per il tempo tecnico necessario
       all'inoltro.
     </li>
     <li>
-      <strong>hCaptcha (Intuition Machines, Inc.)</strong>: verifica anti-bot,
-      caricata solo quando inizi a compilare il modulo. Tratta dati tecnici
-      (indirizzo IP, interazioni con la pagina) per distinguere le persone dai
-      programmi automatici.
+      <strong>Intuition Machines, Inc. (hCaptcha)</strong> — verifica anti-bot
+      caricata solo quando inizi a compilare il modulo.
     </li>
     <li>
-      <strong>GitHub Pages (GitHub, Inc.)</strong>: ospita il sito. Come ogni
-      server web registra dati tecnici di connessione, tra cui l'indirizzo IP,
-      per finalità di sicurezza e funzionamento.
-    </li>
-    <li>
-      <strong>Google Workspace</strong>: la casella di posta su cui riceviamo le
-      richieste.
+      <strong>Google Ireland Ltd.</strong> — casella di posta su cui riceviamo e
+      conserviamo i messaggi.
     </li>
   </ul>
   <p>
-    Alcuni di questi fornitori hanno sede negli Stati Uniti: i trasferimenti
-    avvengono sulla base delle garanzie previste dal Capo V del GDPR (clausole
-    contrattuali standard o adesione al Data Privacy Framework).
+    I dati possono inoltre essere comunicati alle autorità competenti nei casi
+    previsti dalla legge.
   </p>
-  <p>Non vendiamo né cediamo i tuoi dati a terzi per finalità di marketing.</p>
 
-  <h2>Per quanto tempo li conserviamo</h2>
-  <ul>
-    <li>
-      <strong>Richieste senza seguito:</strong> conservate per un massimo di
-      24 mesi, poi cancellate.
-    </li>
-    <li>
-      <strong>Richieste che diventano un rapporto contrattuale:</strong>
-      conservate per la durata del rapporto e per i successivi 10 anni, come
-      richiesto dagli obblighi civilistici e fiscali.
-    </li>
-  </ul>
-
-  <h2>I tuoi diritti</h2>
-  <p>Puoi in qualsiasi momento chiederci di:</p>
-  <ul>
-    <li>accedere ai dati che ti riguardano (art. 15);</li>
-    <li>correggerli se inesatti o incompleti (art. 16);</li>
-    <li>cancellarli (art. 17);</li>
-    <li>limitarne il trattamento (art. 18);</li>
-    <li>riceverli in formato leggibile da un computer (art. 20);</li>
-    <li>opporti al trattamento (art. 21).</li>
-  </ul>
+  <h2>Luogo del trattamento e trasferimenti extra-UE</h2>
   <p>
-    Per esercitarli scrivi a <a href={`mailto:${SITE.email}`}>{SITE.email}</a>:
-    rispondiamo entro 30 giorni. Se ritieni che il trattamento violi il GDPR puoi
-    presentare reclamo al
-    <a href="https://www.garanteprivacy.it" rel="noopener noreferrer" target="_blank">
-      Garante per la protezione dei dati personali</a>.
+    Alcuni dei fornitori elencati hanno sede negli Stati Uniti o vi conservano
+    dati. Il trasferimento avviene sulla base delle garanzie previste dagli
+    artt. 44 e seguenti del GDPR: decisione di adeguatezza per gli aderenti al
+    <em>EU-U.S. Data Privacy Framework</em> oppure Clausole Contrattuali
+    Standard approvate dalla Commissione europea. Puoi chiederci copia delle
+    garanzie applicate scrivendo all'indirizzo del titolare.
+  </p>
+
+  <h2>Assenza di profilazione e decisioni automatizzate</h2>
+  <p>
+    Non facciamo profilazione e non prendiamo decisioni automatizzate che
+    producano effetti giuridici sulle persone. La verifica anti-bot valuta la
+    richiesta, non chi la invia, e il suo unico esito è consentire o meno
+    l'invio del modulo.
   </p>
 
   <h2>Sicurezza</h2>
   <p>
-    Il sito è servito esclusivamente in HTTPS. I dati del modulo viaggiano
-    cifrati. L'accesso alla casella di posta su cui arrivano le richieste è
-    protetto da autenticazione a due fattori.
+    Il sito è servito esclusivamente su connessione cifrata (HTTPS). Le pagine
+    sono file statici: non esiste un database del sito da violare, né un'area
+    riservata. L'accesso alla casella su cui arrivano i messaggi è protetto da
+    autenticazione a due fattori.
   </p>
 
-  <h2>Modifiche</h2>
+  <h2>Diritti dell'interessato e reclamo al Garante</h2>
+  <p>Ai sensi degli artt. 15-22 GDPR hai diritto di:</p>
+  <ul>
+    <li>accedere ai tuoi dati personali e ottenerne copia;</li>
+    <li>rettificare dati inesatti o integrare dati incompleti;</li>
+    <li>ottenere la cancellazione («diritto all'oblio»), nei casi previsti;</li>
+    <li>limitare od opporti al trattamento fondato sul legittimo interesse;</li>
+    <li>ricevere i tuoi dati in un formato strutturato e portabile;</li>
+    <li>revocare in ogni momento il consenso eventualmente prestato.</li>
+  </ul>
   <p>
-    Se cambieremo strumenti o finalità aggiorneremo questo documento e la data in
-    cima alla pagina.
+    Per esercitare i tuoi diritti scrivi a
+    <a href={`mailto:${SITE.email}`}>{SITE.email}</a>: rispondiamo entro 30
+    giorni. Hai inoltre diritto di proporre reclamo al
+    <a href={GARANTE} rel="noopener noreferrer" target="_blank">
+      Garante per la protezione dei dati personali</a>.
+  </p>
+
+  <h2>Cookie</h2>
+  <p>
+    Durante la navigazione normale il sito non installa cookie. Solo se inizi a
+    compilare il modulo entra in gioco la verifica anti-bot, che usa strumenti
+    tecnici necessari. Il dettaglio è nella
+    <a href="/cookie">cookie policy</a>.
+  </p>
+
+  <h2>Aggiornamenti dell'informativa</h2>
+  <p>
+    Possiamo aggiornare questa informativa quando cambiano gli strumenti usati
+    dal sito. La data dell'ultima modifica è in cima alla pagina; le versioni
+    precedenti sono ricostruibili dallo storico pubblico del codice del sito.
   </p>
 </Legal>

@@ -280,7 +280,7 @@ const schema = {
       <div class="mx-auto max-w-2xl text-center">
         <span class="t-eyebrow">I dati</span>
         <h2 class="t-h2 mt-3">
-          Verificabili, <span class="t-dim">non dichiarati.</span>
+          Dati <span class="t-dim">verificabili.</span>
         </h2>
         <p class="t-lead mt-4">
           Partita IVA, ragione sociale e sede: puoi controllarci prima ancora di
@@ -288,7 +288,7 @@ const schema = {
         </p>
       </div>
 
-      <dl class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <dl class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <div class="card p-5">
           <dt class="t-eyebrow">Ragione sociale</dt>
           <dd class="mt-2 text-[0.9375rem] font-semibold text-[var(--color-ink)]">{SITE.legalName}</dd>
@@ -303,10 +303,10 @@ const schema = {
             {SITE.city} ({SITE.region}), {SITE.countryName}
           </dd>
         </div>
-        <div class="card p-5">
+        <div class="card p-5 lg:col-span-2">
           <dt class="t-eyebrow">Contatto</dt>
           <dd class="mt-2">
-            <a href={`mailto:${SITE.email}`} class="link-arrow !text-[0.875rem] break-all">
+            <a href={`mailto:${SITE.email}`} class="link-arrow !text-[0.875rem]">
               {SITE.email}
             </a>
           </dd>

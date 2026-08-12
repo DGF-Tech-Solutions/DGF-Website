@@ -1,0 +1,13 @@
+[
+  { "name": "V6b-consegna", "seed": 831, "out": "brand/render/08-giro3/V6b-consegna.png",
+    "prompt": "documentary photograph seen from slightly above, exactly two people and exactly four hands, one person's two hands pushing a closed silver laptop across a warm wooden table, the other person's two open hands waiting palms up on the far side of the table, clear gesture of handing something over, anatomically correct hands, a mug at the edge of the frame, warm afternoon light from the left, lived-in wooden desk, 50mm lens, natural grain, candid, photorealistic, no faces, no extra hands, no letters, no printed documents" },
+
+  { "name": "V5b-tastiera", "seed": 832, "out": "brand/render/08-giro3/V5b-tastiera.png",
+    "prompt": "documentary photograph, close crop of two hands typing on a laptop keyboard on a warm wooden desk, the screen above tilted away so it is out of frame at the top, a mug and an open notebook with pencil wireframe sketches beside, warm afternoon light from the left, lived-in and slightly untidy, 50mm lens, natural grain, candid, photorealistic, screen not visible, no letters, no printed documents, no papers with writing" },
+
+  { "name": "B1-monitor-frontale", "seed": 833, "out": "brand/render/08-giro3/B1-monitor-frontale.png",
+    "prompt": "documentary photograph of a desk shot perfectly straight on and square to the frame, a large external monitor centred and facing the camera with a plain flat empty white screen, a keyboard and a mug and a notebook around it, warm daylight from the left, warm wooden desk, lived-in and slightly untidy, 35mm lens, natural grain, photorealistic, the monitor screen is a clean flat white rectangle exactly facing the camera with no perspective, no interface, no letters" },
+
+  { "name": "B2-portatile-frontale", "seed": 834, "out": "brand/render/08-giro3/B2-portatile-frontale.png",
+    "prompt": "documentary photograph shot perfectly straight on and square to the frame, an open laptop centred and facing the camera with a plain flat empty white screen, hands resting on the keyboard, a mug and pencil sketches on paper beside it, warm afternoon light from the left, warm wooden desk, lived-in, 35mm lens, natural grain, photorealistic, the laptop screen is a clean flat white rectangle exactly facing the camera with no perspective, no interface, no letters" }
+]

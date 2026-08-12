@@ -18,6 +18,11 @@ export const SITE = {
   email: "founders.dgftechsolutions@gmail.com",
   vatId: "IT03882320835",
   taxId: "03882320835",
+  /* Sede legale. Serve ai documenti legali, dove il titolare del trattamento
+     va identificato per intero, e ai dati strutturati dell'organizzazione.
+     Stessa sede dichiarata nelle pagine legali di Nexia: è la stessa società. */
+  street: "Via Leonardo Sciascia 24",
+  zip: "98168",
   city: "Messina",
   region: "ME",
   country: "IT",
@@ -39,7 +44,6 @@ export const SITE = {
  */
 export const NAV = [
   { label: "Servizi", href: "/servizi" },
-  { label: "Come lavoriamo", href: "/come-lavoriamo" },
   { label: "Progetti", href: "/portfolio" },
   { label: "Blog", href: "/blog" },
   { label: "Chi siamo", href: "/chi-siamo" },

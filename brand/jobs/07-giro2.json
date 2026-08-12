@@ -1,0 +1,13 @@
+[
+  { "name": "V1b-scrivania-vissuta", "seed": 821, "out": "brand/render/07-giro2/V1b-scrivania-vissuta.png",
+    "prompt": "documentary photograph of a real working desk, warm afternoon sunlight raking across from a window, an open notebook filled with pencil drawings of interface wireframes, plain rectangles and arrows and crossed-out boxes, two completely blank unwritten yellow sticky notes, a used coffee mug leaving a ring on the wood, a tangled charging cable, a pen without its cap, warm wood and paper tones, lived-in and slightly untidy, visible dust in the sunbeam, 35mm lens, natural grain, imperfect and candid, photorealistic, only hand-drawn pencil lines anywhere in frame, absolutely no handwriting, no letters, no printed documents" },
+
+  { "name": "V2b-mano-schizzo", "seed": 822, "out": "brand/render/07-giro2/V2b-mano-schizzo.png",
+    "prompt": "documentary photograph, close crop of a hand drawing an interface wireframe in pencil on plain paper, rectangles with diagonal crosses and arrows already drawn, eraser crumbs and one crumpled sheet beside it, warm side light from a desk lamp mixed with daylight, warm paper tones, shallow depth of field, 50mm lens, natural grain, candid and imperfect, photorealistic, every sheet in frame is plain paper with hand-drawn pencil lines only, absolutely no printed documents, no handwriting, no letters, no type" },
+
+  { "name": "V5-tastiera-vissuta", "seed": 823, "out": "brand/render/07-giro2/V5-tastiera-vissuta.png",
+    "prompt": "documentary photograph, close crop of two hands on a worn laptop keyboard, the screen above tilted so it catches a bright window reflection and its content is lost in glare, a mug and a notebook with pencil sketches beside, warm afternoon light from the left, warm wood desk, lived-in and slightly untidy, 50mm lens, natural grain, candid, photorealistic, screen is pure white glare with no content, no letters, no printed documents" },
+
+  { "name": "V6-consegna-vera", "seed": 824, "out": "brand/render/07-giro2/V6-consegna-vera.png",
+    "prompt": "documentary photograph, close crop of two hands pushing a closed silver laptop across a warm wooden table towards a second pair of open waiting hands reaching in from the far side, clear gesture of handing something over, a mug and a notebook at the edge of the frame, warm afternoon light from the left, lived-in desk, 50mm lens, natural grain, candid and imperfect, photorealistic, no faces, no letters, no printed documents" }
+]

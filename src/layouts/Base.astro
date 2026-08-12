@@ -18,11 +18,6 @@ interface Props {
   noindex?: boolean;
   /** Dati strutturati aggiuntivi, specifici della pagina. */
   schema?: Record<string, unknown> | Record<string, unknown>[];
-  /**
-   * Barra in alto opaca fin dall'inizio, invece che trasparente e poi bianca
-   * scorrendo. Da mettere sulle pagine che aprono con una fascia scura.
-   */
-  navSolid?: boolean;
 }
 
 const {
@@ -33,7 +28,6 @@ const {
   ogType = "website",
   noindex = false,
   schema,
-  navSolid = false,
 } = Astro.props;
 
 const canonicalURL = new URL(canonical ?? Astro.url.pathname, Astro.site);
@@ -64,6 +58,8 @@ const organizationSchema = {
   foundingLocation: { "@type": "Place", name: `${SITE.city}, ${SITE.countryName}` },
   address: {
     "@type": "PostalAddress",
+    streetAddress: SITE.street,
+    postalCode: SITE.zip,
     addressLocality: SITE.city,
     addressRegion: SITE.region,
     addressCountry: SITE.country,
@@ -155,7 +151,7 @@ const jsonLd = {
 
   <body>
     <a class="skip-link" href="#main">Salta al contenuto</a>
-    <Nav solid={navSolid} />
+    <Nav />
     <main id="main">
       <slot />
     </main>

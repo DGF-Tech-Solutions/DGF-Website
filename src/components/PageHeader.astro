@@ -5,10 +5,25 @@ import Breadcrumbs from "@/components/Breadcrumbs.astro";
 import AiCredit from "@/components/AiCredit.astro";
 
 /*
- * Testata delle pagine interne, sul modello degli hero interni di Nexia:
- * testo a sinistra, illustrazione a destra, alone azzurro dietro.
- * La ripetizione della struttura è una virtù — chi naviga impara dove
- * guardare.
+ * Testata delle pagine interne.
+ *
+ * LA FOTOGRAFIA È UN TAGLIO, NON UN RIQUADRO — stessa idea della fascia di
+ * chiusura (CtaBand): la foto occupa la metà destra fino al bordo della
+ * finestra e si dissolve verso sinistra con una maschera sfumata, così non
+ * c'è nessuna linea di confine fra l'immagine e la pagina.
+ *
+ * Prima era un'immagine dentro una colonna della griglia: funzionava con i
+ * disegni piatti su fondo bianco, che si fondevano con la carta da soli. Una
+ * fotografia in quella stessa posizione resta un rettangolo appoggiato sopra
+ * la pagina, e si vede.
+ *
+ * Il fondo resta chiaro. La fascia scura per pagina è una sola — la regola
+ * sta scritta in global.css — ed è quella di chiusura: due blocchi blu, uno
+ * in cima e uno in fondo, schiaccerebbero il contenuto in mezzo.
+ *
+ * Sotto i 1024 px la foto lascia il posizionamento assoluto e torna nel
+ * flusso, a tutta larghezza sotto al testo, senza maschera: su una colonna
+ * stretta la dissolvenza mangerebbe metà soggetto.
  */
 interface Props {
   eyebrow?: string;
@@ -40,41 +55,89 @@ const {
 ---
 
 <section
-  class:list={["glow-bg under-nav overflow-hidden border-b border-[var(--color-line)]", className]}
+  class:list={["band-brand under-nav overflow-hidden", className]}
 >
   <div class="wrap pt-6 pb-12 sm:pt-8 sm:pb-16">
     <Breadcrumbs items={crumbs} class="mb-8" />
 
-    <div
-      class:list={[
-        "grid items-center gap-10",
-        illustration && "lg:grid-cols-[1.1fr_0.9fr] lg:gap-12",
-      ]}
-    >
-      <div>
-        {eyebrow && <span class="t-eyebrow">{eyebrow}</span>}
-        <h1 class:list={["t-h1 anim-rise", eyebrow && "mt-3"]} set:html={title} />
-        {lead && <p class="t-lead mt-5 max-w-2xl anim-fade-rise delay-2">{lead}</p>}
-        <slot />
-      </div>
-
-      {
-        illustration && (
-          /* Le scene sono orizzontali (1152×896): vogliono più larghezza
-             degli omini verticali, altrimenti restano minuscole. */
-          <div class="anim-fade delay-2 parallax-slow mx-auto w-full max-w-[22rem] lg:max-w-[30rem]">
-            <Image
-              src={illustration}
-              alt={illustrationAlt}
-              widths={[360, 520, 720]}
-              sizes="(min-width: 1024px) 480px, 340px"
-              loading="eager"
-              class="w-full"
-            />
-            {illustrationAi && <AiCredit />}
-          </div>
-        )
-      }
+    <div class:list={["ph-testo", illustration && "ph-testo-con-foto"]}>
+      {eyebrow && <span class="t-eyebrow">{eyebrow}</span>}
+      <h1 class:list={["t-h1 anim-rise", eyebrow && "mt-3"]} set:html={title} />
+      {lead && <p class="t-lead mt-5 anim-fade-rise delay-2">{lead}</p>}
+      <slot />
+      {illustrationAi && <AiCredit />}
     </div>
   </div>
+
+  {/* Dopo il `wrap` di proposito: su schermo stretto la fotografia esce dal
+      posizionamento assoluto e torna nel flusso, quindi deve stare sotto al
+      testo e non sopra. */}
+  {
+    illustration && (
+      <div class="ph-foto anim-fade delay-2">
+        <Image
+          src={illustration}
+          alt={illustrationAlt}
+          widths={[520, 780, 1100]}
+          sizes="(min-width: 1024px) 52vw, 100vw"
+          loading="eager"
+        />
+      </div>
+    )
+  }
 </section>
+
+<style>
+  /* Il testo sta sopra la parte piena e lascia libera la metà destra:
+     centrato o a tutta larghezza finirebbe sopra la fotografia. */
+  .ph-testo { position: relative; z-index: 1; }
+  .ph-testo :global(.t-lead) { max-width: 42rem; }
+
+  @media (min-width: 1024px) {
+    .ph-testo-con-foto { max-width: 36rem; }
+    .ph-testo-con-foto :global(.t-lead) { max-width: 34rem; }
+  }
+
+  /* ── La fotografia ──────────────────────────────────────────────────────
+     Su schermo stretto: blocco normale sotto al testo, angoli arrotondati.
+     Da 1024 px in su: appoggiata al bordo destro della finestra e dissolta
+     verso sinistra. La maschera rende trasparenti i pixel invece di coprirli
+     con una sfumatura sovrapposta, così sotto resta il fondo chiaro della
+     pagina qualunque esso sia. */
+  .ph-foto {
+    margin: 0 auto;
+    width: min(100%, 34rem);
+    padding: 0 1.25rem 2.5rem;
+  }
+  .ph-foto :global(img) {
+    width: 100%;
+    border-radius: var(--radius-lg);
+  }
+
+  @media (min-width: 1024px) {
+    .ph-foto {
+      position: absolute;
+      inset: 0 0 0 auto;
+      z-index: 0;
+      width: 56%;
+      padding: 0;
+      pointer-events: none;
+      opacity: 0.62;
+    }
+    .ph-foto :global(img) {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center right;
+      border-radius: 0;
+      /* Dissolvenza ELLITTICA, non lineare.
+         Una sfumatura dritta lascia comunque una linea verticale, e l'occhio
+         la legge come il bordo di un rettangolo. Un'ellisse ancorata al bordo
+         destro dissolve a sinistra, in alto e in basso insieme: non esiste
+         nessun lato dritto, quindi non si capisce più che la foto è
+         rettangolare. */
+      -webkit-mask-image: radial-gradient(130% 158% at 100% 50%, #000 0%, #000 44%, rgb(0 0 0 / 0.45) 72%, transparent 94%);
+      mask-image: radial-gradient(130% 158% at 100% 50%, #000 0%, #000 44%, rgb(0 0 0 / 0.45) 72%, transparent 94%);
+    }
+  }
+</style>

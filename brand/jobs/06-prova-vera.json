@@ -1,0 +1,13 @@
+[
+  { "name": "V1-scrivania-vissuta", "seed": 811, "out": "brand/render/06-prova-vera/V1-scrivania-vissuta.png",
+    "prompt": "documentary photograph of a real working desk, warm afternoon sunlight raking across from a window, an open notebook covered in pencil sketches of boxes and arrows and underlines, a few yellow sticky notes with quick pencil marks, a used coffee mug leaving a ring on the wood, a tangled charging cable, a pen without its cap, warm wood and paper tones with a little colour, lived-in and slightly untidy, visible dust in the sunbeam, 35mm lens, natural grain, imperfect and candid, photorealistic, sketched shapes only, no words, no printed type" },
+
+  { "name": "V2-mano-schizzo", "seed": 812, "out": "brand/render/06-prova-vera/V2-mano-schizzo.png",
+    "prompt": "documentary photograph, close crop of a hand drawing an interface wireframe in pencil on graph paper, rectangles and arrows and crossed-out boxes already on the page, eraser crumbs and a second crumpled sheet beside it, warm side light from a desk lamp mixed with daylight, warm paper tones, shallow depth of field, 50mm lens, natural grain, candid and imperfect, photorealistic, drawn shapes only, no words, no printed type" },
+
+  { "name": "V3-monitor-frontale", "seed": 813, "out": "brand/render/06-prova-vera/V3-monitor-frontale.png",
+    "prompt": "documentary photograph of a desk shot straight on, a laptop facing the camera square to the frame with a plain bright empty white screen, a mug and a notebook and a pair of glasses around it, warm daylight from the left, warm wood desk, lived-in and slightly untidy, 35mm lens, natural grain, photorealistic, the laptop screen is a clean flat white rectangle facing the camera, no interface, no words" },
+
+  { "name": "V4-lavagna-vera", "seed": 814, "out": "brand/render/06-prova-vera/V4-lavagna-vera.png",
+    "prompt": "documentary photograph, close crop of a whiteboard covered in a real hand-drawn diagram, boxes joined by arrows, circles, a few crossings out, marker smudges and old half-erased ghost marks, a hand holding a marker mid-stroke at the edge of the frame, warm room light, slightly imperfect and busy, 35mm lens, natural grain, photorealistic, drawn shapes only, no words, no letters" }
+]

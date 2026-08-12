@@ -42,6 +42,18 @@
   --color-soft: #e8f1f8;        /* navy al 6% su bianco */
   --color-soft-2: #d4e6f2;      /* un gradino più marcato */
 
+  /* Il blu delle fasce piene, definito una volta sola.
+     Lo usano la testata delle pagine di progetto (.band-brand) e la fascia
+     di chiusura (.cta-band): erano due sfumature diverse per distrazione, e
+     nella stessa pagina lo stacco si vedeva. Con un token solo non possono
+     più separarsi. */
+  --gradient-brand: linear-gradient(
+    160deg,
+    var(--color-navy) 0%,
+    color-mix(in oklab, var(--color-navy) 78%, var(--color-blue)) 55%,
+    color-mix(in oklab, var(--color-blue) 82%, var(--color-cyan)) 100%
+  );
+
   /* ─── Neutri ───────────────────────────────────────────────────────────
      Scala slate, leggermente fredda: sta bene accanto al navy. */
   --color-ink: #0f172a;         /* titoli                    */
@@ -291,12 +303,7 @@ main { padding-top: var(--nav-h); }
   --color-ink-3: rgb(255 255 255 / 0.7);
   --color-line: rgb(255 255 255 / 0.18);
 
-  background: linear-gradient(
-    160deg,
-    var(--color-navy) 0%,
-    color-mix(in oklab, var(--color-navy) 78%, var(--color-blue)) 55%,
-    color-mix(in oklab, var(--color-blue) 82%, var(--color-cyan)) 100%
-  );
+  background: var(--gradient-brand);
   color: rgb(255 255 255 / 0.82);
 }
 

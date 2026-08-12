@@ -40,10 +40,14 @@ NEGATIVE = (
     "distorted face, deformed hands, extra fingers, "
     # Il modello, lasciato libero, riempie schermi e fogli di lettere finte:
     # da vicino si legge che sono scarabocchi e l'immagine perde credibilita'.
-    "text, watermark, logo, signature, caption, "
-    "letters, words, writing, typography, gibberish text, fake brand logo, "
+    "watermark, signature, caption, "
+    # Restano fuori solo le lettere: il modello non sa scrivere e produce
+    # scarabocchi che a schermo intero si vedono. Segni disegnati a mano
+    # invece si', ed e' quello che rende viva una scrivania.
+    "printed text, typography, gibberish text, fake brand logo, "
     "readable user interface labels, menu bar with text, "
-    "oversaturated, hdr, heavy vignette, lens flare, cluttered, messy"
+    "oversaturated, hdr, heavy vignette, lens flare, "
+    "empty sterile desk, showroom, staged product shot"
 )
 
 

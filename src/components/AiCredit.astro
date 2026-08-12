@@ -30,12 +30,15 @@ const { label = "Immagine generata con IA", class: className = "" } = Astro.prop
 
 <style>
   .ai-credit {
-    margin-top: 0.625rem;
+    margin-top: 1.75rem;
     font-size: 0.6875rem;
     line-height: 1.4;
     letter-spacing: 0.02em;
-    color: var(--color-muted);
-    text-align: center;
+    color: var(--color-ink-3);
+    /* Segue l'allineamento di chi la contiene: sotto una fotografia centrata
+       sta centrata, in una testata allineata a sinistra sta a sinistra. Una
+       regola fissa qui costringerebbe ogni uso a smentirla. */
+    text-align: inherit;
   }
 
   /* Sulle fasce scure il grigio del testo secondario sparirebbe. */

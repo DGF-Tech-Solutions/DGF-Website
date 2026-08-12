@@ -46,7 +46,7 @@ const {
 } = Astro.props;
 ---
 
-<section class="section">
+<section class="video-sezione on-dark section">
   <div class="wrap">
     {/* Un contenitore solo per titolo, spiegazione e video: prima erano tre
         blocchi appoggiati sulla pagina uno sotto l'altro, e il video sembrava
@@ -157,7 +157,33 @@ const {
    * dell'elemento principale della sezione. Senza, l'unica cosa che ha un
    * bordo è il video, ed è lì che va l'occhio.
    */
-  .video-box { max-width: 74rem; margin-inline: auto; }
+  /* ═══════════════════════════════════════════════════════════════════════
+  /* ═══════════════════════════════════════════════════════════════════════
+     La sezione che scivola SOPRA quella precedente
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  /*
+   * Questa fascia sale e copre i servizi, che restano fermi dietro (il
+   * meccanismo sta in `.pila-parallasse`, in index.astro).
+   *
+   * Qui servono solo tre cose perché l'effetto si legga:
+   *  - un fondo OPACO, altrimenti si vedrebbe la sezione sotto in trasparenza;
+   *  - `z-index` più alto, per stare davanti;
+   *  - un'ombra verso l'ALTO sul bordo superiore, che è ciò che fa capire che
+   *    è un pannello appoggiato sopra e non il seguito della pagina. Senza
+   *    ombra il movimento c'è ma non si nota.
+   *
+   * La fascia è scura di suo: una schermata di prodotto su fondo scuro si
+   * stacca molto meglio, ed è l'unica sezione scura della pagina.
+   */
+  .video-sezione {
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 -14px 34px -10px rgb(10 34 51 / 0.45);
+    border-top: 1px solid rgb(255 255 255 / 0.10);
+  }
+
+
 
   /*
    * A sinistra il testo, a destra il video: superato. Ora il titolo sta sopra
@@ -184,6 +210,9 @@ const {
     margin-top: 1.5rem;
     padding: 0.3125rem 0.875rem;
     border-radius: var(--radius-pill);
+    /* Qui invece `--color-soft` va bene anche sul fondo scuro: la pillola sta
+       sul navy, non sopra un'immagine, e il bianco al 10% le dà il rilievo
+       giusto senza diventare un elemento pesante. */
     background: var(--color-soft);
     font-family: var(--font-mono);
     font-size: 0.6875rem;
@@ -283,16 +312,30 @@ const {
     list-style: none;
   }
 
-  /* Azzurro chiaro, lo stesso delle schede del sito: su fondo bianco un
-     cartellino bianco sparirebbe, e bordarlo di grigio avrebbe rimesso il
-     contorno che si voleva togliere. Il colore basta a staccarlo. */
+  /*
+   * Fondo SOLIDO, scritto per esteso e non con `--color-soft`.
+   *
+   * Dentro `.on-dark` quel token diventa bianco al dieci per cento: i
+   * cartellini erano diventati trasparenti e sopra il video ci si leggeva
+   * attraverso la tabella delle fatture. Un cartellino che spiega qualcosa
+   * deve essere opaco, sempre, perché sta appoggiato su un'immagine.
+   *
+   * Navy schiarito e non bianco: bianchi ruberebbero l'occhio al video, che
+   * è la cosa da guardare.
+   */
   .volante {
     display: flex;
     gap: 0.75rem;
     padding: 0.875rem 1rem;
     border-radius: var(--radius-md);
-    background: var(--color-soft);
+    background: color-mix(in srgb, var(--color-navy-deep) 84%, white);
+    border: 1px solid rgb(255 255 255 / 0.14);
   }
+  .volante .volante-titolo { color: #fff; }
+  .volante .volante-testo { color: rgb(255 255 255 / 0.72); }
+  /* Cyan schiarito, non `--color-cyan`: sul fondo del cartellino il cyan pieno
+     dà 3,21:1, sotto la soglia. Schiarito verso il bianco arriva a 5,15. */
+  .volante .volante-num { color: color-mix(in srgb, var(--color-cyan) 55%, white); }
   .volante-num {
     flex-shrink: 0;
     font-family: var(--font-mono);

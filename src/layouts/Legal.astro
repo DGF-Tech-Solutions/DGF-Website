@@ -1,10 +1,21 @@
 ---
 import Base from "@/layouts/Base.astro";
 import PageHeader from "@/components/PageHeader.astro";
+import Icon from "@/components/Icon.astro";
+import { SITE } from "@/data/site";
 
 /*
- * Impaginazione comune ai documenti legali. Volutamente sobria: qui conta la
- * leggibilità, non il design.
+ * Impaginazione comune ai documenti legali.
+ *
+ * Ricalca quella di Nexia, che è la stessa società: sezioni numerate con il
+ * riquadro davanti al titolo, colonna di lettura stretta, e in fondo i tre
+ * documenti sempre insieme con quello corrente evidenziato. Chi arriva sulla
+ * privacy trova a un clic anche cookie e termini, senza tornare al footer.
+ *
+ * I numeri delle sezioni NON si scrivono nel testo: li conta il CSS. Così
+ * aggiungere o spostare un capitolo non obbliga a rinumerare a mano tutto
+ * quello che viene dopo — che è il modo classico di ritrovarsi con due
+ * sezioni "7." in un documento legale.
  */
 interface Props {
   title: string;
@@ -21,6 +32,12 @@ const updatedLabel = new Intl.DateTimeFormat("it-IT", {
   month: "long",
   year: "numeric",
 }).format(new Date(updated));
+
+const DOCUMENTI = [
+  { href: "/privacy", label: "Privacy policy", icon: "shield" },
+  { href: "/cookie", label: "Cookie policy", icon: "layers" },
+  { href: "/termini", label: "Termini di utilizzo", icon: "file" },
+] as const;
 ---
 
 <Base title={title} description={description} canonical={canonical} noindex>
@@ -28,20 +45,248 @@ const updatedLabel = new Intl.DateTimeFormat("it-IT", {
 
   <section class="section">
     <div class="wrap">
-      <p class="chip mb-10">
-        Ultimo aggiornamento: <time datetime={updated}>{updatedLabel}</time>
-      </p>
+      <div class="legale">
+        <p class="chip">
+          Ultimo aggiornamento: <time datetime={updated}>{updatedLabel}</time>
+        </p>
 
-      <div class="prose">
-        <slot />
+        <div class="prose legale-testo">
+          <slot />
+        </div>
+
+        <div class="legale-doc">
+          <p class="t-eyebrow">Documenti legali</p>
+          <div class="legale-doc-elenco">
+            {
+              DOCUMENTI.map((d) =>
+                d.href === canonical ? (
+                  <span class="legale-doc-voce is-attiva" aria-current="page">
+                    <Icon name={d.icon} size={16} />
+                    {d.label}
+                  </span>
+                ) : (
+                  <a href={d.href} class="legale-doc-voce">
+                    <Icon name={d.icon} size={16} />
+                    {d.label}
+                  </a>
+                )
+              )
+            }
+          </div>
+        </div>
+
+        <p class="t-small legale-nota">
+          Documento redatto per un sito vetrina con modulo di contatto, sulla
+          traccia di quelli di Nexia Home™ (stessa società: {SITE.legalName}).
+          Non sostituisce il parere di un professionista: se un domani il sito
+          raccoglie categorie particolari di dati, attiva account o vende
+          online, va rivisto da un consulente prima di pubblicarlo.
+        </p>
       </div>
-
-      <p class="t-small prose-measure mt-14 border-t border-[var(--color-line)] pt-6">
-        Questo documento è redatto secondo la prassi corrente per un sito vetrina
-        con modulo di contatto. Non sostituisce il parere di un professionista: se
-        tratti categorie particolari di dati o attivi nuovi servizi, fallo
-        verificare da un consulente.
-      </p>
     </div>
   </section>
 </Base>
+
+<style>
+  /* Colonna di lettura stretta: un documento legale a tutta larghezza non lo
+     legge nessuno. */
+  .legale {
+    max-width: 48rem;
+  }
+
+  .legale-testo {
+    margin-top: 2.5rem;
+    counter-reset: sezione;
+  }
+
+  /*
+   * Titolo di sezione con il numero nel riquadro, come su Nexia. Il numero è
+   * un contatore CSS: il markup delle pagine contiene solo `<h2>`.
+   */
+  .legale-testo :global(h2) {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 2.75rem;
+    margin-bottom: 0.875rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    color: var(--color-ink);
+    counter-increment: sezione;
+  }
+
+  .legale-testo :global(h2)::before {
+    content: counter(sezione);
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 1.625rem;
+    height: 1.625rem;
+    border-radius: var(--radius-sm);
+    background: var(--color-soft);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-navy) 12%, transparent);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-navy);
+  }
+
+  /* Il corpo della sezione rientra sotto il titolo, allineato al testo e non
+     al riquadro del numero: si legge come un documento, non come un elenco. */
+  .legale-testo :global(h2 ~ p),
+  .legale-testo :global(h2 ~ ul),
+  .legale-testo :global(h2 ~ ol),
+  .legale-testo :global(h2 ~ h3),
+  .legale-testo :global(h2 ~ .legale-tabella) {
+    padding-left: 2.375rem;
+  }
+
+  .legale-testo :global(h3) {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--color-ink);
+  }
+
+  /* ── La tabella dei cookie ─────────────────────────────────────────────
+     Stessa idea di Nexia: nome, scopo, durata, e un'etichetta che dice se il
+     cookie si può rifiutare. Scorre in orizzontale sul telefono invece di
+     spingere la pagina. */
+  .legale-testo :global(.legale-tabella) {
+    margin: 1rem 0 1.5rem;
+    overflow-x: auto;
+  }
+
+  .legale-testo :global(.legale-tabella table) {
+    width: 100%;
+    min-width: 30rem;
+    border-collapse: collapse;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    font-size: 0.8125rem;
+  }
+
+  .legale-testo :global(.legale-tabella th) {
+    background: var(--color-paper-2);
+    padding: 0.625rem 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .legale-testo :global(.legale-tabella td) {
+    padding: 0.625rem 0.75rem;
+    border-top: 1px solid var(--color-line);
+    color: var(--color-ink-3);
+    vertical-align: top;
+  }
+
+  .legale-testo :global(.legale-tabella td:first-child) {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-ink);
+    white-space: nowrap;
+  }
+
+  .legale-testo :global(.legale-etichetta) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin: 1.25rem 0 0;
+    padding-left: 2.375rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-ink-2);
+  }
+
+  .legale-testo :global(.legale-etichetta b) {
+    padding: 0.125rem 0.5rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.6875rem;
+    font-weight: 600;
+  }
+
+  .legale-testo :global(.legale-etichetta b.obbligatorio) {
+    background: var(--color-soft);
+    color: var(--color-navy);
+  }
+
+  .legale-testo :global(.legale-etichetta b.opzionale) {
+    background: var(--color-paper-2);
+    color: var(--color-ink-3);
+    box-shadow: inset 0 0 0 1px var(--color-line);
+  }
+
+  /* Il riquadro con i dati della società, ripetuto dove serve identificare il
+     titolare. */
+  .legale-testo :global(.legale-titolare) {
+    margin-left: 2.375rem;
+    padding: 1rem 1.125rem;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    background: var(--color-paper-2);
+    font-size: 0.875rem;
+    line-height: 1.7;
+  }
+
+  /* ── I tre documenti in fondo ────────────────────────────────────────── */
+
+  .legale-doc {
+    margin-top: 3.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-line);
+  }
+
+  .legale-doc-elenco {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+    margin-top: 1rem;
+  }
+
+  .legale-doc-voce {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    background: var(--color-paper);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-ink-2);
+    transition:
+      border-color var(--dur) var(--ease-out-quart),
+      color var(--dur) var(--ease-out-quart),
+      background-color var(--dur) var(--ease-out-quart);
+  }
+
+  .legale-doc-voce :global(svg) {
+    color: var(--color-navy);
+    opacity: 0.75;
+  }
+
+  @media (hover: hover) {
+    a.legale-doc-voce:hover {
+      border-color: color-mix(in srgb, var(--color-navy) 30%, transparent);
+      background: var(--color-soft);
+      color: var(--color-navy);
+    }
+  }
+
+  .legale-doc-voce.is-attiva {
+    background: var(--color-soft);
+    border-color: color-mix(in srgb, var(--color-navy) 22%, transparent);
+    color: var(--color-navy);
+    font-weight: 600;
+  }
+
+  .legale-nota {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-line-2);
+  }
+</style>
