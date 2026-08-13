@@ -1,0 +1,53 @@
+---
+/*
+ * L'indirizzo email, senza mai scriverlo nell'HTML servito.
+ *
+ * I raccoglitori di indirizzi leggono il sorgente della pagina cercando
+ * `mailto:` e la forma utente@dominio. Qui l'indirizzo non esiste mai per
+ * intero: utente e dominio viaggiano in due attributi `data-` separati
+ * (niente @ da riconoscere) e li ricompone un rigo di script nel browser.
+ * Ferma lo scraping dell'HTML — che è il grosso — non un bot che esegue
+ * JavaScript: quelli sono rari, e contro di loro filtra Gmail.
+ *
+ * DEGRADO SENZA JAVASCRIPT: il link porta a /contatti (il form funziona
+ * comunque) e, dove il testo visibile è l'indirizzo stesso, si legge nella
+ * forma "utente [chiocciola] dominio" — ricostruibile da una persona.
+ *
+ * USO:
+ *   <EmailLink />                  → testo visibile = indirizzo
+ *   <EmailLink>Scrivici</EmailLink> → testo tuo, solo l'href viene composto
+ */
+import { SITE } from "@/data/site";
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+const [utente, dominio] = SITE.email.split("@");
+
+/* Se il testo lo mette chi usa il componente, lo script non deve toccarlo:
+   `data-pt` c'è solo quando il testo visibile è l'indirizzo da comporre. */
+const testoDaComporre = !Astro.slots.has("default");
+---
+
+<a
+  href="/contatti"
+  class={className}
+  data-posta
+  data-pu={utente}
+  data-pd={dominio}
+  data-pt={testoDaComporre ? "" : undefined}
+>
+  <slot>{utente} [chiocciola] {dominio}</slot>
+</a>
+
+<script>
+  /* Astro deduplica: questo script esiste una volta sola per pagina,
+     qualunque sia il numero di EmailLink presenti. */
+  for (const a of document.querySelectorAll<HTMLAnchorElement>("[data-posta]")) {
+    const indirizzo = `${a.dataset.pu}@${a.dataset.pd}`;
+    a.href = `mailto:${indirizzo}`;
+    if (a.dataset.pt !== undefined) a.textContent = indirizzo;
+  }
+</script>

@@ -1,14 +1,22 @@
 ---
+import Piano from "@/components/servizi/Piano.astro";
+
 /*
  * Intelligenza artificiale — la domanda che si scrive, la rete che si accende,
  * la risposta che arriva riga per riga.
  *
  * Il cursore che lampeggia è l'unica animazione che continua a girare: dà il
  * senso di "sta lavorando" senza far muovere nient'altro.
+ *
+ * I LIVELLI. In cima la rete, sospesa sopra alla domanda e alla risposta: è
+ * quello che succede in mezzo, e vederlo staccato dalle due dice più di
+ * qualunque didascalia.
  */
 ---
 
-<svg class="viz-svg" viewBox="0 0 400 300" fill="none" aria-hidden="true">
+<Piano n={0} />
+
+<Piano n={1}>
   <rect data-p="1" x="30" y="30" width="340" height="240" rx="10" class="v-schermo"></rect>
 
   <!-- La richiesta -->
@@ -19,6 +27,21 @@
   </g>
   <rect data-p="3" data-lampeggia="" x="200" y="61" width="1.6" height="11" class="v-cursore"></rect>
 
+  <!-- Il foglio della risposta -->
+  <g data-p="8">
+    <rect x="50" y="182" width="300" height="68" rx="8" class="v-scheda-piena"></rect>
+  </g>
+</Piano>
+
+<Piano n={2}>
+  <!-- La risposta, riga per riga -->
+  <rect data-p="9" x="64" y="196" width="120" height="5" rx="2.5" class="v-riga-risposta"></rect>
+  <rect data-p="10" x="64" y="210" width="230" height="5" rx="2.5" class="v-riga-risposta"></rect>
+  <rect data-p="11" x="64" y="224" width="186" height="5" rx="2.5" class="v-riga-risposta"></rect>
+  <rect data-p="12" x="64" y="238" width="94" height="5" rx="2.5" class="v-riga-risposta-tenue"></rect>
+</Piano>
+
+<Piano n={3}>
   <!-- La rete: archi che si tracciano, nodi che si accendono -->
   <g class="v-rete">
     <path data-p="4" data-traccia="" pathLength="1" d="M96 118L166 100" class="v-arco"></path>
@@ -36,13 +59,4 @@
     <circle data-p="7" cx="310" cy="100" r="5" class="v-nodo"></circle>
     <circle data-p="7" cx="310" cy="146" r="5" class="v-nodo"></circle>
   </g>
-
-  <!-- La risposta, riga per riga -->
-  <g data-p="8">
-    <rect x="50" y="182" width="300" height="68" rx="8" class="v-scheda-piena"></rect>
-  </g>
-  <rect data-p="9" x="64" y="196" width="120" height="5" rx="2.5" class="v-riga-risposta"></rect>
-  <rect data-p="10" x="64" y="210" width="230" height="5" rx="2.5" class="v-riga-risposta"></rect>
-  <rect data-p="11" x="64" y="224" width="186" height="5" rx="2.5" class="v-riga-risposta"></rect>
-  <rect data-p="12" x="64" y="238" width="94" height="5" rx="2.5" class="v-riga-risposta-tenue"></rect>
-</svg>
+</Piano>

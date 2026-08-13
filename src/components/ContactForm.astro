@@ -126,24 +126,32 @@ import { CONTACT } from "@/data/site";
   }
   .field textarea { resize: vertical; min-height: 8rem; }
 
+  /* Hover e fuoco dai token condivisi: qui erano 3px di blu, sul campo di
+     ricerca 4px di navy. Due campi sullo stesso sito che si accendono
+     diverso. */
   .field input:hover,
-  .field textarea:hover { border-color: color-mix(in srgb, var(--color-navy) 35%, transparent); }
+  .field textarea:hover { border-color: var(--hover-bordo); }
 
   .field input:focus,
   .field textarea:focus {
     outline: none;
-    border-color: var(--color-blue);
-    box-shadow: 0 0 0 3px rgb(21 117 164 / 0.12);
+    border-color: var(--focus-bordo);
+    box-shadow: var(--focus-anello);
   }
 
-  /* Errore segnalato dal colore E dal testo: mai dal solo colore (WCAG 1.4.1) */
+  /* Errore segnalato dal colore E dal testo: mai dal solo colore (WCAG 1.4.1)
+
+     I colori vengono dai token. Qui c'era `#b4232a` scritto a mano tre volte,
+     mentre `--color-danger` — che vale esattamente quel valore — risultava
+     un token morto, mai referenziato da nessuna parte. Il token esisteva e
+     nessuno lo usava; il valore girava a mano. */
   .field input[aria-invalid="true"],
   .field textarea[aria-invalid="true"] {
-    border-color: #b4232a;
+    border-color: var(--color-danger);
   }
   .field-error {
     font-size: 0.8125rem;
-    color: #b4232a;
+    color: var(--color-danger);
   }
 
   .form-status {
@@ -155,12 +163,12 @@ import { CONTACT } from "@/data/site";
   .form-status[data-state="success"] {
     background: #f0f8f2;
     border-color: #bcdcc6;
-    color: #1d6334;
+    color: var(--color-success);
   }
   .form-status[data-state="error"] {
     background: #fdf2f2;
     border-color: #f0c8c8;
-    color: #b4232a;
+    color: var(--color-danger);
   }
 </style>
 
@@ -173,6 +181,27 @@ import { CONTACT } from "@/data/site";
     const button = form.querySelector<HTMLButtonElement>("[data-submit]");
     const label = form.querySelector<HTMLElement>("[data-submit-label]");
     const siteKey = form.dataset.hcaptcha ?? "";
+
+    /* ── Messaggio che arriva dalla chat della home ──────────────────────
+       La barra del telefono in `Consulenza.astro` è un `<form method="get">`
+       che punta qui: chi scrive lì dentro non deve riscrivere tutto.
+
+       Si legge dall'indirizzo e non da uno spazio di memoria condiviso perché
+       il sito è statico e senza server: `?messaggio=` è l'unico canale che
+       funziona anche a JavaScript spento, dove almeno il campo resta
+       compilabile a mano.
+
+       `.value =` e non `innerHTML`: quello che arriva dall'indirizzo è testo
+       scritto da chi visita, e non deve poter diventare markup. */
+    const chat = new URLSearchParams(location.search).get("messaggio");
+    const area = form.querySelector<HTMLTextAreaElement>("#messaggio");
+    if (chat && area && !area.value) {
+      area.value = chat.slice(0, 2000);
+      /* L'indirizzo torna pulito: il messaggio è già nel campo, e lasciarlo
+         nella barra significherebbe farlo finire in cronologia e nei
+         segnalibri. */
+      history.replaceState(null, "", location.pathname);
+    }
 
     /* ── hCaptcha pigro ──────────────────────────────────────────────────
        Lo script di hCaptcha pesa parecchio ed è di terze parti. Caricarlo
@@ -290,9 +319,12 @@ import { CONTACT } from "@/data/site";
         );
       } catch (error) {
         const detail = error instanceof Error ? error.message : "Errore sconosciuto";
+        /* L'indirizzo si compone a runtime: anche i file .js compilati sono
+           testo che i raccoglitori di indirizzi possono scansionare. */
+        const posta = ["founders.dgftechsolutions", "gmail.com"].join("@");
         show(
           "error",
-          `Non siamo riusciti a inviare la richiesta (${detail}). Scrivici direttamente a founders.dgftechsolutions@gmail.com`,
+          `Non siamo riusciti a inviare la richiesta (${detail}). Scrivici direttamente a ${posta}`,
         );
       } finally {
         button?.removeAttribute("disabled");

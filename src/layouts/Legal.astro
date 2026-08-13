@@ -50,7 +50,7 @@ const DOCUMENTI = [
           Ultimo aggiornamento: <time datetime={updated}>{updatedLabel}</time>
         </p>
 
-        <div class="prose legale-testo">
+        <div class="prose legale-testo !max-w-none">
           <slot />
         </div>
 
@@ -88,11 +88,10 @@ const DOCUMENTI = [
 </Base>
 
 <style>
-  /* Colonna di lettura stretta: un documento legale a tutta larghezza non lo
-     legge nessuno. */
-  .legale {
-    max-width: 48rem;
-  }
+  /* Il testo arriva ai bordi del contenitore, come sugli articoli del blog e
+     sulle pagine di progetto: prima qui c'era una colonna da 48rem appoggiata
+     a sinistra (con la prosa dentro capata a 42), e i documenti legali erano
+     le uniche pagine del sito con il margine destro vuoto. */
 
   .legale-testo {
     margin-top: 2.5rem;

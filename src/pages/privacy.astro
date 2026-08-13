@@ -10,6 +10,7 @@
  */
 import Legal from "@/layouts/Legal.astro";
 import { SITE } from "@/data/site";
+import EmailLink from "@/components/EmailLink.astro";
 
 const DOMINIO = SITE.url.replace(/^https?:\/\//, "");
 const GARANTE = "https://www.garanteprivacy.it";
@@ -35,7 +36,7 @@ const GARANTE = "https://www.garanteprivacy.it";
     <strong>{SITE.legalName}</strong><br />
     {SITE.street}, {SITE.zip} {SITE.city} ({SITE.region}), {SITE.countryName}<br />
     P. IVA {SITE.vatId}<br />
-    E-mail: <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+    E-mail: <EmailLink />
   </div>
   <p>
     Non è stato nominato un Responsabile della protezione dei dati (DPO): non
@@ -183,7 +184,7 @@ const GARANTE = "https://www.garanteprivacy.it";
   </ul>
   <p>
     Per esercitare i tuoi diritti scrivi a
-    <a href={`mailto:${SITE.email}`}>{SITE.email}</a>: rispondiamo entro 30
+    <EmailLink />: rispondiamo entro 30
     giorni. Hai inoltre diritto di proporre reclamo al
     <a href={GARANTE} rel="noopener noreferrer" target="_blank">
       Garante per la protezione dei dati personali</a>.

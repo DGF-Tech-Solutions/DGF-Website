@@ -92,7 +92,7 @@ const {
                 </a>
               )}
               {ctaAlt && (
-                <a href={ctaAlt.href} class="btn hero-btn-ghost btn-lg">
+                <a href={ctaAlt.href} class="btn btn-ghost btn-lg">
                   {ctaAlt.label}
                 </a>
               )}
@@ -135,22 +135,20 @@ const {
      `.band-brand` (global.css), condivisa con la testata delle pagine di
      progetto. Qui restano solo le parti proprie di questo componente. */
 
+  /* Il colore dal token, non un letterale: `--color-ink-2` è già il "testo
+     corrente" ed è rimappato da `.band-brand` sul valore giusto per questo
+     gradiente. Lo stesso sommario esisteva in tre copie con tre opacità
+     diverse — 0,82 qui, 0,80 sulla CTA, 0,85 su Nexia — che è deriva, non
+     scelta. */
   .hero-lead {
     font-size: clamp(1rem, 0.95rem + 0.35vw, 1.125rem);
     line-height: 1.65;
-    color: rgb(255 255 255 / 0.82);
+    color: var(--color-ink-2);
   }
 
-  .hero-btn-ghost {
-    background: rgb(255 255 255 / 0.12);
-    color: #fff;
-    border-color: rgb(255 255 255 / 0.28);
-  }
-  @media (hover: hover) {
-    .hero-btn-ghost:hover {
-      background: rgb(255 255 255 / 0.2);
-      border-color: rgb(255 255 255 / 0.45);
-      transform: translateY(-1px);
-    }
-  }
+  /* `.hero-btn-ghost` stava qui, copia quasi identica di `.cta-btn-ghost`
+     (differivano solo per l'alfa del bordo, 0.28 contro 0.30 — due numeri
+     diversi per la stessa cosa, che è il segno che nessuno dei due era
+     voluto). Adesso basta `.btn-ghost`: `.band-brand` rimappa anche i token
+     di superficie, quindi la classe condivisa funziona anche qui. */
 </style>

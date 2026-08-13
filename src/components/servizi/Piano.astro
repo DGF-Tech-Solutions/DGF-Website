@@ -1,0 +1,27 @@
+---
+/*
+ * UN LIVELLO DEL DISEGNO.
+ *
+ * Ogni disegno di servizio è diviso in più SVG con lo stesso `viewBox`,
+ * sovrapposti: combaciano al pixel e si leggono come un disegno unico. La
+ * divisione non si vede — serve a chi scrive: un livello per ogni parte
+ * (la macchina, il telaio, il contenuto, i comandi), così si modifica una
+ * cosa senza rileggere trecento righe di coordinate.
+ *
+ * L'altezza NON viene da qui: la dichiara il contenitore con il rapporto
+ * della tavola. Legarla a un livello significava che nasconderne uno faceva
+ * sparire il disegno intero.
+ */
+interface Props {
+  /** Posizione nella pila: 0 sta sotto, i numeri più alti sopra. */
+  n: 0 | 1 | 2 | 3 | 4;
+}
+
+const { n } = Astro.props;
+---
+
+<div class="pila-piano" data-piano={n}>
+  <svg class="viz-svg" viewBox="0 0 400 300" fill="none" aria-hidden="true">
+    <slot />
+  </svg>
+</div>

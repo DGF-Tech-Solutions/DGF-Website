@@ -2,6 +2,7 @@
 import Base from "@/layouts/Base.astro";
 import Icon from "@/components/Icon.astro";
 import { SITE } from "@/data/site";
+import EmailLink from "@/components/EmailLink.astro";
 
 /*
  * Pagina di conferma. La raggiunge solo chi invia il modulo SENZA JavaScript
@@ -36,8 +37,7 @@ import { SITE } from "@/data/site";
 
         <p class="t-body mt-5">
           Nel frattempo, se vuoi aggiungere qualcosa puoi scriverci direttamente a
-          <a href={`mailto:${SITE.email}`} class="font-semibold text-[var(--color-navy)] underline underline-offset-2">
-            {SITE.email}</a>.
+          <EmailLink class="font-semibold text-[var(--color-navy)] underline underline-offset-2" />.
         </p>
 
         <div class="mt-9 flex flex-wrap justify-center gap-3">

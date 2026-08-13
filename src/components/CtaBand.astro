@@ -1,6 +1,7 @@
 ---
 import Icon from "@/components/Icon.astro";
 import BandPhoto from "@/components/BandPhoto.astro";
+import AiCredit from "@/components/AiCredit.astro";
 import foto from "@/assets/foto/parliamone.webp";
 
 /*
@@ -15,8 +16,17 @@ import foto from "@/assets/foto/parliamone.webp";
  * Sotto i 1024 px la foto sparisce e il testo torna centrato: su una colonna
  * stretta non c'è spazio per due cose affiancate.
  *
- * Va in fondo a OGNI pagina secondaria: è l'unico punto in cui il sito chiede
- * qualcosa, e ripeterlo sempre nello stesso posto è ciò che lo rende efficace.
+ * Va in fondo a ogni pagina di CONTENUTO: è l'unico punto in cui il sito
+ * chiede qualcosa, e ripeterlo sempre nello stesso posto è ciò che lo rende
+ * efficace. Le tre eccezioni sono volute e vanno lasciate tali:
+ *
+ *   /contatti          — la richiesta è già il modulo che sta in pagina;
+ *   /contatti/inviato  — la richiesta è appena stata accolta;
+ *   /404               — chi ci finisce cerca una pagina, non un preventivo.
+ *
+ * Prima qui c'era scritto "OGNI pagina secondaria", e il codice diceva altro
+ * da sempre. Fra una regola assoluta smentita dai fatti e una regola con tre
+ * eccezioni dichiarate, la seconda è quella vera.
  *
  * Il titolo non si anima in opacità (regola LCP), anche se qui è quasi sempre
  * sotto la piega: la regola vale per tutto il sito, senza eccezioni da
@@ -52,7 +62,7 @@ const {
 
   <div class="wrap relative z-10">
     <div class="cta-testo py-16 sm:py-20">
-      <span class="cta-badge">{badge}</span>
+      <span class="badge-brand cta-badge">{badge}</span>
 
       <h2 class="t-h2 mt-6" set:html={title} />
 
@@ -63,7 +73,7 @@ const {
           Parliamo del tuo progetto
           <Icon name="arrow-right" size={17} />
         </a>
-        <a href="/servizi" class="btn cta-btn-ghost btn-lg">Guarda i servizi</a>
+        <a href="/servizi" class="btn btn-ghost btn-lg">Guarda i servizi</a>
       </div>
 
       <ul class="cta-fatti mt-8 flex flex-wrap gap-x-6 gap-y-2">
@@ -77,7 +87,9 @@ const {
         }
       </ul>
 
-      <p class="cta-credito">Fotografia generata con IA</p>
+      {/* La componente, non una copia: la dichiarazione dell'art. 50 è una
+          stringa di conformità e non deve esistere in due posti. */}
+      <AiCredit label="Fotografia generata con IA" class="mt-8" />
     </div>
   </div>
 </section>
@@ -98,7 +110,20 @@ const {
        stanno fuori da @layer e batterebbero le utility di Tailwind. */
     --color-ink: #ffffff;
     --color-ink-2: rgb(255 255 255 / 0.82);
-    --color-ink-3: rgb(255 255 255 / 0.7);
+    /* 0.8 e non 0.7, come `.band-brand` in global.css: è lo STESSO gradiente,
+       e lì la misura dice che a 0,7 il testo minuto sta a 3,9:1 contro i 4,5
+       richiesti. La correzione era stata applicata solo a una delle due
+       fasce. Oggi qui dentro nessun elemento legge `--color-ink-3`, quindi
+       non fallisce niente: sarebbe fallito al primo `.t-small` messo qui. */
+    --color-ink-3: rgb(255 255 255 / 0.8);
+    --color-line: rgb(255 255 255 / 0.18);
+    /* Le stesse superfici di `.band-brand` (global.css), che è lo stesso
+       gradiente: senza, `.btn-ghost` qui dentro sarebbe bianco su bianco. È
+       per questo che esisteva un `.cta-btn-ghost` scritto a mano. */
+    --color-paper: rgb(255 255 255 / 0.10);
+    --color-paper-2: rgb(255 255 255 / 0.06);
+    --color-soft: rgb(255 255 255 / 0.16);
+    --color-soft-2: rgb(255 255 255 / 0.22);
     color: var(--color-ink-2);
   }
 
@@ -151,17 +176,11 @@ const {
     pointer-events: none;
   }
 
+  /* La superficie (pillola, bianco traslucido, anello interno, testo pieno)
+     arriva da `.badge-brand` in global.css. Qui resta solo ciò che è di
+     questa fascia: un filo di respiro in più e una spaziatura più larga. */
   .cta-badge {
-    display: inline-flex;
-    align-items: center;
     padding: 0.375rem 0.9375rem;
-    border-radius: var(--radius-pill);
-    background: rgb(255 255 255 / 0.14);
-    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.18);
-    color: #fff;
-    font-size: 0.6875rem;
-    font-weight: 700;
-    text-transform: uppercase;
     letter-spacing: 0.16em;
   }
 
@@ -190,46 +209,28 @@ const {
     .cta-azioni, .cta-fatti { justify-content: center; }
   }
 
-  /*
-   * La dichiarazione richiesta dall'art. 50 dell'AI Act. Minuta e appoggiata
-   * al testo, non sopra la fotografia: lì sarebbe illeggibile.
-   *
-   * Minuta, non invisibile. Era bianco al 45% e sul gradiente misurava
-   * 2,39:1 — a 11px ne servono 4,5. La norma chiede che la dichiarazione sia
-   * "chiara e distinguibile": un contrasto sotto soglia la rende esattamente
-   * il contrario, ed è in fondo a ogni pagina del sito.
-   */
-  .cta-credito {
-    margin-top: 2rem;
-    font-size: 0.6875rem;
-    letter-spacing: 0.02em;
-    color: rgb(255 255 255 / 0.82);
-  }
+  /* `.cta-credito` stava qui: una copia in prosa e in stile di AiCredit, per
+     la stessa dichiarazione dell'art. 50. Adesso la fascia usa la componente,
+     e il colore glielo dà `--color-ink-3` rimappato qui sopra — che è tarato
+     con la misura in mano (a bianco/0,45 stava a 2,39:1, contro i 4,5 che
+     servono a 11px). */
 
-  /* Ciano schiarito: quello pieno stava a 2,76:1 sul gradiente, sotto i 3:1
-     di un testo grande — e questa fascia è in fondo a ogni pagina. */
-  .cta-band :global(.t-dim) { color: var(--color-cyan-soft); }
+  /* La regola per `.t-dim` sul gradiente sta in global.css, condivisa con la
+     fascia di Nexia: qui era scritta identica, spiegazione compresa. */
 
   .cta-band :global(h2) { color: #fff; }
 
+  /* Dal token, come il sommario di HeroBand: erano 0,80 qui e 0,82 là, per
+     lo stesso ruolo sullo stesso gradiente. */
   .cta-lead {
     font-size: clamp(1rem, 0.95rem + 0.3vw, 1.0625rem);
     line-height: 1.7;
-    color: rgb(255 255 255 / 0.8);
+    color: var(--color-ink-2);
   }
 
-  .cta-btn-ghost {
-    background: rgb(255 255 255 / 0.12);
-    color: #fff;
-    border-color: rgb(255 255 255 / 0.3);
-  }
-  @media (hover: hover) {
-    .cta-btn-ghost:hover {
-      background: rgb(255 255 255 / 0.2);
-      border-color: rgb(255 255 255 / 0.5);
-      transform: translateY(-1px);
-    }
-  }
+  /* `.cta-btn-ghost` stava qui: quattro dichiarazioni per riottenere quello
+     che `.btn-ghost` fa da solo, ora che questa fascia rimappa anche i token
+     di superficie. Copia identica ne esisteva una in HeroBand. */
 
   .cta-fact {
     display: inline-flex;

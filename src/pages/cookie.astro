@@ -9,6 +9,7 @@
  */
 import Legal from "@/layouts/Legal.astro";
 import { SITE } from "@/data/site";
+import EmailLink from "@/components/EmailLink.astro";
 ---
 
 <Legal
@@ -121,7 +122,7 @@ import { SITE } from "@/data/site";
   <p>
     Bloccando i cookie di hCaptcha il modulo di contatto potrebbe non
     funzionare: in quel caso puoi sempre scriverci direttamente a
-    <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+    <EmailLink />.
   </p>
 
   <h2>Titolare e contatti</h2>
@@ -130,7 +131,7 @@ import { SITE } from "@/data/site";
     <strong>{SITE.legalName}</strong><br />
     {SITE.street}, {SITE.zip} {SITE.city} ({SITE.region}), {SITE.countryName}<br />
     P. IVA {SITE.vatId}<br />
-    E-mail: <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+    E-mail: <EmailLink />
   </div>
   <p>
     Per il trattamento dei dati personali in generale vedi la

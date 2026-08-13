@@ -105,7 +105,10 @@ const {
          verticale che si vedeva in pagina: non la foto che finisce, ma la
          sfumatura interrotta a metà. La dissolvenza deve finire DENTRO il
          riquadro, non sul suo bordo. */
-      -webkit-mask-image: radial-gradient(
+      /* Scritta una volta in una variabile, come fa Globe con la sua: qui il
+         gradiente era ripetuto identico per le due grafie della proprietà, e
+         correggerne una sola sarebbe stato un difetto invisibile su Safari. */
+      --maschera: radial-gradient(
         130% 190% at 100% 50%,
         #000 0%,
         #000 30%,
@@ -113,14 +116,8 @@ const {
         rgb(0 0 0 / 0.12) 68%,
         transparent 76%
       );
-      mask-image: radial-gradient(
-        130% 190% at 100% 50%,
-        #000 0%,
-        #000 30%,
-        rgb(0 0 0 / 0.45) 56%,
-        rgb(0 0 0 / 0.12) 68%,
-        transparent 76%
-      );
+      -webkit-mask-image: var(--maschera);
+      mask-image: var(--maschera);
     }
 
     /* Il velo che tinge la fotografia del blu del marchio.

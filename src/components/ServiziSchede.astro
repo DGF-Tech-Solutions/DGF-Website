@@ -43,7 +43,11 @@ const ICONE: IconName[] = ["globe", "bag", "phone", "dashboard", "sparkles"];
 <div class="schede">
   {/*
     I radio vengono prima di tutto il resto perché le regole che accendono
-    scheda e pannello usano il combinatore "fratello successivo" (`~`).
+    voce di menu, disegno e testo usano il combinatore "fratello successivo"
+    (`~`). L'ORDINE CONTA: prima i cinque servizi, poi i due della modalità.
+    Le regole di stato accoppiano il radio in posizione N con la voce in
+    posizione N usando `nth-of-type`, che conta gli `input` e ignora le
+    classi: infilare un radio in mezzo scompagina tutto.
   */}
   {
     SERVICES.map((s, i) => (
@@ -57,60 +61,107 @@ const ICONE: IconName[] = ["globe", "bag", "phone", "dashboard", "sparkles"];
     ))
   }
 
+  {/*
+    ── LA RIGA DEI COMANDI ────────────────────────────────────────────────
+    Sopra a tutto, in orizzontale: i cinque servizi a sinistra e la vista a
+    destra. In colonna, il menu spingeva il testo del servizio sotto la piega
+    e costringeva a scorrere per leggere quello che si era appena scelto.
+  */}
   <div class="schede-barra">
-    {
-      SERVICES.map((s, i) => (
-        <label class="schede-tab" for={`sv-${s.slug}`}>
-          <Icon name={ICONE[i]} size={15} />
-          <span>{s.title}</span>
-        </label>
-      ))
-    }
+    <div class="schede-tabs">
+      {
+        SERVICES.map((s, i) => (
+          <label class="schede-tab" for={`sv-${s.slug}`}>
+            <Icon name={ICONE[i]} size={15} />
+            <span>{s.title}</span>
+          </label>
+        ))
+      }
+    </div>
+
   </div>
 
   <div class="schede-corpo">
-    {
-      SERVICES.map((s, i) => {
-        const Disegno = DISEGNI[i];
-        return (
-          <section class="pannello">
-            <div class="viz">
-              <Disegno />
+    {/* ── IL PALCO ──────────────────────────────────────────────────────── */}
+    <div class="palco">
+      {
+        SERVICES.map((s, i) => {
+          const Disegno = DISEGNI[i];
+          return (
+            <div class="viz" data-scena={s.slug}>
+              <div class="viz-orbita">
+                  <div class="viz-strato viz-reticolo" aria-hidden="true" />
+
+                  {/* Il disegno, diviso in livelli sovrapposti che combaciano
+                      al pixel: uno per ogni parte, comodo da modificare. */}
+                  <div class="viz-strato viz-pila">
+                    <Disegno />
+                  </div>
+
+                  {/* Note tecniche: squadre agli angoli, quota in basso e
+                      cerchio di centratura. Stanno dietro al disegno, non
+                      sopra: passate davanti cadevano in mezzo allo schermo e
+                      sembravano sporco sulla figura. */}
+                  <div class="viz-strato viz-note" aria-hidden="true">
+                    <svg viewBox="0 0 400 300" fill="none">
+                      <path d="M18 42V18h24M358 18h24v24M382 258v24h-24M42 282H18v-24" class="v-squadra" />
+                      <path d="M18 292h364" class="v-quota" />
+                      <path d="M18 288v8M382 288v8M200 289v6" class="v-quota" />
+                      <circle cx="200" cy="140" r="128" class="v-mirino" />
+                      <path d="M200 2v22M60 140H38M362 140h-22" class="v-mirino" />
+                    </svg>
+                  </div>
+
+                  <div class="viz-strato viz-hud" aria-hidden="true">
+                    <span class="viz-gettone viz-gettone-icona">
+                      <Icon name={ICONE[i]} size={17} />
+                    </span>
+                    <span class="viz-gettone viz-gettone-indice">{s.index}</span>
+                  </div>
+              </div>
             </div>
+          );
+        })
+      }
 
-            <div class="pannello-testo">
-              <span class="pannello-indice tabular">{s.index}</span>
-              <h3 class="pannello-titolo">{s.title}</h3>
-              <p class="pannello-riga">{s.headline}</p>
-              <p class="pannello-intro">{s.summary}</p>
+    </div>
 
-              <ul class="pannello-elenco">
-                {s.includes.slice(0, 4).map((x) => (
-                  <li>{x.title}</li>
-                ))}
-              </ul>
+    {/* ── LA COLONNA DI DESTRA ──────────────────────────────────────────── */}
+    <div class="lato">
+      {
+        SERVICES.map((s) => (
+          <section class="testo">
+            <span class="pannello-indice tabular">{s.index}</span>
+            <h3 class="pannello-titolo">{s.title}</h3>
+            <p class="pannello-riga">{s.headline}</p>
+            <p class="pannello-intro">{s.summary}</p>
 
-              <p class="pannello-stack">
-                {s.stack.slice(0, 4).map((t) => (
-                  <span class="stack-voce">{t}</span>
-                ))}
-              </p>
+            <ul class="pannello-elenco">
+              {s.includes.slice(0, 4).map((x) => (
+                <li>{x.title}</li>
+              ))}
+            </ul>
 
-              <a href={`/servizi/${s.slug}`} class="link-arrow pannello-vai">
-                Vedi il servizio
-                <Icon name="arrow-right" size={16} />
-              </a>
-            </div>
+            <p class="pannello-stack">
+              {s.stack.slice(0, 4).map((t) => (
+                <span class="stack-voce">{t}</span>
+              ))}
+            </p>
+
+            <a href={`/servizi/${s.slug}`} class="link-arrow pannello-vai">
+              Vedi il servizio
+              <Icon name="arrow-right" size={16} />
+            </a>
           </section>
-        );
-      })
-    }
+        ))
+      }
+    </div>
   </div>
 </div>
 
 <style>
   /* ══════════════════════════════════════════════════════════════════════
-     LA BARRA DELLE SCHEDE
+     IMPIANTO
      ══════════════════════════════════════════════════════════════════════ */
 
   .schede {
@@ -127,34 +178,61 @@ const ICONE: IconName[] = ["globe", "bag", "phone", "dashboard", "sparkles"];
     pointer-events: none;
   }
 
+  .schede-corpo {
+    display: grid;
+    gap: 2rem;
+    padding-top: 2rem;
+  }
+
+  /* Il disegno prende la parte larga: è il pezzo che si guarda per primo, e in
+     tre dimensioni gli serve spazio per girare. Le due colonne sono allineate
+     IN ALTO, non al centro: il testo deve cominciare dove comincia la scena,
+     altrimenti chi legge deve scendere a cercarlo. */
+  @media (min-width: 900px) {
+    .schede-corpo {
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 3rem;
+      align-items: start;
+      padding-top: 2.5rem;
+    }
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     LA RIGA DEI COMANDI
+     ══════════════════════════════════════════════════════════════════════ */
+
   .schede-barra {
     display: flex;
-    gap: 0.25rem;
-    overflow-x: auto;
-    scrollbar-width: none;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1.25rem;
     border-bottom: 1px solid var(--color-line);
   }
 
-  .schede-barra::-webkit-scrollbar {
-    display: none;
+  .schede-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
   }
 
   .schede-tab {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    flex-shrink: 0;
-    padding: 0.75rem 0.9rem 0.9rem;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
+    padding: 0.5rem 0.875rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
     font-size: 0.875rem;
     font-weight: 600;
     color: var(--color-ink-3);
     cursor: pointer;
     white-space: nowrap;
     transition:
-      color var(--dur) var(--ease-out-quart),
-      border-color var(--dur) var(--ease-out-quart);
+      background var(--dur) var(--ease-out-quart),
+      border-color var(--dur) var(--ease-out-quart),
+      color var(--dur) var(--ease-out-quart);
   }
 
   .schede-tab :global(svg) {
@@ -164,24 +242,25 @@ const ICONE: IconName[] = ["globe", "bag", "phone", "dashboard", "sparkles"];
 
   @media (hover: hover) {
     .schede-tab:hover {
+      background: color-mix(in srgb, var(--color-paper) 60%, transparent);
       color: var(--color-ink);
     }
-    .schede-tab:hover :global(svg) {
-      opacity: 0.9;
-    }
+    .schede-tab:hover :global(svg) { opacity: 0.9; }
   }
 
   /* ── Stato attivo ─────────────────────────────────────────────────────
-   * Cinque coppie di regole scritte una volta con `nth-of-type`: il radio in
-   * posizione N accende la label in posizione N e il pannello in posizione N.
-   * Se un domani i servizi diventano sei, basta aggiungere una coppia. */
+   * Cinque coppie scritte una volta con `nth-of-type`: il radio in posizione
+   * N accende il pulsante N, il disegno N e il testo N. Se un domani i servizi
+   * diventano sei, si aggiunge una riga per gruppo — e i due radio della
+   * modalità restano in fondo, dove non spostano i conti. */
   .schede-radio:nth-of-type(1):checked ~ .schede-barra .schede-tab:nth-of-type(1),
   .schede-radio:nth-of-type(2):checked ~ .schede-barra .schede-tab:nth-of-type(2),
   .schede-radio:nth-of-type(3):checked ~ .schede-barra .schede-tab:nth-of-type(3),
   .schede-radio:nth-of-type(4):checked ~ .schede-barra .schede-tab:nth-of-type(4),
   .schede-radio:nth-of-type(5):checked ~ .schede-barra .schede-tab:nth-of-type(5) {
-    color: var(--color-navy);
-    border-bottom-color: var(--color-navy);
+    background: var(--color-navy);
+    border-color: var(--color-navy);
+    color: #fff;
   }
 
   .schede-radio:nth-of-type(1):checked ~ .schede-barra .schede-tab:nth-of-type(1) :global(svg),
@@ -192,49 +271,26 @@ const ICONE: IconName[] = ["globe", "bag", "phone", "dashboard", "sparkles"];
     opacity: 1;
   }
 
-  .schede-radio:nth-of-type(1):focus-visible ~ .schede-barra .schede-tab:nth-of-type(1),
-  .schede-radio:nth-of-type(2):focus-visible ~ .schede-barra .schede-tab:nth-of-type(2),
-  .schede-radio:nth-of-type(3):focus-visible ~ .schede-barra .schede-tab:nth-of-type(3),
-  .schede-radio:nth-of-type(4):focus-visible ~ .schede-barra .schede-tab:nth-of-type(4),
-  .schede-radio:nth-of-type(5):focus-visible ~ .schede-barra .schede-tab:nth-of-type(5) {
-    outline: 2px solid var(--color-blue);
-    outline-offset: -2px;
-    border-radius: var(--radius-sm);
+  @media (hover: hover) {
   }
 
   /* ══════════════════════════════════════════════════════════════════════
-     IL PANNELLO
+     IL TESTO DEL SERVIZIO
      ══════════════════════════════════════════════════════════════════════ */
 
-  .pannello {
-    display: none;
-  }
+  .testo { display: none; }
 
-  .schede-radio:nth-of-type(1):checked ~ .schede-corpo .pannello:nth-of-type(1),
-  .schede-radio:nth-of-type(2):checked ~ .schede-corpo .pannello:nth-of-type(2),
-  .schede-radio:nth-of-type(3):checked ~ .schede-corpo .pannello:nth-of-type(3),
-  .schede-radio:nth-of-type(4):checked ~ .schede-corpo .pannello:nth-of-type(4),
-  .schede-radio:nth-of-type(5):checked ~ .schede-corpo .pannello:nth-of-type(5) {
-    display: grid;
-  }
-
-  .pannello {
-    gap: 2rem;
-    align-items: center;
-    padding-top: 2.5rem;
-  }
-
-  @media (min-width: 900px) {
-    .pannello {
-      grid-template-columns: 1.05fr 0.95fr;
-      gap: 3.5rem;
-      padding-top: 3rem;
-    }
+  .schede-radio:nth-of-type(1):checked ~ .schede-corpo .testo:nth-of-type(1),
+  .schede-radio:nth-of-type(2):checked ~ .schede-corpo .testo:nth-of-type(2),
+  .schede-radio:nth-of-type(3):checked ~ .schede-corpo .testo:nth-of-type(3),
+  .schede-radio:nth-of-type(4):checked ~ .schede-corpo .testo:nth-of-type(4),
+  .schede-radio:nth-of-type(5):checked ~ .schede-corpo .testo:nth-of-type(5) {
+    display: block;
   }
 
   /* Il testo entra con un filo di ritardo sul disegno: prima si guarda la
      figura, poi si legge. */
-  .pannello-testo > * {
+  .testo > * {
     animation: sc-testo 0.55s var(--ease-out-quart) both;
   }
 
@@ -342,8 +398,55 @@ const ICONE: IconName[] = ["globe", "bag", "phone", "dashboard", "sparkles"];
   }
 
   /* ══════════════════════════════════════════════════════════════════════
-     LA CORNICE DEL DISEGNO
+     IL PALCO
+     ═══════════════════════════════════════════════════════════════════════
+
+     Cinque scene sovrapposte: solo quella scelta è accesa. Le altre sono
+     `display: none`, che è anche il motore delle animazioni — un elemento che
+     rientra nel documento fa ripartire le proprie animazioni CSS dall'inizio.
+
+     DUE REGOLE PER TUTTO CIÒ CHE SEGUE:
+
+       1. la catena `perspective` → `preserve-3d` non si interrompe mai. Basta
+          un anello in mezzo senza `transform-style: preserve-3d` e i piani si
+          schiacciano su uno solo: il 3D sparisce senza dare alcun errore.
+       2. niente `overflow` diverso da `visible` sugli anelli di quella catena:
+          schiaccia esattamente come il punto 1. È il motivo per cui in tre
+          dimensioni la cornice sparisce invece di limitarsi ad allargarsi.
      ══════════════════════════════════════════════════════════════════════ */
+
+  /* Altezza bloccata: la scena si centra dentro, in piano come in profondità.
+     Prima la sezione cresceva quando si passava alle tre dimensioni — la scena
+     si portava dietro la propria spaziatura — e la pagina saltava sotto le
+     mani di chi aveva appena premuto il pulsante. */
+  /* UN'ALTEZZA SOLA PER LE DUE VISTE.
+   *
+   * Ne aveva due, una per la vista piana e una più alta per l'esploso: premere
+   * «3D» allungava il palco e faceva saltare in giù tutta la pagina, proprio
+   * mentre chi guarda aveva gli occhi sul disegno. Adesso lo spazio è
+   * riservato una volta e le due viste ci vivono dentro. */
+  .palco {
+    position: relative;
+    display: grid;
+    align-content: center;
+    /* Contenitore di query: da qui `cqw` vale «per cento della larghezza della
+       scena». Serve perché lo stacco fra i pezzi sia una FRAZIONE della scena
+       e non una misura fissa — in pixel, restringendo la finestra i pezzi si
+       riavvicinavano fino a chiudersi. `inline-size` non ritaglia niente e il
+       palco non fa parte della catena prospettica, che comincia su `.viz`. */
+    container-type: inline-size;
+    min-height: clamp(360px, 40vw, 560px);
+  }
+
+  .viz { display: none; }
+
+  .schede-radio:nth-of-type(1):checked ~ .schede-corpo .viz:nth-of-type(1),
+  .schede-radio:nth-of-type(2):checked ~ .schede-corpo .viz:nth-of-type(2),
+  .schede-radio:nth-of-type(3):checked ~ .schede-corpo .viz:nth-of-type(3),
+  .schede-radio:nth-of-type(4):checked ~ .schede-corpo .viz:nth-of-type(4),
+  .schede-radio:nth-of-type(5):checked ~ .schede-corpo .viz:nth-of-type(5) {
+    display: block;
+  }
 
   .viz {
     position: relative;
@@ -356,22 +459,274 @@ const ICONE: IconName[] = ["globe", "bag", "phone", "dashboard", "sparkles"];
         var(--color-paper)
       );
     overflow: hidden;
+
+    perspective: 1100px;
+
+    /* ── I NUMERI DELLA SCENA ────────────────────────────────────────────
+     * Sono tutti qui, e valgono la vista piana. La modalità a tre dimensioni
+     * non riscrive nessuna regola: cambia solo questi numeri, e tutto il
+     * resto del foglio li segue. È anche il motivo per cui il passaggio fra
+     * le due viste è una transizione e non un salto. */
+    
+    /* Posizione del puntatore, da -1 a 1, e il punto di luce in percentuale.
+       Le scrive lo script in fondo al file; se non parte restano questi
+       valori e la scena sta ferma. */
+    --mx: 0;
+    --my: 0;
+    --lx: 50%;
+    --ly: 0%;
+
+    /* Quanto ha girato la scena chi la sta trascinando. Restano dove le
+       lascia: è la differenza fra guardare e maneggiare. */
+
+    transition:
+      border-color 500ms var(--ease-out-quart),
+      background 500ms var(--ease-out-quart),
+      padding 500ms var(--ease-out-quart);
   }
 
-  /* La quadrettatura tecnica sotto al disegno: si vede appena, ma è ciò che
-     fa leggere la figura come un progetto invece che come un'illustrazione. */
-  .viz::before {
-    content: "";
+  /* LA SALITA DELLA PILA, CALCOLATA E NON INDOVINATA.
+   *
+   * Ogni pezzo sale di `stacco` in profondità; inclinato di `incl`, sullo
+   * schermo quella profondità diventa altezza per sin(incl), e la scala la
+   * riduce ancora. Il primo pezzo non sale, quindi i salti sono `livelli - 1`:
+   *
+   *     salita = (livelli - 1) · stacco · sin(incl) · zoom
+   *
+   * Serve perché la pila cresce TUTTA verso l'alto: senza compensazione usciva
+   * dal palco di centinaia di pixel e finiva sopra ai pulsanti dei servizi.
+   * Spostandola giù di metà salita, la pila resta centrata nel proprio spazio
+   * qualunque siano i numeri della posa — e il giorno che si cambia
+   * inclinazione o si aggiunge un pezzo, si aggiusta da sola. */
+  .viz {
+  }
+
+  /* In piano il disegno non si prende: nessun cursore che lo prometta e
+     nessun gesto rubato al browser. */
+  .viz { cursor: default; touch-action: auto; }
+
+  
+  
+
+  /* Il respiro a riposo, su un anello suo: così non litiga con la rotazione
+     del puntatore, che sta sul genitore. Le due trasformazioni si sommano. */
+  .viz-orbita {
+    position: relative;
+    transform-style: preserve-3d;
+    animation: viz-fluttua 12s ease-in-out infinite;
+  }
+
+  /* Mentre la mano guida, il respiro si ferma: due movimenti insieme sono
+     rumore. */
+  @media (hover: hover) {
+    .viz:hover .viz-orbita { animation-play-state: paused; }
+  }
+
+  @keyframes viz-fluttua {
+    0%, 100% { transform: translate3d(0, 0, 0) rotateY(-1.2deg) rotateX(0.6deg); }
+    50%      { transform: translate3d(0, -7px, 0) rotateY(1.2deg) rotateX(-0.6deg); }
+  }
+
+  /* Tutti i piani si sovrappongono; solo la pila sta nel flusso, ed è lei a
+     dare l'altezza alla scena. */
+  .viz-strato { position: absolute; inset: 0; }
+
+  /* L'ALTEZZA VIENE DALLA PROPORZIONE, NON DAL CONTENUTO.
+   *
+   * Tutte le tavole hanno viewBox 400x300: la pila e' alta quanto quel
+   * rapporto, sempre, e non dipende da quale livello sia visibile.
+   *
+   * Prima l'altezza la dava il livello 0, l'unico lasciato nel flusso. Poi il
+   * livello 0 dell'app e' diventato `solo3d` — visibile solo da smontato — e
+   * in vista piana non restava piu' niente in flusso: la pila si chiudeva a
+   * zero e il disegno spariva. Non un errore di quel disegno: un modo di
+   * misurare che si appoggiava su chi c'era, invece che su quanto e' grande. */
+  .viz-pila {
+    position: relative;
+    aspect-ratio: 400 / 300;
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     LA PILA DEI PIANI
+     ═══════════════════════════════════════════════════════════════════════
+
+     Ogni disegno è diviso in più SVG con lo stesso `viewBox`, sovrapposti:
+     combaciano al pixel e si leggono come un disegno solo. La divisione resta
+     perché è il modo in cui i cinque disegni sono scritti — un livello per
+     ogni parte, comodo da modificare — e perché l'altezza la dichiara il
+     contenitore, non i livelli.
+
+     Le classi `.pila-piano` le scrive Piano.astro, quindi servono `:global()`:
+     l'attributo di scope di Astro non arriva agli elementi di un componente
+     figlio. Il contenimento resta, perché la parte a sinistra (`.viz`) è
+     scopata.
+     ══════════════════════════════════════════════════════════════════════ */
+
+  .viz :global(.pila-piano) {
     position: absolute;
     inset: 0;
+    transform-style: preserve-3d;
+  }
+
+  
+
+  
+
+  
+
+  /* Il livello più alto ha il bordo del marchio: è la cosa che conta, e in una
+     pila di piani chiari serve un segno che dica quale guardare. */ {
+    border-color: color-mix(in srgb, var(--color-cyan) 85%, transparent);
+  }
+
+  /* La base è il pavimento: più fredda e più piatta delle lastre che regge, e
+     con la quadrettatura addosso. Bianca come le altre sembrava un quarto
+     livello per sbaglio invece che il piano su cui poggia tutto. */
+  .viz :global(.pila-piano[data-piano="0"])::before {
+    background:
+      linear-gradient(
+        to right,
+        color-mix(in srgb, var(--color-cyan) 14%, transparent) 1px,
+        transparent 1px
+      ) 0 0 / 26px 26px,
+      linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--color-cyan) 14%, transparent) 1px,
+        transparent 1px
+      ) 0 0 / 26px 26px,
+      color-mix(in srgb, var(--color-soft) 75%, #fff);
+    border-color: color-mix(in srgb, var(--color-navy) 20%, transparent);
+  }
+
+  
+
+  /* Il livello di fondo non getta ombra su niente: sotto non c'è nulla. */
+
+  
+
+  
+
+  
+
+  /* Il piano di fondo non ha niente sotto a cui aggrapparsi. */
+
+  /* La quadrettatura tecnica: si vede appena, ma è ciò che fa leggere la
+     figura come un progetto invece che come un'illustrazione. Adesso sta 80px
+     dietro, quindi alla rotazione scorre sotto al disegno. */
+  .viz-reticolo {
     background-image:
       linear-gradient(to right, color-mix(in srgb, var(--color-cyan) 12%, transparent) 1px, transparent 1px),
       linear-gradient(to bottom, color-mix(in srgb, var(--color-cyan) 12%, transparent) 1px, transparent 1px);
     background-size: 28px 28px;
     mask-image: radial-gradient(closest-side ellipse at 50% 50%, #000 30%, transparent 92%);
+    animation: viz-piano-fondo 0.9s var(--ease-out-quart) both;
   }
 
-  .viz-svg {
+  .viz-pila {
+    animation: viz-piano-figura 0.75s var(--ease-out-quart) both;
+  }
+
+  .viz-note {
+    animation: viz-piano-note 0.8s var(--ease-out-quart) 0.2s both;
+  }
+
+  .viz-note svg { width: 100%; height: 100%; display: block; }
+
+  .viz-note :global(.v-squadra) {
+    stroke: color-mix(in srgb, var(--color-navy) 26%, transparent);
+    stroke-width: 1.2;
+  }
+  .viz-note :global(.v-quota) {
+    stroke: color-mix(in srgb, var(--color-navy) 18%, transparent);
+    stroke-width: 1;
+    stroke-dasharray: 3 4;
+  }
+  .viz-note :global(.v-mirino) {
+    stroke: color-mix(in srgb, var(--color-cyan) 30%, transparent);
+    stroke-width: 1;
+    stroke-dasharray: 2 6;
+  }
+
+  .viz-hud {
+    animation: viz-piano-hud 0.85s var(--ease-out-quart) 0.3s both;
+  }
+
+  /* ── I piani entrano dalla profondità ─────────────────────────────────
+   * Il valore finale di `translateZ` sta nel fotogramma finale e non in una
+   * regola a parte: `both` lo tiene, e così ogni piano ha la sua quota
+   * scritta in un posto solo. */
+  @keyframes viz-piano-fondo {
+    from { opacity: 0; transform: translateZ(-300px) scale(1.08); }
+    to   { opacity: 1; transform: translateZ(-80px) scale(1.08); }
+  }
+  /* NIENTE `opacity` IN QUESTI FOTOGRAMMI.
+   *
+   * È l'errore che teneva piatta la pila: `.viz-pila` è l'anello `preserve-3d`
+   * che regge i quattro pezzi, e un'opacità diversa da 1 — anche solo per i
+   * 750 ms dell'ingresso — lo raggruppa e butta i figli fuori dallo spazio 3D
+   * comune. Risultato: i pezzi si sovrapponevano tutti sulla stessa riga, e
+   * sembrava un oggetto spesso invece che un oggetto aperto.
+   *
+   * Misurato: con l'opacità in questi fotogrammi le quattro cime stavano a
+   * 1647/1647/1647/1647; togliendola, a 1553/1444/1332/1218.
+   *
+   * La dissolvenza d'ingresso non manca a nessuno: ogni pezzo del disegno ha
+   * già la propria, dentro l'SVG, dove non fa danni. */
+  @keyframes viz-piano-figura {
+    from { transform: translateZ(-70px) rotateX(9deg); }
+    to   { transform: translateZ(0) rotateX(0deg); }
+  }
+  @keyframes viz-piano-note {
+    from { opacity: 0; transform: translateZ(-160px); }
+    to   { opacity: 1; transform: translateZ(-34px); }
+  }
+  /* Arriva addosso a chi guarda e poi si posa: è l'unico piano che entra
+     dal davanti, e serve a far capire che lo spazio ha due direzioni. */
+  @keyframes viz-piano-hud {
+    from { opacity: 0; transform: translateZ(210px); }
+    to   { opacity: 1; transform: translateZ(72px); }
+  }
+
+  /* ── Gli strumenti che galleggiano ────────────────────────────────────
+   * Stanno dentro ai margini della cornice di proposito: sporgendo verrebbero
+   * tagliati dall'`overflow: hidden` che tiene insieme la finestra. */
+  .viz-gettone {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md, 0.75rem);
+    background: rgb(255 255 255 / 0.82);
+    box-shadow: 0 10px 22px rgb(15 42 72 / 0.14);
+    color: var(--color-navy);
+    backdrop-filter: blur(6px);
+  }
+
+  .viz-gettone-icona {
+    top: 1.1rem;
+    left: 1.1rem;
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .viz-gettone-indice {
+    right: 1.1rem;
+    bottom: 1.1rem;
+    padding: 0.3rem 0.6rem;
+    border-radius: var(--radius-pill);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.16em;
+  }
+
+  @media (hover: hover) {
+  }
+
+  /* `:global()` perché l'SVG lo scrive Piano.astro: l'attributo di scope di
+     Astro non entra in un componente figlio, e questa regola non agganciava
+     niente. */
+  .viz :global(.viz-svg) {
     position: relative;
     display: block;
     width: 100%;
@@ -533,7 +888,20 @@ const ICONE: IconName[] = ["globe", "bag", "phone", "dashboard", "sparkles"];
 
   /* Chi ha chiesto meno movimento vede il disegno già finito. */
   @media (prefers-reduced-motion: reduce) {
-    .pannello-testo > *,
+    /* La scena si appiattisce: niente rotazione, niente respiro, niente
+       ingressi dalla profondità. I piani restano alle loro quote perché la
+       sovrapposizione è il disegno, non l'effetto. Lo script non parte
+       nemmeno: la condizione è scritta anche là. */
+    .viz-orbita { animation: none; }
+    /* La posa resta — è la forma della cosa, non un movimento: chi sceglie le
+       tre dimensioni le vede, ferme. Sparisce solo ciò che si muove. */
+    .viz-reticolo { animation: none; opacity: 1; transform: translateZ(-80px) scale(1.08); }
+    .viz-pila { animation: none; opacity: 1; transform: none; }
+    .viz :global(.pila-piano) { transition: none; }
+    .viz-note { animation: none; opacity: 1; transform: translateZ(-34px); }
+    .viz-hud { animation: none; opacity: 1; transform: translateZ(72px); }
+
+    .testo > *,
     .viz :global([data-p]),
     .viz :global([data-traccia]),
     .viz :global([data-cresce]),
@@ -734,3 +1102,4 @@ const ICONE: IconName[] = ["globe", "bag", "phone", "dashboard", "sparkles"];
     font-family: var(--font-mono);
   }
 </style>
+

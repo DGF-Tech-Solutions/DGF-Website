@@ -27,7 +27,11 @@ interface Props {
    * legge: senza, il video mostra delle schermate e basta. Con, si capisce
    * che cosa si sta guardando e perché dovrebbe interessare.
    */
-  points?: { title: string; text: string }[];
+  /* `readonly`: questa componente le legge soltanto, e la home le passa da un
+     `as const`. Senza, TypeScript rifiutava l'unica chiamata che esiste — era
+     l'ultimo errore di `astro check`. Un componente che non modifica non ha
+     motivo di chiedere un array modificabile. */
+  points?: readonly { readonly title: string; readonly text: string }[];
   pointsTitle?: string;
   /** Rimando alla scheda del progetto, per chi vuole i dettagli tecnici. */
   href?: string;
@@ -88,7 +92,7 @@ const {
         {eyebrow && <span class="t-eyebrow">{eyebrow}</span>}
         <h2 class="t-h2 mt-3" set:html={title} />
         {lead && <p class="video-lead">{lead}</p>}
-        {pointsTitle && <span class="video-etichetta">{pointsTitle}</span>}
+        {pointsTitle && <span class="badge-brand video-etichetta">{pointsTitle}</span>}
       </div>
 
       <!--
@@ -227,6 +231,13 @@ const {
        parallasse di questo pezzo. Il bordo netto è anche la regola generale
        dei confini fra colori lontani (vedi `.band-soft` in global.css). */
     background: var(--gradient-brand);
+
+    /* `.on-dark` tara `--color-ink-2` su 0,78, che è giusto sul navy pieno.
+       Questa fascia però porta il gradiente, che sotto al sommario corre più
+       chiaro: qui il token vale un gradino in più. Si rimappa invece di
+       scrivere un letterale nella regola del sommario, così tutto ciò che
+       legge "testo corrente" dentro questa fascia si adegua da solo. */
+    --color-ink-2: rgb(255 255 255 / 0.85);
   }
 
   /* ═══════════════════════════════════════════════════════════════════════
@@ -383,12 +394,8 @@ const {
     text-align: center;
   }
 
-  /* La stessa correzione di CtaBand: `.t-dim` nasce per il fondo chiaro e su
-     questo blu esce spento, come disattivato. Sul gradiente la seconda voce
-     del titolo va in ciano, identica alla fascia di chiusura. */
-  .video-sezione :global(.t-dim) {
-    color: var(--color-cyan-soft);
-  }
+  /* La regola per `.t-dim` sul gradiente sta in global.css, insieme a quella
+     della fascia di chiusura: era la stessa scritta due volte. */
 
   /* Il ciano dei link su fondo scuro (regola di `.on-dark`) qui non regge:
      in basso a destra il gradiente diventa proprio ciano-blu e il link ci
@@ -410,7 +417,7 @@ const {
     margin-top: 1rem;
     font-size: 1rem;
     line-height: 1.65;
-    color: rgb(255 255 255 / 0.85);
+    color: var(--color-ink-2);
   }
 
   /* L'occhiello di `.on-dark` è ciano, pensato per staccare sul navy-deep
@@ -422,23 +429,16 @@ const {
 
   /* Etichetta che introduce i cartellini: senza, "01 Vive sul web" appare
      senza che si capisca di che elenco faccia parte. */
+  /* La superficie arriva da `.badge-brand` in global.css — la stessa pillola
+     della fascia di chiusura, che è lo stesso gradiente. Qui restano il
+     monospazio e la spaziatura stretta, che sono di questa etichetta. */
   .video-etichetta {
     display: inline-block;
     margin-top: 1.5rem;
     padding: 0.3125rem 0.875rem;
-    border-radius: var(--radius-pill);
-    /* La stessa pillola del badge della CTA (`.cta-badge`): bianco al 14%
-       con l'anello interno e il testo pieno. La versione precedente —
-       bianco al 10% e testo al 66% — era tarata sul navy-deep e sul
-       gradiente non si leggeva quasi più. */
-    background: rgb(255 255 255 / 0.14);
-    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.18);
     font-family: var(--font-mono);
-    font-size: 0.6875rem;
     font-weight: 600;
     letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #fff;
   }
 
   /* ═══════════════════════════════════════════════════════════════════════

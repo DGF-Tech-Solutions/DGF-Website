@@ -10,6 +10,7 @@
  */
 import Legal from "@/layouts/Legal.astro";
 import { SITE } from "@/data/site";
+import EmailLink from "@/components/EmailLink.astro";
 
 const DOMINIO = SITE.url.replace(/^https?:\/\//, "");
 ---
@@ -31,7 +32,7 @@ const DOMINIO = SITE.url.replace(/^https?:\/\//, "");
     <strong>{SITE.legalName}</strong><br />
     {SITE.street}, {SITE.zip} {SITE.city} ({SITE.region}), {SITE.countryName}<br />
     P. IVA {SITE.vatId}<br />
-    E-mail: <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+    E-mail: <EmailLink />
   </div>
 
   <h2>Accettazione dei termini</h2>
@@ -147,6 +148,6 @@ const DOMINIO = SITE.url.replace(/^https?:\/\//, "");
   <h2>Contatti</h2>
   <p>
     Per qualsiasi richiesta relativa a questi termini scrivi a
-    <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+    <EmailLink />.
   </p>
 </Legal>

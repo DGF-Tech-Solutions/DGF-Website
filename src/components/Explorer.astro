@@ -127,9 +127,10 @@ const showChips = categories.length > 1;
                 box-shadow var(--dur) var(--ease-out-quart);
   }
   .explorer-input::placeholder { color: var(--color-ink-3); }
+  /* Stessi token del campo del modulo di contatto. */
   .explorer-input:focus {
-    border-color: color-mix(in srgb, var(--color-navy) 40%, transparent);
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-navy) 10%, transparent);
+    border-color: var(--focus-bordo);
+    box-shadow: var(--focus-anello);
   }
   /* La "x" nativa di Safari/Chrome duplicherebbe il nostro pulsante. */
   .explorer-input::-webkit-search-cancel-button { display: none; }
@@ -171,7 +172,7 @@ const showChips = categories.length > 1;
   }
   @media (hover: hover) {
     .filter-chip:hover {
-      border-color: color-mix(in srgb, var(--color-navy) 30%, transparent);
+      border-color: var(--hover-bordo);
       color: var(--color-navy);
     }
   }

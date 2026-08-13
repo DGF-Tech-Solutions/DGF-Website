@@ -57,9 +57,9 @@ const {
 } = Astro.props;
 ---
 
-<section
-  class:list={["band-brand under-nav overflow-hidden", className]}
->
+{/* Niente `overflow-hidden` nella lista: `.band-brand` lo imposta già. Era
+    l'unico dei tre punti che usano questa fascia a ripeterlo. */}
+<section class:list={["band-brand under-nav", className]}>
   <div class="wrap pt-6 pb-12 sm:pt-8 sm:pb-16">
     <Breadcrumbs items={crumbs} class="mb-8" />
 

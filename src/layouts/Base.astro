@@ -53,7 +53,10 @@ const organizationSchema = {
   image: ogImageURL.href,
   description: SITE.description,
   slogan: SITE.tagline,
-  email: SITE.email,
+  /* Niente email nei dati strutturati: il JSON-LD è testo in chiaro dentro
+     l'HTML di ogni pagina, e i raccoglitori di indirizzi lo leggono come
+     qualsiasi altro sorgente — avrebbe vanificato l'offuscamento di
+     EmailLink. Il punto di contatto per Google è la pagina /contatti. */
   vatID: SITE.vatId,
   taxID: SITE.taxId,
   foundingLocation: { "@type": "Place", name: `${SITE.city}, ${SITE.countryName}` },
@@ -68,7 +71,7 @@ const organizationSchema = {
   areaServed: { "@type": "Country", name: SITE.countryName },
   contactPoint: {
     "@type": "ContactPoint",
-    email: SITE.email,
+    url: `${SITE.url}/contatti`,
     contactType: "customer support",
     areaServed: SITE.country,
     availableLanguage: ["Italian"],

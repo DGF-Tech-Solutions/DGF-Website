@@ -55,44 +55,8 @@ const haystack = `${d.title} ${d.excerpt} ${d.category} ${d.author}`
 </a>
 
 <style>
-  /* Chip di categoria: maiuscoletto piccolo su fondo azzurro. */
-  .tag {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.3125rem 0.625rem;
-    border-radius: var(--radius-sm);
-    background: var(--color-soft);
-    color: var(--color-navy);
-    font-size: 0.625rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.09em;
-    white-space: nowrap;
-  }
-
-  .meta {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3125rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--color-ink-3);
-    white-space: nowrap;
-  }
-
-  .read-more {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4375rem;
-    margin-top: 1.5rem;
-    font-size: 0.875rem;
-    font-weight: 700;
-    color: var(--color-navy);
-  }
-  .read-more :global(svg) {
-    transition: transform var(--dur) var(--ease-out-quart);
-  }
-  @media (hover: hover) {
-    .group:hover .read-more :global(svg) { transform: translateX(3px); }
-  }
+  /* `.tag`, `.meta` e `.read-more` stanno in global.css, condivise con
+     CaseCard: qui erano scritte identiche, commento compreso.
+     Resta solo ciò che è di questa scheda. */
+  .read-more { margin-top: 1.5rem; }
 </style>

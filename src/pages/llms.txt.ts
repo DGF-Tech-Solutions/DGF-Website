@@ -51,7 +51,7 @@ ${projects
 ${articles.map((a) => `- [${a.data.title}](${SITE.url}/blog/${a.id}): ${a.data.excerpt}`).join("\n")}
 
 ## Contatti
-- Email: ${SITE.email}
+- Modulo di contatto: ${SITE.url}/contatti (l'email è indicata lì e nel footer del sito)
 - Sede: ${SITE.city} (${SITE.region}), ${SITE.countryName}
 - P. IVA: ${SITE.vatId}
 

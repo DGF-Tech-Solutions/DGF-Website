@@ -6,6 +6,7 @@ import Icon from "@/components/Icon.astro";
 import { SITE } from "@/data/site";
 import { SERVICES } from "@/data/services";
 import illustration from "@/assets/foto/contatti.webp";
+import EmailLink from "@/components/EmailLink.astro";
 
 const SERVICE_ICONS = ["globe", "bag", "phone", "dashboard", "sparkles"] as const;
 
@@ -52,9 +53,7 @@ const schema = {
           <div class="card p-6">
             <span class="icon-tile"><Icon name="mail" size={20} /></span>
             <h2 class="t-h3 mt-4">Scrivici direttamente</h2>
-            <a href={`mailto:${SITE.email}`} class="link-arrow mt-3 !text-[0.875rem] break-all">
-              {SITE.email}
-            </a>
+            <EmailLink class="link-arrow mt-3 !text-[0.875rem] break-all" />
           </div>
 
           <div class="card p-6">

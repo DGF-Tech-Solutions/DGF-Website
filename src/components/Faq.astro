@@ -7,15 +7,25 @@
  * sarebbe peggio sotto ogni aspetto misurabile.
  */
 import Icon from "@/components/Icon.astro";
-import { parseInlineLinks, stripInlineLinks, type TextPart } from "@/lib/inline-links";
+import { parseInlineLinks, type TextPart } from "@/lib/inline-links";
 
+/*
+ * NIENTE JSON-LD qui dentro, di proposito.
+ *
+ * C'era una prop `schema` che emetteva un `FAQPage` inline. Nessuno dei due
+ * chiamanti l'ha mai passata, quindi quel blocco non è mai uscito — mentre
+ * `servizi/[slug]` si riscriveva lo stesso schema a mano e `portfolio/[slug]`
+ * non ne pubblicava nessuno. Una funzionalità che esiste e che nessuno
+ * accende è peggio di una che non c'è: sembra coperta.
+ *
+ * Adesso lo schema lo costruisce la pagina e lo passa al grafo di `Base`,
+ * dove sta tutto il resto dei dati strutturati del sito. Una sorgente sola.
+ */
 interface Props {
   items: { q: string; a: string }[];
-  /** Emette il JSON-LD FAQPage (una sola pagina per sito dovrebbe farlo). */
-  schema?: boolean;
 }
 
-const { items, schema = false } = Astro.props;
+const { items } = Astro.props;
 
 /*
  * La freccina dei link esterni è un elemento atomico, e il browser tratta i
@@ -35,21 +45,11 @@ function splitTail(text: string): { head: string; tail: string } {
 }
 
 /* La risposta si scrive come testo, con i link in forma `[testo](url)`.
-   Qui diventa un elenco di porzioni; nei dati strutturati torna testo pulito,
-   perché lì il markup sarebbe rumore. */
+   Qui diventa un elenco di porzioni. Nei dati strutturati serve invece la
+   frase pulita: quella la ricava la pagina, con `stripInlineLinks`. */
 const answers: (TextPart & { head?: string; tail?: string })[][] = items.map((i) =>
   parseInlineLinks(i.a).map((p) => (p.external ? { ...p, ...splitTail(p.text) } : p)),
 );
-
-const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: items.map((i) => ({
-    "@type": "Question",
-    name: i.q,
-    acceptedAnswer: { "@type": "Answer", text: stripInlineLinks(i.a) },
-  })),
-};
 ---
 
 <div class="space-y-3">
@@ -86,7 +86,6 @@ const faqSchema = {
   }
 </div>
 
-{schema && <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} is:inline />}
 
 <style>
   .faq-item { overflow: hidden; }

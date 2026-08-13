@@ -5,9 +5,11 @@ import PageHeader from "@/components/PageHeader.astro";
 import Banner from "@/components/Banner.astro";
 import CtaBand from "@/components/CtaBand.astro";
 import Icon from "@/components/Icon.astro";
+import AiCredit from "@/components/AiCredit.astro";
 import { SITE } from "@/data/site";
 import illustration from "@/assets/foto/chi-siamo.webp";
 import scenaProcesso from "@/assets/foto/processo.webp";
+import EmailLink from "@/components/EmailLink.astro";
 
 /*
  * Chi siamo, riscritta.
@@ -142,19 +144,22 @@ const schema = {
         </div>
       </div>
 
+      {/* Onestà DA PARI, non a testa bassa: il portfolio corto è detto come
+          scelta di campo (un prodotto verificabile contro un muro di loghi),
+          mai come scusa. La regola resta: niente clienti inventati. */}
       <Banner
         icon="message"
-        title="Siamo all'inizio, e non lo nascondiamo."
+        title="Pochi lavori, tutti veri."
         class="mx-auto mt-8 max-w-4xl reveal"
       >
         <p>
-          L'azienda è giovane e il portfolio è corto: è un fatto, non un
-          segreto. Quello che c'è, però, è vero: <a href="/portfolio/nexia-home">Nexia Home</a>,
-          il gestionale per amministratori di condominio che abbiamo progettato,
-          scritto e che teniamo in produzione ogni giorno — un sistema completo,
-          non una demo. Se cerchi vent'anni di referenze, non siamo noi. Se
-          cerchi tre persone che sul tuo progetto si giocano tutta la
-          reputazione che devono ancora costruirsi, parliamone.
+          Non abbiamo un muro di loghi da mostrarti. Abbiamo
+          <a href="/portfolio/nexia-home">Nexia Home</a>, il gestionale per
+          amministratori di condominio che abbiamo progettato, scritto e che
+          teniamo in produzione ogni giorno: un sistema completo che le persone
+          usano per lavorare, non una demo. Preferiamo un prodotto che puoi
+          toccare a cento referenze che non puoi verificare. Se è anche il tuo
+          modo di ragionare, parliamone.
         </p>
       </Banner>
     </div>
@@ -176,14 +181,14 @@ const schema = {
               DGF nasce da un'osservazione fatta da vicino: le piccole imprese
               italiane il software lo pagano due volte. La prima quando lo
               comprano, la seconda quando scoprono che nessuno risponde più.
-              Siti lenti, gestionali improvvisati, fornitori spariti — non è
-              sfortuna: è il modello di chi vende e passa al cliente successivo.
+              Siti lenti, gestionali improvvisati, fornitori spariti: non è
+              sfortuna, è il modello di chi vende e passa al cliente successivo.
             </p>
             <p>
               Noi siamo costruiti al contrario: pochi progetti alla volta,
               seguiti dalla prima riga di codice al lancio, e reperibili dopo.
               Quando scrivi ti risponde una delle tre persone che il tuo
-              prodotto lo sta costruendo — non un commerciale che «gira la
+              prodotto lo sta costruendo, non un commerciale che «gira la
               richiesta al tecnico».
             </p>
             <p>
@@ -207,6 +212,11 @@ const schema = {
             loading="lazy"
             class="w-full"
           />
+          {/* La dichiarazione va QUI e non basta quella in testata: l'art. 50
+              chiede che sia al punto di prima esposizione, e questa foto sta
+              quattro sezioni più sotto. Era l'unica immagine IA scoperta del
+              sito. */}
+          <AiCredit class="text-center" />
         </div>
       </div>
     </div>
@@ -313,9 +323,7 @@ const schema = {
         <div class="card p-5">
           <dt class="t-eyebrow">Contatto</dt>
           <dd class="mt-2 whitespace-nowrap">
-            <a href={`mailto:${SITE.email}`} class="link-arrow !text-[0.875rem]">
-              {SITE.email}
-            </a>
+            <EmailLink class="link-arrow !text-[0.875rem]" />
           </dd>
         </div>
       </dl>
@@ -338,7 +346,14 @@ const schema = {
     width: 4.5rem;
     height: 4.5rem;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--color-navy), var(--color-blue));
+    /* Il gradiente del marchio dal token, non riscritto a mano.
+       Qui c'era un `linear-gradient(135deg, navy, blue)`: un TERZO blu, con
+       un'inclinazione sua, sulla stessa pagina che ha già una testata
+       `band-brand` e una fascia di chiusura. È esattamente il difetto che il
+       commento di `--gradient-brand` in global.css racconta di aver corretto
+       («erano due sfumature diverse per distrazione») e che CtaBand racconta
+       di aver corretto a sua volta: questa era l'istanza sopravvissuta. */
+    background: var(--gradient-brand);
     color: #fff;
     font-size: 1.25rem;
     font-weight: 800;

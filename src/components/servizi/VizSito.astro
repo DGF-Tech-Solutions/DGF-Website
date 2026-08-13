@@ -1,4 +1,6 @@
 ---
+import Piano from "@/components/servizi/Piano.astro";
+
 /*
  * Siti web — un portatile che si costruisce la pagina addosso.
  *
@@ -7,13 +9,32 @@
  * stile della sezione ci attacca ritardo e animazione. Ripartono da sole ogni
  * volta che la scheda torna visibile, perché un elemento che rientra nel
  * documento fa ripartire le sue animazioni CSS.
+ *
+ * I LIVELLI. Sulla base sta il misuratore del tempo di caricamento: è la
+ * misura dell'oggetto, non una sua parte, e sul piano d'appoggio si legge come
+ * la quota di un disegno tecnico. Sopra il portatile, sopra ancora la pagina,
+ * e in cima il pulsante — che è l'unica cosa su cui si clicca davvero.
  */
 ---
 
-<svg class="viz-svg" viewBox="0 0 400 300" fill="none" aria-hidden="true">
+<Piano n={0}>
+  <!-- Il misuratore: si riempie mentre la pagina finisce di comporsi -->
+  <g data-p="11">
+    <path d="M74 274h252" class="v-binario"></path>
+    <path data-p="11" data-cresce-x="" d="M74 274h252" class="v-carica"></path>
+    <text x="74" y="266" class="v-etichetta">CARICAMENTO</text>
+    <text x="326" y="266" text-anchor="end" class="v-numero">0,4 s</text>
+  </g>
+</Piano>
+
+<Piano n={1}>
   <!-- Scocca e schermo -->
   <rect data-p="1" x="46" y="34" width="308" height="196" rx="10" class="v-scocca"></rect>
   <rect data-p="1" x="56" y="44" width="288" height="176" rx="4" class="v-schermo"></rect>
+
+  <!-- Base del portatile -->
+  <path data-p="1" d="M28 238h344l-10 12H38z" class="v-base"></path>
+  <path data-p="1" d="M176 238h48" class="v-tacca"></path>
 
   <!-- Barra del browser -->
   <path data-p="2" d="M56 62h288" class="v-filo"></path>
@@ -21,14 +42,16 @@
   <circle data-p="2" cx="77" cy="53" r="2.6" class="v-pallino"></circle>
   <circle data-p="2" cx="86" cy="53" r="2.6" class="v-pallino"></circle>
   <rect data-p="3" x="150" y="48" width="100" height="10" rx="5" class="v-url"></rect>
+</Piano>
 
-  <!-- La pagina che si compone dentro allo schermo -->
+<Piano n={2}>
+  <!-- La pagina che si compone -->
   <rect data-p="4" x="74" y="76" width="26" height="4" rx="2" class="v-accento"></rect>
   <rect data-p="5" x="74" y="88" width="150" height="12" rx="3" class="v-titolo"></rect>
   <rect data-p="6" x="74" y="108" width="196" height="6" rx="3" class="v-riga"></rect>
   <rect data-p="6" x="74" y="120" width="160" height="6" rx="3" class="v-riga"></rect>
-  <rect data-p="7" x="74" y="136" width="62" height="16" rx="8" class="v-bottone"></rect>
 
+  <!-- Le tre schede in fondo alla pagina -->
   <g data-p="8">
     <rect x="74" y="166" width="80" height="40" rx="5" class="v-scheda"></rect>
     <rect x="84" y="176" width="30" height="4" rx="2" class="v-riga"></rect>
@@ -44,16 +67,9 @@
     <rect x="260" y="176" width="30" height="4" rx="2" class="v-riga"></rect>
     <rect x="260" y="186" width="52" height="4" rx="2" class="v-riga-tenue"></rect>
   </g>
+</Piano>
 
-  <!-- Base del portatile -->
-  <path data-p="1" d="M28 238h344l-10 12H38z" class="v-base"></path>
-  <path data-p="1" d="M176 238h48" class="v-tacca"></path>
-
-  <!-- Il misuratore: si riempie mentre la pagina finisce di comporsi -->
-  <g data-p="11">
-    <path d="M74 274h252" class="v-binario"></path>
-    <path data-p="11" data-cresce-x="" d="M74 274h252" class="v-carica"></path>
-    <text x="74" y="266" class="v-etichetta">CARICAMENTO</text>
-    <text x="326" y="266" text-anchor="end" class="v-numero">0,4 s</text>
-  </g>
-</svg>
+<Piano n={3}>
+  <!-- L'invito all'azione: l'unica cosa su cui si clicca -->
+  <rect data-p="7" x="74" y="136" width="62" height="16" rx="8" class="v-bottone"></rect>
+</Piano>

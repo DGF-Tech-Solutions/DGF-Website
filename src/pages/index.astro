@@ -7,8 +7,9 @@ import ServiziSchede from "@/components/ServiziSchede.astro";
 import Globe from "@/components/Globe.astro";
 import VideoLoop from "@/components/VideoLoop.astro";
 import ArticleCard from "@/components/ArticleCard.astro";
-import CtaBand from "@/components/CtaBand.astro";
+import Consulenza from "@/components/Consulenza.astro";
 import { SITE } from "@/data/site";
+import { SERVICES } from "@/data/services";
 import AiCredit from "@/components/AiCredit.astro";
 import fase1 from "@/assets/foto/fase-1-ascolto.webp";
 import fase2 from "@/assets/foto/fase-2-proposta.webp";
@@ -18,6 +19,41 @@ import fase4 from "@/assets/foto/fase-4-consegna.webp";
 const articles = (await getCollection("blog", ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 2);
+
+/*
+ * Dati strutturati della home.
+ *
+ * Era l'UNICA rotta indicizzabile senza: emetteva solo il grafo globale
+ * Organization + WebSite di Base.astro, quindi la pagina più importante del
+ * sito era anche l'unica a non dire ai motori che cosa contiene.
+ *
+ * `WebPage` dichiara la pagina, `ItemList` i cinque servizi che mostra — la
+ * stessa lista che /servizi già pubblica, costruita dalla stessa sorgente
+ * (`SERVICES`) perché non possano scostarsi.
+ */
+const schema = [
+  {
+    "@type": "WebPage",
+    "@id": `${SITE.url}/#webpage`,
+    url: `${SITE.url}/`,
+    name: SITE.name,
+    description: SITE.description,
+    inLanguage: "it-IT",
+    isPartOf: { "@id": `${SITE.url}/#website` },
+    about: { "@id": `${SITE.url}/#organization` },
+  },
+  {
+    "@type": "ItemList",
+    name: "Servizi di DGF Tech Solutions",
+    itemListElement: SERVICES.map((s, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: s.title,
+      description: s.summary,
+      url: `${SITE.url}/servizi/${s.slug}`,
+    })),
+  },
+];
 
 /*
  * Cos'è un SaaS, in tre righe.
@@ -82,7 +118,12 @@ const PHASES = [
 
 ---
 
-<Base title={SITE.name} description={SITE.description} canonical="/">
+<Base
+  title={SITE.name}
+  description={SITE.description}
+  canonical="/"
+  schema={schema}
+>
   <!-- ══════════════════════════════════════════════════════════════════
        HERO
        Il titolo è l'elemento LCP: si anima solo in `transform`, mai in
@@ -342,7 +383,7 @@ const PHASES = [
        ══════════════════════════════════════════════════════════════════ -->
   {
     articles.length > 0 && (
-      <section class="blog-fascia band-soft section">
+      <section class="band-soft section">
         <div class="wrap">
           <div class="flex flex-wrap items-end justify-between gap-6">
             <div class="max-w-2xl">
@@ -367,7 +408,25 @@ const PHASES = [
     )
   }
 
-  <CtaBand />
+  <!-- ══════════════════════════════════════════════════════════════════
+       CONSULENZA — chiude la home al posto della fascia di chiusura
+
+       QUI NON C'È `CtaBand`, ed è voluto. È l'unica pagina del sito senza.
+
+       Le due chiedevano la stessa cosa a seicento pixel di distanza:
+       «Parliamo del tuo progetto» compariva tre volte in pagina, due delle
+       quali di fila. Ne resta una, e con un campo da compilare invece di due
+       bottoni — che è una chiusura più forte, perché la conversazione
+       comincia qui invece di rimandare.
+
+       La consulenza ha quindi ereditato il fondo blu del marchio e la
+       discesa nel navy del footer, che erano compiti di `CtaBand`. Quella
+       resta su tutte le altre pagine.
+
+       Effetto sull'onda dei fondi: bianco → azzurro → blu, due volte piene.
+       Con la consulenza bianca in mezzo la seconda si spezzava.
+       ══════════════════════════════════════════════════════════════════ -->
+  <Consulenza />
 </Base>
 
 <style>

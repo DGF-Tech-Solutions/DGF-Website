@@ -118,20 +118,7 @@ const hiddenTags = allTags.length - shownTags.length;
     overflow: hidden;
   }
 
-  /* Chip di categoria: maiuscoletto piccolo su fondo azzurro. */
-  .tag {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.3125rem 0.625rem;
-    border-radius: var(--radius-sm);
-    background: var(--color-soft);
-    color: var(--color-navy);
-    font-size: 0.625rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.09em;
-    white-space: nowrap;
-  }
+  /* `.tag` sta in global.css, condivisa con ArticleCard. */
 
   /*
    * Una riga, sempre. Andando a capo i tag spingono giù il piede della scheda
@@ -186,32 +173,8 @@ const hiddenTags = allTags.length - shownTags.length;
     font-variant-numeric: tabular-nums;
   }
 
-  .meta {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3125rem;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--color-ink-3);
-    white-space: nowrap;
-  }
-
-  /* Come il `.read-more` di ArticleCard, ma senza margine sopra: qui divide
-     la riga con l'etichetta di natura del progetto, e la spaziatura la dà
-     il contenitore. */
-  .read-more {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4375rem;
-    font-size: 0.875rem;
-    font-weight: 700;
-    color: var(--color-navy);
-    white-space: nowrap;
-  }
-  .read-more :global(svg) {
-    transition: transform var(--dur) var(--ease-out-quart);
-  }
-  @media (hover: hover) {
-    .group:hover .read-more :global(svg) { transform: translateX(3px); }
-  }
+  /* `.meta` e `.read-more` stanno in global.css. Qui il richiamo non prende
+     margine sopra: divide la riga con l'etichetta di natura del progetto, e
+     la spaziatura la dà il contenitore. Il valore predefinito è già zero,
+     quindi non serve scrivere niente. */
 </style>

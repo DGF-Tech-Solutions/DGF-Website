@@ -41,9 +41,20 @@ const { label = "Immagine generata con IA", class: className = "" } = Astro.prop
     text-align: inherit;
   }
 
-  /* Sulle fasce scure il grigio del testo secondario sparirebbe. */
-  :global(.on-dark) .ai-credit,
-  :global(.cta-band) .ai-credit {
-    color: rgb(255 255 255 / 0.55);
-  }
+  /*
+   * NIENTE regola per le fasce scure, e il motivo è istruttivo.
+   *
+   * Qui c'era un `color: rgb(255 255 255 / 0.55)` per `.on-dark` e
+   * `.cta-band`. Due difetti in una riga:
+   *
+   *   — la metà `.cta-band` non ha MAI fatto match: quella fascia non
+   *     renderizzava `AiCredit`, si riscriveva la dichiarazione a mano con un
+   *     `.cta-credito` suo. Due sorgenti per una stringa di conformità legale;
+   *   — e 0,55 è più spento di quanto quelle fasce diano da sole: `.on-dark`
+   *     rimappa `--color-ink-3` a 0,66 e `.band-brand`/`.cta-band` a 0,80.
+   *     L'override peggiorava il contrasto invece di salvarlo.
+   *
+   * Bastano i token: `--color-ink-3` è già rimappato su ogni fondo scuro, ed
+   * è tarato lì con la misura in mano.
+   */
 </style>

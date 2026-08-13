@@ -11,6 +11,7 @@ import Toc from "@/components/Toc.astro";
 import { SITE } from "@/data/site";
 import { readingMinutes } from "@/lib/format";
 import { kindLabel } from "@/lib/project";
+import { stripInlineLinks } from "@/lib/inline-links";
 
 export async function getStaticPaths() {
   const projects = await getCollection("portfolio");
@@ -55,16 +56,45 @@ const tocItems = [
   ...(d.faq.length > 0 ? [{ slug: "domande", text: "Domande frequenti" }] : []),
 ];
 
-const schema = {
-  "@type": "CreativeWork",
-  name: d.title,
-  abstract: d.summary,
-  url: `${SITE.url}/portfolio/${entry.id}`,
-  creator: { "@id": `${SITE.url}/#organization` },
-  dateCreated: d.year,
-  genre: d.category,
-  keywords: [...d.services, ...d.stack].join(", "),
-};
+/*
+ * Lo schema FAQ va costruito QUI e non dentro il componente `Faq`.
+ *
+ * `Faq.astro` aveva una prop `schema` che nessuno dei due chiamanti passava:
+ * il JSON-LD che il componente sa costruire non è mai uscito, e questa pagina
+ * — l'unica con domande frequenti oltre alle schede servizio — non ne
+ * pubblicava nessuno. Stessa forma del difetto per cui la dichiarazione AI
+ * Act non usciva su /blog e /portfolio: una funzionalità che esiste e che
+ * nessuno accende.
+ *
+ * Il posto giusto è il grafo di `Base`, dove sta già tutto il resto: un
+ * secondo blocco JSON-LD emesso in mezzo al corpo, con un `@context` suo,
+ * sarebbe una seconda sorgente per la stessa informazione.
+ */
+const schema = [
+  {
+    "@type": "CreativeWork",
+    name: d.title,
+    abstract: d.summary,
+    url: `${SITE.url}/portfolio/${entry.id}`,
+    creator: { "@id": `${SITE.url}/#organization` },
+    dateCreated: d.year,
+    genre: d.category,
+    keywords: [...d.services, ...d.stack].join(", "),
+  },
+  ...(d.faq.length > 0
+    ? [
+        {
+          "@type": "FAQPage",
+          mainEntity: d.faq.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            // Senza markup: nei dati strutturati deve arrivare la frase e basta.
+            acceptedAnswer: { "@type": "Answer", text: stripInlineLinks(f.a) },
+          })),
+        },
+      ]
+    : []),
+];
 ---
 
 <Base
@@ -255,10 +285,21 @@ const schema = {
 
   <!-- ══════════════════════════════════════════════════════════════════
        CORRELATI
+
+       La fascia azzurra qui NON è decorativa, è la regola dell'alternanza
+       (global.css, `.band-soft`: mai due fondi uguali di fila).
+
+       Questa sezione è preceduta da un'altra sezione bianca, e in mezzo c'è
+       solo il blocco delle domande — che è condizionale. Una scheda progetto
+       senza `faq` ma con progetti fratelli avrebbe prodotto due bianchi
+       attaccati: nessun filetto, nessun cambio di colore e due padding
+       impilati, fino a 14rem di vuoto. Non si vedeva perché oggi in
+       `src/content/portfolio/` c'è una scheda sola, che ha le faq e non ha
+       fratelli — quindi questa sezione non viene proprio renderizzata.
        ══════════════════════════════════════════════════════════════════ -->
   {
     related.length > 0 && (
-      <section class="section">
+      <section class="band-soft section">
         <div class="wrap">
           <div class="flex flex-wrap items-end justify-between gap-6">
             <h2 class="t-h2">

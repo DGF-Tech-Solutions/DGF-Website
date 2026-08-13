@@ -1,0 +1,740 @@
+---
+import Icon from "@/components/Icon.astro";
+
+/*
+ * IL PORTATILE CHE DIVENTA UN TELEFONO — e chiude la home.
+ *
+ * ─────────────────────────────────────────────────────────────────────────
+ * DA DOVE VIENE
+ *
+ * Questa scena esisteva nel sito in Next.js (`src/components/sections/
+ * Consulenza.tsx`) ed è stata tolta nel commit a7be099. Là era in
+ * framer-motion: un valore legato allo scroll e una decina di interpolazioni
+ * su larghezza, altezza, raggi e colori. Testi, riquadri e conversazione qui
+ * sono quelli originali, ripresi parola per parola dal vecchio file.
+ *
+ * ─────────────────────────────────────────────────────────────────────────
+ * PERCHÉ NON È PIÙ AGGANCIATA ALLO SCROLL
+ *
+ * La prima ricostruzione la faceva scrubbare su 180svh, come la scena di
+ * Nexia. Misurata sulla home finita: fra le due, il 39% della pagina era
+ * scroll bloccato — quattro schermate su dieci in cui scorri e la pagina non
+ * avanza. È quello che rendeva la home "non fluida".
+ *
+ * Nexia resta agganciata perché è la prova, il pezzo che vale la sosta.
+ * Questa parte invece quando entra nello schermo: un secondo di animazione
+ * invece di due schermate di attesa. Come effetto collaterale funziona anche
+ * su Safari e Firefox, dove `animation-timeline` non c'è ancora — la
+ * versione scrubbata là restava un fermo immagine.
+ *
+ * La trasformazione è una TRANSIZIONE innescata da una classe, non dei
+ * keyframe: senza JavaScript resta il portatile, che è uno stato completo
+ * (titolo, tre riquadri, bottone). Il telefono con la chat è lo stato di
+ * arrivo, non l'unico stato utile.
+ *
+ * ─────────────────────────────────────────────────────────────────────────
+ * PERCHÉ CHIUDE LA PAGINA
+ *
+ * Sulla home ha preso il posto della fascia di chiusura: chiedevano la stessa
+ * cosa a 600 pixel di distanza, e «Parliamo del tuo progetto» compariva tre
+ * volte in pagina. Da qui il fondo blu del marchio e la discesa nel navy del
+ * footer, che erano compiti di `CtaBand` — che resta su tutte le altre pagine.
+ */
+
+interface Props {
+  eyebrow?: string;
+  /** Ammette HTML per lo <span class="t-dim"> nella seconda metà. */
+  title?: string;
+  lead?: string;
+  cta?: { label: string; href: string };
+}
+
+const {
+  eyebrow = "Consulenza",
+  title = 'Parliamo del tuo progetto, <span class="t-dim">davvero.</span>',
+  lead = "Prima di scrivere una riga di codice, mettiamo a fuoco obiettivi, vincoli e priorità. Niente tecnicismi inutili, niente fretta: prima la direzione giusta, poi il codice.",
+  cta = { label: "Richiedi una call", href: "/contatti" },
+} = Astro.props;
+
+/* I tre riquadri sullo schermo del portatile: testi originali. */
+const FEATURES = [
+  {
+    icon: "clock",
+    title: "Risposta entro 24 ore",
+    body: "Ti rispondiamo sempre con un primo riscontro, anche solo per dirti se possiamo aiutarti.",
+  },
+  {
+    icon: "message",
+    title: "Primo confronto gratuito",
+    body: "Una call iniziale per chiarire obiettivi, vincoli e fattibilità. Senza impegno.",
+  },
+  {
+    icon: "users",
+    title: "Contatto diretto con chi sviluppa",
+    body: "Parli con chi progetta e scrive il codice, non con un commerciale di passaggio.",
+  },
+] as const;
+
+/* La conversazione, identica all'originale. `noi` = bolla a sinistra. */
+const CHAT = [
+  { da: "noi", testo: "Ciao! Parlaci del tuo progetto." },
+  { da: "tu", testo: "Vorrei un sito nuovo con qualche integrazione AI." },
+  { da: "noi", testo: "Perfetto, possiamo aiutarti. Ti torna comodo una call domani?" },
+  { da: "tu", testo: "Sì, alle 15." },
+] as const;
+---
+
+<section class="consulenza" data-consulenza>
+  <span class="cons-alone" aria-hidden="true"></span>
+
+  <div class="cons-palco">
+    <div class="cons-scena">
+      <div class="cons-telaio">
+        {/* La tacca del telefono: compare solo a trasformazione quasi finita. */}
+        <span class="cons-tacca" aria-hidden="true"></span>
+
+        <div class="cons-schermo">
+          {/* ─── Lo schermo del portatile ───────────────────────────── */}
+          <div class="cons-desktop">
+            <div class="cons-barra" aria-hidden="true">
+              <span class="cons-pallino"></span>
+              <span class="cons-pallino"></span>
+              <span class="cons-pallino"></span>
+              <span class="cons-url">dgftechsolutions.com / consulenza</span>
+            </div>
+
+            <div class="cons-corpo">
+              <span class="t-eyebrow">{eyebrow}</span>
+              <h2 class="cons-titolo" set:html={title} />
+              <p class="cons-lead">{lead}</p>
+
+              <div class="cons-schede">
+                {
+                  FEATURES.map((f) => (
+                    <div class="cons-scheda">
+                      <span class="cons-scheda-icona">
+                        <Icon name={f.icon} size={15} />
+                      </span>
+                      <h3 class="cons-scheda-titolo">{f.title}</h3>
+                      <p class="cons-scheda-testo">{f.body}</p>
+                    </div>
+                  ))
+                }
+              </div>
+
+              <a href={cta.href} class="btn btn-primary cons-bottone">
+                {cta.label}
+                <Icon name="arrow-right" size={15} />
+              </a>
+            </div>
+          </div>
+
+          {/* ─── Lo schermo del telefono ────────────────────────────── */}
+          <div class="cons-mobile">
+            <div class="cons-stato" aria-hidden="true">
+              <span>9:41</span>
+              <span class="cons-batteria"></span>
+            </div>
+
+            <div class="cons-intestazione">
+              <span class="cons-avatar" aria-hidden="true">D</span>
+              <span class="cons-testata">
+                <span class="cons-nome">DGF Tech Solutions</span>
+                <span class="cons-attivo">attivo ora</span>
+              </span>
+            </div>
+
+            <div class="cons-conversazione">
+              {
+                CHAT.map((m) => (
+                  <p class:list={["cons-bolla", `cons-bolla-${m.da}`]}>{m.testo}</p>
+                ))
+              }
+              <span class="cons-scrive" aria-hidden="true">
+                <i></i><i></i><i></i>
+              </span>
+            </div>
+
+            {/*
+              LA BARRA È UN MODULO VERO.
+              Si scrive qui, si preme invio, e il testo arriva già dentro il
+              modulo dei contatti (ContactForm lo rilegge dall'indirizzo).
+              `method="get"` e non uno script: funziona anche senza JavaScript.
+            */}
+            <form class="cons-invio" action={cta.href} method="get">
+              <label class="sr-only" for="cons-messaggio">Scrivi un messaggio</label>
+              <input
+                id="cons-messaggio"
+                class="cons-campo"
+                type="text"
+                name="messaggio"
+                placeholder="Scrivi un messaggio…"
+                autocomplete="off"
+              />
+              <button type="submit" class="cons-invio-tasto" aria-label="Invia e vai ai contatti">
+                <Icon name="arrow-right" size={13} />
+              </button>
+            </form>
+
+            <span class="cons-maniglia" aria-hidden="true"></span>
+          </div>
+        </div>
+      </div>
+
+      {/* La base del portatile: cerniera e tastiera, si spengono mentre il
+          riquadro si stringe. */}
+      <div class="cons-base" aria-hidden="true">
+        <span class="cons-cerniera"></span>
+        <span class="cons-tastiera"><span class="cons-trackpad"></span></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ══════════════════════════════════════════════════════════════════════
+     LA FASCIA
+
+     Fondo del marchio e discesa nel navy del footer: erano compiti della
+     fascia di chiusura, che sulla home questa sezione ha sostituito.
+     ══════════════════════════════════════════════════════════════════════ */
+
+  .consulenza {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    padding-block: clamp(3.5rem, 2.2rem + 5vw, 7rem);
+    background: var(--gradient-brand);
+
+    /* Gli stessi token di `.cta-band`: è lo stesso gradiente. Servono a
+       qualunque cosa finisca fuori dal dispositivo. */
+    --color-ink: #ffffff;
+    --color-ink-2: rgb(255 255 255 / 0.82);
+    --color-ink-3: rgb(255 255 255 / 0.8);
+    --color-line: rgb(255 255 255 / 0.18);
+    --color-paper: rgb(255 255 255 / 0.10);
+    --color-paper-2: rgb(255 255 255 / 0.06);
+    --color-soft: rgb(255 255 255 / 0.16);
+    --color-soft-2: rgb(255 255 255 / 0.22);
+    color: var(--color-ink-2);
+  }
+
+  /* La discesa nel footer: il gradiente del marchio finisce sul suo punto
+     più chiaro, e sotto attacca il navy quasi nero. Senza questo velo il
+     salto è il più brusco della pagina. */
+  .consulenza::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(to bottom, transparent 55%, var(--color-navy-deep) 100%);
+  }
+
+  /*
+   * Il palco ha un'altezza FISSA, pari allo stato più alto dei due (il
+   * telefono, 43,75rem contro le 38 del portatile).
+   *
+   * Senza, la sezione cresceva di 56px a trasformazione finita: misurato,
+   * 798 → 854. Un salto del genere sposta tutto quello che sta sotto mentre
+   * si guarda — è la metrica di stabilità visiva, e su questo sito conta.
+   * Fissando il contenitore, dentro cambia solo il dispositivo.
+   */
+  .cons-palco {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    min-height: min(43.75rem, 66svh);
+  }
+
+
+  .cons-alone {
+    position: absolute;
+    z-index: 0;
+    left: 50%;
+    top: 50%;
+    width: min(38rem, 90vw);
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgb(255 255 255 / 0.10) 0%,
+      transparent 70%
+    );
+    filter: blur(45px);
+    pointer-events: none;
+  }
+
+  .cons-scena {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     LA TRASFORMAZIONE
+
+     Stato di partenza = PORTATILE. Ci si arriva anche senza JavaScript, ed è
+     uno stato completo: titolo, tre riquadri, bottone.
+
+     Stato di arrivo = TELEFONO, con la chat che si può compilare. Lo innesca
+     la classe `is-vista`, messa da un osservatore quando la sezione entra
+     nello schermo.
+     ══════════════════════════════════════════════════════════════════════ */
+
+  .cons-telaio {
+    position: relative;
+    width: min(65rem, 94vw);
+    height: min(38rem, 60svh);
+    padding: 0.875rem;
+    border-radius: 0.875rem;
+    background: var(--color-navy-deep);
+    box-shadow:
+      0 50px 90px -30px rgb(10 20 40 / 0.55),
+      0 18px 40px -18px rgb(10 20 40 / 0.35);
+    transition:
+      width var(--cons-dur) var(--cons-curva),
+      height var(--cons-dur) var(--cons-curva),
+      padding var(--cons-dur) var(--cons-curva),
+      border-radius var(--cons-dur) var(--cons-curva),
+      background-color var(--cons-dur) var(--cons-curva);
+
+    /* Durata e curva in un posto solo: tutto ciò che si muove le condivide,
+       così le parti non possono scollarsi fra loro. */
+    --cons-dur: 1100ms;
+    --cons-curva: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  .consulenza.is-vista .cons-telaio {
+    width: min(21.25rem, 84vw);
+    height: min(43.75rem, 66svh);
+    padding: 0.6875rem;
+    border-radius: 2.75rem;
+    background: #fff;
+  }
+
+  .cons-tacca {
+    position: absolute;
+    left: 50%;
+    top: 0.75rem;
+    z-index: 3;
+    width: 6rem;
+    height: 1.25rem;
+    translate: -50% 0;
+    border-radius: var(--radius-pill);
+    background: rgb(0 0 0 / 0.9);
+    opacity: 0;
+    transition: opacity 350ms ease 700ms;
+  }
+  .consulenza.is-vista .cons-tacca { opacity: 1; }
+
+  .cons-schermo {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 0.375rem;
+    background: var(--color-paper);
+    transition:
+      border-radius 1100ms cubic-bezier(0.65, 0, 0.35, 1),
+      background-color 1100ms cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .consulenza.is-vista .cons-schermo {
+    border-radius: 1.875rem;
+    background: var(--color-navy);
+  }
+
+  /* Le due facce si scambiano a metà corsa. `visibility` e non solo
+     `opacity`: una faccia invisibile ma raggiungibile col Tab sarebbe una
+     trappola per chi naviga da tastiera — e su questa ci sta un modulo. */
+  .cons-desktop,
+  .cons-mobile {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    transition: opacity 400ms ease 350ms, visibility 0s linear 350ms;
+  }
+
+  .consulenza.is-vista .cons-desktop { opacity: 0; visibility: hidden; }
+  .consulenza.is-vista .cons-mobile { opacity: 1; visibility: visible; }
+
+  /* ── La faccia "portatile" ─────────────────────────────────────────── */
+
+  .cons-barra {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    background: #f8fafc;
+  }
+  .cons-pallino {
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 50%;
+    background: #e2e8f0;
+  }
+  .cons-url {
+    margin-inline: auto;
+    padding: 0.125rem 0.75rem;
+    border-radius: var(--radius-sm);
+    background: #fff;
+    box-shadow: inset 0 0 0 1px #e2e8f0;
+    font-size: 0.625rem;
+    font-weight: 500;
+    color: #526074;
+    white-space: nowrap;
+  }
+
+  /* Lo schermo del portatile è una pagina chiara DENTRO una fascia blu:
+     qui i colori non possono venire dai token, che in questa sezione sono
+     rimappati sul bianco. Sono gli stessi valori di `--color-ink`,
+     `--color-ink-2`, `--color-ink-3` e `--color-line` sul fondo chiaro. */
+  .cons-corpo {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: clamp(1.25rem, 2.2vw, 2.25rem);
+    background: #fff;
+    text-align: left;
+  }
+
+  .cons-titolo {
+    margin-top: 0.75rem;
+    font-size: clamp(1.375rem, 0.6rem + 2.2vw, 2.5rem);
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    color: #0f172a;
+  }
+  .cons-titolo :global(.t-dim) { color: #64748b; }
+
+  .cons-corpo :global(.t-eyebrow) { color: var(--color-navy); }
+
+  .cons-lead {
+    margin-top: 0.875rem;
+    max-width: 60ch;
+    font-size: clamp(0.8125rem, 0.7rem + 0.35vw, 0.9375rem);
+    line-height: 1.6;
+    color: #334155;
+  }
+
+  .cons-schede {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.875rem;
+    margin-top: 1.5rem;
+  }
+  .cons-scheda {
+    padding: 0.875rem;
+    border: 1px solid #e2e8f0;
+    border-radius: var(--radius-md);
+    background: #fff;
+    box-shadow: var(--shadow-xs);
+  }
+  .cons-scheda-icona {
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    margin-bottom: 0.625rem;
+    border-radius: var(--radius-sm);
+    background: #e8f1f8;
+    color: var(--color-navy);
+  }
+  .cons-scheda-titolo {
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #0f172a;
+  }
+  .cons-scheda-testo {
+    margin-top: 0.375rem;
+    font-size: 0.6875rem;
+    line-height: 1.5;
+    color: #526074;
+  }
+
+  .cons-bottone {
+    align-self: flex-start;
+    margin-top: auto;
+  }
+
+  /* ── La faccia "telefono" ──────────────────────────────────────────── */
+
+  /* Tutte le dichiarazioni di questa faccia in un blocco solo, comprese
+     `opacity` e `visibility` dello stato di partenza: stavano centodieci
+     righe più su, ed è la forma esatta del difetto che in global.css ha
+     cambiato nove sezioni senza che nessuno se ne accorgesse. */
+  .cons-mobile {
+    padding: 2.25rem 1rem 1rem;
+    color: #fff;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .cons-stato {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-inline: 0.5rem;
+    font-size: 0.625rem;
+    font-weight: 600;
+    color: rgb(255 255 255 / 0.85);
+  }
+  .cons-batteria {
+    width: 1.125rem;
+    height: 0.5rem;
+    border: 1px solid rgb(255 255 255 / 0.6);
+    border-radius: 0.125rem;
+  }
+
+  .cons-intestazione {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgb(255 255 255 / 0.12);
+  }
+  .cons-avatar {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-cyan), var(--color-blue));
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  .cons-testata {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .cons-nome { font-size: 0.8125rem; font-weight: 600; }
+  .cons-attivo { font-size: 0.625rem; color: #6ee7b7; }
+
+  .cons-conversazione {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+    padding-block: 0.875rem;
+    overflow: hidden;
+  }
+
+  .cons-bolla {
+    max-width: 80%;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.71875rem;
+    line-height: 1.45;
+  }
+  .cons-bolla-noi {
+    align-self: flex-start;
+    border-radius: 1rem 1rem 1rem 0.25rem;
+    background: rgb(255 255 255 / 0.12);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14);
+  }
+  .cons-bolla-tu {
+    align-self: flex-end;
+    border-radius: 1rem 1rem 0.25rem 1rem;
+    background: #fff;
+    color: var(--color-navy);
+  }
+
+  .cons-scrive {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    align-self: flex-start;
+    padding: 0.5rem 0.75rem;
+    border-radius: 1rem 1rem 1rem 0.25rem;
+    background: rgb(255 255 255 / 0.12);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14);
+  }
+  .cons-scrive i {
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.7);
+    animation: cons-scrive 1.2s ease-in-out infinite;
+  }
+  .cons-scrive i:nth-child(2) { animation-delay: 0.15s; }
+  .cons-scrive i:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes cons-scrive {
+    0%, 60%, 100% { opacity: 0.35; }
+    30% { opacity: 1; }
+  }
+
+  .cons-invio {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.375rem 0.375rem 0.875rem;
+    border-radius: var(--radius-pill);
+    background: rgb(255 255 255 / 0.12);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.16);
+  }
+  .cons-campo {
+    flex: 1;
+    min-width: 0;
+    padding: 0.25rem 0;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 0.6875rem;
+    color: #fff;
+  }
+  .cons-campo::placeholder { color: rgb(255 255 255 / 0.65); }
+  .cons-campo:focus { outline: none; }
+  .cons-invio:focus-within { box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.6); }
+
+  .cons-invio-tasto {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: 0;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--color-navy);
+    cursor: pointer;
+    transition: transform var(--dur) var(--ease-out-quart);
+  }
+  @media (hover: hover) {
+    .cons-invio-tasto:hover { transform: translateX(2px); }
+  }
+
+  .cons-maniglia {
+    width: 6rem;
+    height: 0.25rem;
+    margin: 0.75rem auto 0;
+    border-radius: var(--radius-pill);
+    background: rgb(255 255 255 / 0.3);
+  }
+
+  /* ── La base del portatile ─────────────────────────────────────────── */
+
+  /* Appesa sotto al telaio e FUORI dal flusso: se occupasse spazio, la sua
+     scomparsa rimetterebbe in circolo il salto di layout appena chiuso. */
+  .cons-base {
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    translate: -50% 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: opacity 500ms ease;
+  }
+  .consulenza.is-vista .cons-base { opacity: 0; }
+
+  .cons-cerniera {
+    width: 6.25rem;
+    height: 0.25rem;
+    border-radius: 0 0 var(--radius-pill) var(--radius-pill);
+    background: rgb(0 0 0 / 0.3);
+  }
+  .cons-tastiera {
+    position: relative;
+    width: min(65rem, 94vw);
+    height: 0.875rem;
+    border-radius: 0 0 0.875rem 0.875rem;
+    background: #0a2233;
+    box-shadow: 0 10px 22px -10px rgb(0 0 0 / 0.45);
+  }
+  .cons-trackpad {
+    position: absolute;
+    left: 50%;
+    top: 0.1875rem;
+    width: 7rem;
+    height: 0.375rem;
+    translate: -50% 0;
+    border-radius: var(--radius-pill);
+    background: rgb(0 0 0 / 0.15);
+  }
+
+  /*
+   * Sotto i 1024 px si parte già dal telefono: il portatile non ha lo spazio
+   * per leggersi, e la versione originale infatti disattivava la
+   * trasformazione «sui telefoni veri, dove laggava».
+   */
+  @media (max-width: 1023px) {
+    .cons-desktop { display: none; }
+    .cons-base { display: none; }
+    .cons-telaio {
+      width: min(21.25rem, 84vw);
+      height: min(43.75rem, 66svh);
+      padding: 0.6875rem;
+      border-radius: 2.75rem;
+      background: #fff;
+      transition: none;
+    }
+    .cons-schermo {
+      border-radius: 1.875rem;
+      background: var(--color-navy);
+      transition: none;
+    }
+    .cons-tacca { opacity: 1; transition: none; }
+    .cons-mobile { opacity: 1; visibility: visible; transition: none; }
+  }
+
+  /* Chi ha chiesto meno movimento arriva allo stato finale senza il viaggio. */
+  @media (prefers-reduced-motion: reduce) {
+    .cons-telaio,
+    .cons-schermo,
+    .cons-tacca,
+    .cons-desktop,
+    .cons-mobile,
+    .cons-base {
+      transition-duration: 0s !important;
+      transition-delay: 0s !important;
+    }
+    .cons-scrive i { animation: none; opacity: 0.6; }
+  }
+</style>
+
+<script>
+  /*
+   * L'unico compito: accendere la trasformazione quando la sezione entra
+   * nello schermo. ~300 byte.
+   *
+   * Un osservatore e non `animation-timeline: view()` perché quello esiste
+   * solo su Chrome ed Edge: là la scena sarebbe rimasta ferma su Safari e
+   * Firefox, cioè su tutti gli iPhone. Qui la trasformazione parte ovunque.
+   *
+   * `once`: si disconnette dopo il primo passaggio. Una scena che si rifà
+   * ogni volta che risali diventa un tic.
+   */
+  const sezione = document.querySelector<HTMLElement>("[data-consulenza]");
+
+  if (sezione) {
+    if (!("IntersectionObserver" in window)) {
+      // Senza osservatore si mostra lo stato di arrivo: meglio la chat
+      // compilabile che un portatile fermo per sempre.
+      sezione.classList.add("is-vista");
+    } else {
+      const osserva = new IntersectionObserver(
+        (voci) => {
+          for (const v of voci) {
+            if (!v.isIntersecting) continue;
+            sezione.classList.add("is-vista");
+            osserva.disconnect();
+          }
+        },
+        // Parte quando è entrata per un terzo: prima sarebbe uno scatto in
+        // fondo allo schermo, dopo si arriverebbe a trasformazione già fatta.
+        { threshold: 0.33 },
+      );
+      osserva.observe(sezione);
+    }
+  }
+</script>

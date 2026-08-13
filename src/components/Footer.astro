@@ -5,6 +5,7 @@ import type { IconName } from "@/components/Icon.astro";
 import { SITE, SOCIAL } from "@/data/site";
 import { SERVICES } from "@/data/services";
 import logo from "@/assets/logo-dgf.png";
+import EmailLink from "@/components/EmailLink.astro";
 
 /*
  * Footer ricalcato su quello di Nexia: colonna brand larga a sinistra (logo,
@@ -143,7 +144,7 @@ const hasAnySocial = SOCIAL.length > 0;
           <span class="tabular">{SITE.vatId}</span>
         </p>
         <p class="foot-legal">
-          <a href={`mailto:${SITE.email}`} class="foot-legal-link">{SITE.email}</a>
+          <EmailLink class="foot-legal-link" />
           <span aria-hidden="true"> · </span>
           {SITE.city} ({SITE.region}), {SITE.countryName}
         </p>
