@@ -176,13 +176,31 @@ const jsonLd = {
        * strappato. Qui non c'è nessun intercetto e nessuno stato: non può
        * combattere con niente, per costruzione.
        *
-       * Rispetta prefers-reduced-motion (non parte). Sul touch resta lo
-       * scorrimento nativo: smoothWheel agisce solo sulla rotella. ~8 kB:
-       * è il costo, dichiarato, del feel — deciso da David (ago 2026).
+       * Rispetta prefers-reduced-motion (non parte). ~8 kB: è il costo,
+       * dichiarato, del feel — deciso da David (ago 2026).
+       *
+       * DUE CONDIZIONI, non una, e l'import è dinamico apposta.
+       *
+       * `smoothWheel` agisce solo sulla ROTELLA: su un telefono, dove si
+       * scorre col dito, Lenis non tocca niente. Con l'import statico quegli
+       * 8 kB venivano comunque scaricati, analizzati ed eseguiti da ogni
+       * telefono, e l'inizializzazione misura il documento — 81 ms di
+       * riflusso forzato, misurati da Lighthouse, spesi per un effetto che
+       * su quel dispositivo non esiste. `(any-pointer: fine)` è vero quando
+       * fra i dispositivi di puntamento ce n'è uno di precisione: mouse,
+       * trackpad, stilo. Un portatile con schermo touch lo soddisfa, un
+       * telefono no.
+       *
+       * L'import sta DENTRO l'if perché è lì che diventa una promessa: il
+       * modulo entra in un file separato e chi non passa il controllo non lo
+       * richiede nemmeno.
        */
-      import Lenis from "lenis";
+      const scorrimentoFluido =
+        !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
+        window.matchMedia("(any-pointer: fine)").matches;
 
-      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      if (scorrimentoFluido) {
+        const { default: Lenis } = await import("lenis");
         const lenis = new Lenis({ duration: 1.1, smoothWheel: true });
         const raf = (time: number) => {
           lenis.raf(time);
