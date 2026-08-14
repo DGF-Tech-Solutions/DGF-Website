@@ -48,6 +48,11 @@ const schema = {
   mainEntityOfPage: { "@type": "WebPage", "@id": `${SITE.url}/blog/${entry.id}` },
   author: { "@type": "Organization", name: d.author, "@id": `${SITE.url}/#organization` },
   publisher: { "@id": `${SITE.url}/#organization` },
+  /* Il campo che Google usa per l'anteprima con immagine dei risultati
+     articolo. Senza, i pezzi del blog partono penalizzati pur avendo una
+     copertina in frontmatter. `cover.src` e' il percorso processato da Astro,
+     reso assoluto perche' i dati strutturati non ammettono percorsi relativi. */
+  image: cover ? new URL(cover.src, SITE.url).href : undefined,
   articleSection: d.category,
   wordCount: (entry.body ?? "").trim().split(/\s+/).length,
 };

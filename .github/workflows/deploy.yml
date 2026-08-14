@@ -35,6 +35,12 @@ jobs:
       - name: Installa le dipendenze
         run: npm ci
 
+      # Astro build NON valida quello che valida `astro check`: un articolo con
+      # frontmatter sbagliato o un componente con props errate passerebbe fino
+      # in produzione. Trenta secondi qui, invece di un difetto online.
+      - name: Controllo tipi e contenuti
+        run: npm run check
+
       - name: Build (export statico in ./dist)
         run: npm run build
 

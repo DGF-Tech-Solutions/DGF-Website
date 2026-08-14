@@ -109,7 +109,25 @@ export default defineConfig({
     processor: satteri({ hastPlugins: [satteriCallout()] }),
   },
 
-  integrations: [sitemap()],
+  integrations: [
+    sitemap({
+      /*
+       * Fuori le pagine che dichiarano `noindex`.
+       *
+       * Senza filtro la sitemap elencava /privacy, /cookie, /termini e
+       * /contatti/inviato, che emettono tutte `<meta name="robots"
+       * content="noindex">`: Search Console lo segnala come «pagina inviata
+       * contrassegnata con noindex», quattro errori su diciotto indirizzi
+       * dalla prima scansione. Dire ai motori «indicizza questa» e insieme
+       * «non indicizzarla» non e' un dettaglio: e' una contraddizione che
+       * costa fiducia al dominio appena nato.
+       */
+      filter: (pagina) =>
+        !["/privacy/", "/cookie/", "/termini/", "/contatti/inviato/"].some((p) =>
+          pagina.endsWith(p),
+        ),
+    }),
+  ],
 
   vite: {
     plugins: [tailwindcss()],

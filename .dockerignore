@@ -14,3 +14,13 @@ docs
 Dockerfile
 docker-compose.yml
 .dockerignore
+
+# 55 MB di render e prompt del lavoro sul marchio: la build non li apre mai, e
+# senza questa riga ogni `npm run verifica` li spediva al daemon Docker e li
+# copiava dentro l'immagine.
+brand
+scripts
+.claude
+THIRD-PARTY-NOTICES.md
+LICENSE
+README.md

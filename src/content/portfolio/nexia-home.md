@@ -4,7 +4,7 @@ title: Il gestionale che un amministratore di condominio usa tutti i giorni
 summary: >-
   Piattaforma SaaS per studi di amministrazione condominiale: contabilità,
   adempimenti, assemblee e portale per i condòmini. È nata dai problemi
-  concreti di uno studio, lo Studio Mattaliano, ed è diventata un prodotto
+  concreti di uno studio di amministrazione condominiale, ed è diventata un prodotto
   aperto a chiunque faccia lo stesso mestiere.
 category: Software gestionale
 year: "2026"
@@ -40,7 +40,7 @@ challenge: >-
   una telefonata.
 approach:
   - >-
-    Partire da un caso vero. Nexia Home nasce affiancando lo Studio Mattaliano
+    Partire da un caso vero. Nexia Home nasce affiancando uno studio di amministrazione condominiale
     nel suo lavoro quotidiano: prima abbiamo guardato come si amministra
     davvero un condominio, poi abbiamo scritto il software.
   - Partire dalla contabilità, perché è la parte che non ammette errori. Aritmetica decimale e non virgola mobile, e tutti i riparti eseguiti dal server, mai nel browser.
@@ -61,7 +61,7 @@ faq:
       [nexiahome.it](https://nexiahome.it), con le schermate reali dei moduli
       e la prova gratuita. Quello che vedi in questa pagina è come è stato
       costruito, non la vetrina commerciale.
-  - q: Che ruolo ha avuto lo Studio Mattaliano?
+  - q: Che ruolo ha avuto lo studio con cui avete lavorato?
     a: >-
       Quello che di solito manca: il mestiere. Loro amministrano condomìni tutti
       i giorni e hanno portato i casi veri, comprese le eccezioni che nessun
@@ -92,11 +92,11 @@ order: 1
 
 ## Da un problema solo a un prodotto
 
-Nexia Home non nasce da un'analisi di mercato. Nasce da uno studio di amministrazione condominiale in carne e ossa, lo **Studio Mattaliano**, e dal tempo passato a guardare come lavorava davvero: quante volte riapriva lo stesso file, quante telefonate riceveva per informazioni che erano già scritte da qualche parte, quanto tempo se ne andava a rimettere in fila numeri che il computer poteva tenere in fila da solo.
+Nexia Home non nasce da un'analisi di mercato. Nasce da uno studio di amministrazione condominiale in carne e ossa, di Messina, e dal tempo passato a guardare come lavorava davvero: quante volte riapriva lo stesso file, quante telefonate riceveva per informazioni che erano già scritte da qualche parte, quanto tempo se ne andava a rimettere in fila numeri che il computer poteva tenere in fila da solo.
 
 Da lì il salto. Quei problemi non erano di quello studio: erano del mestiere. La stessa giornata, con nomi diversi, la fa ogni amministratore d'Italia. Un software costruito bene per uno solo, se è costruito bene, scioglie gli stessi nodi a tutti. Ed è esattamente il percorso che abbiamo fatto: dal caso singolo al prodotto aperto a chiunque.
 
-È anche il motivo per cui l'abbiamo costruito **insieme** allo Studio Mattaliano, non per conto loro. Le eccezioni del lavoro reale non stanno in nessun manuale: il condòmino che vende a metà esercizio, la spesa da ripartire su una tabella che vale solo per una scala. Le conosce solo chi ci ha lavorato dentro.
+È anche il motivo per cui l'abbiamo costruito **insieme** a loro, non per conto loro. Le eccezioni del lavoro reale non stanno in nessun manuale: il condòmino che vende a metà esercizio, la spesa da ripartire su una tabella che vale solo per una scala. Le conosce solo chi ci ha lavorato dentro.
 
 ## Perché un altro gestionale
 
@@ -127,7 +127,7 @@ Il frontend è un'unica applicazione che serve tre pubblici diversi con permessi
 
 ## Come si registra una fattura
 
-È il percorso che un amministratore ripete decine di volte al mese, ed è il primo che abbiamo reso indolore. L'ordine dei passaggi è quello che ci ha mostrato lo Studio Mattaliano, non quello che avremmo immaginato noi.
+È il percorso che un amministratore ripete decine di volte al mese, ed è il primo che abbiamo reso indolore. L'ordine dei passaggi è quello che ci ha mostrato il loro lavoro quotidiano, non quello che avremmo immaginato noi.
 
 1. **Si importa il documento.** Dal cassetto fiscale o caricando il file della fattura elettronica. I dati si leggono da soli, senza ridigitare partita IVA, importi e scadenze.
 2. **Il fornitore si riconosce da solo.** Se la partita IVA è già in anagrafica il collegamento è automatico; se è nuova si crea al volo senza uscire dalla schermata.

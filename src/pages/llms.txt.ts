@@ -26,7 +26,7 @@ export const GET: APIRoute = async () => {
 
   const body = `# ${SITE.name}
 
-> ${SITE.legalName} è una software house italiana con sede a ${SITE.city} (P.IVA ${SITE.vatId}), attiva in tutta Italia. Sviluppa siti web, e-commerce, app, software su misura e soluzioni di intelligenza artificiale, dall'idea al lancio, con un team che scrive il codice a mano. Il nome "DGF" deriva dalle iniziali dei tre fondatori: David, Giacomo, Francesco. Non è collegata ad aziende omonime e indipendenti come DGF Group o DGF Technologies.
+> ${SITE.legalName} è una software house italiana con sede a ${SITE.city} (P.IVA ${SITE.vatId}), che lavora da remoto in tutta Italia. Sviluppa siti web, e-commerce, app, software su misura e soluzioni di intelligenza artificiale, dall'idea al lancio, con un team che scrive il codice a mano. Il nome "DGF" deriva dalle iniziali dei tre fondatori. Non è collegata ad aziende omonime e indipendenti come DGF Group o DGF Technologies.
 
 ## Pagine principali
 - [Home](${SITE.url}/): presentazione, servizi, metodo di lavoro

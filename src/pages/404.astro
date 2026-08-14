@@ -5,12 +5,17 @@ import { NAV } from "@/data/site";
 import { SERVICES } from "@/data/services";
 
 const SERVICE_ICONS = ["globe", "bag", "phone", "dashboard", "sparkles"] as const;
+
+/*
+ * Questa pagina non dichiara un `canonical`, ed è voluto: dichiararlo
+ * farebbe esistere /404 come indirizzo legittimo agli occhi dei motori,
+ * in contraddizione con il `noindex` che la pagina stessa emette.
+ */
 ---
 
 <Base
   title="Pagina non trovata"
   description="La pagina che cercavi non esiste o è stata spostata."
-  canonical="/404"
   noindex
 >
   <section class="glow-bg under-nav section">

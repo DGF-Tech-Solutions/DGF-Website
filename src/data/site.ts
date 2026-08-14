@@ -12,7 +12,7 @@ export const SITE = {
   /** Claim breve, usato nei meta e nel footer. */
   tagline: "Dall'idea al lancio, parli sempre con chi scrive il codice.",
   description:
-    "Software house a Messina, attiva in tutta Italia: siti web, e-commerce, app, software su misura e soluzioni di intelligenza artificiale.",
+    "Software house a Messina, che lavora da remoto in tutta Italia: siti web, e-commerce, app, software su misura e soluzioni di intelligenza artificiale.",
   locale: "it_IT",
   lang: "it",
   email: "founders.dgftechsolutions@gmail.com",
@@ -27,8 +27,18 @@ export const SITE = {
   region: "ME",
   country: "IT",
   countryName: "Italia",
-  logo: "/logo-dgf-trasparente.png",
-  ogImage: "/og-image.jpg",
+  /* Deve esistere davvero in public/: finisce nel JSON-LD Organization di
+     OGNI pagina, e Google scarta il campo se risponde 404. Puntava a
+     "/logo-dgf-trasparente.png", che nel repository non c'e' mai stato. */
+  logo: "/icon-512.png",
+  /* NOME NUOVO, non lo stesso file corretto: gli scraper — WhatsApp per
+     primo — tengono in cache per URL e non hanno alcuno strumento di
+     invalidazione. Cambiare percorso e' l'unico modo di essere certi che
+     riscarichino. La versione vecchia diceva "dgftechsolutions.it", un
+     dominio che non esiste: la riga e' stata tolta del tutto, perche' un
+     indirizzo dentro a un file binario e' una copia di SITE.url che
+     nessuno tiene aggiornata. */
+  ogImage: "/og-image-2.jpg",
   themeColor: "#054b77",
 } as const;
 

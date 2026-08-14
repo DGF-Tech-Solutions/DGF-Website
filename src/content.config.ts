@@ -71,7 +71,7 @@ const portfolio = defineCollection({
       cover: image(),
       coverFull: image().optional(),
       /** Indirizzo pubblico del progetto, se è online e visitabile. */
-      liveUrl: z.string().url().optional(),
+      liveUrl: z.url().optional(),
       /** Testo del pulsante che porta al sito. */
       liveLabel: z.string().optional(),
       services: z.array(z.string()).min(1),
