@@ -190,44 +190,53 @@ const PHASES = [
             <div class="globe-halo" aria-hidden="true"></div>
             <Globe />
           </div>
-
-          <!--
-            Tre didascalie appoggiate sul globo.
-
-            Prima erano tre schede bianche: rettangoli opachi incollati sopra
-            al pianeta, che coprivano i continenti e sembravano appartenere a
-            un'altra pagina. Ora parlano la stessa lingua della mappa — un
-            puntino sul posto, un filo, la scritta — come l'etichetta di
-            Messina. Niente riquadro da attraversare con lo sguardo.
-
-            Stanno sul terzo sinistro del disco, dove la mappa è già sfumata.
-          -->
-          <ul class="hero-note">
-            <li class="hero-note-1 float">
-              <span class="hero-note-punto" aria-hidden="true"></span>
-              <span>
-                <span class="hero-note-titolo">Siti istantanei</span>
-                <span class="hero-note-riga">Ottimizzati fino all'ultimo kB</span>
-              </span>
-            </li>
-
-            <li class="hero-note-2 float-slow">
-              <span class="hero-note-punto" aria-hidden="true"></span>
-              <span>
-                <span class="hero-note-titolo">Il codice è tuo</span>
-                <span class="hero-note-riga">Sorgenti, dominio e accessi</span>
-              </span>
-            </li>
-
-            <li class="hero-note-3 float-fast">
-              <span class="hero-note-punto" aria-hidden="true"></span>
-              <span>
-                <span class="hero-note-titolo">Risposta in 1 giorno</span>
-                <span class="hero-note-riga">Lavorativo, e risponde una persona</span>
-              </span>
-            </li>
-          </ul>
         </div>
+
+        <!--
+          Tre didascalie appoggiate sul globo.
+
+          Prima erano tre schede bianche: rettangoli opachi incollati sopra
+          al pianeta, che coprivano i continenti e sembravano appartenere a
+          un'altra pagina. Ora parlano la stessa lingua della mappa — un
+          puntino sul posto, un filo, la scritta — come l'etichetta di
+          Messina. Niente riquadro da attraversare con lo sguardo.
+
+          Stanno sul terzo sinistro del disco, dove la mappa è già sfumata.
+
+          DA QUI IN POI L'ELENCO NON È PIÙ FIGLIO DEL GLOBO, ed è voluto: è
+          una cella della griglia, non un livello sopra la mappa. Da 1024 px
+          in su torna a sovrapporsi al pianeta occupandone la stessa cella
+          (vedi `.hero-note` nel foglio qui sotto), quindi il disegno del
+          desktop non cambia. Sotto, dove il globo diventa un fondale steso
+          dietro al testo, le note scendono nel flusso una sotto l'altra
+          invece di sparire: erano `display: none`, cioè su telefono il
+          messaggio commerciale della prima schermata non esisteva.
+        -->
+        <ul class="hero-note">
+          <li class="hero-note-1 float">
+            <span class="hero-note-punto" aria-hidden="true"></span>
+            <span>
+              <span class="hero-note-titolo">Siti istantanei</span>
+              <span class="hero-note-riga">Ottimizzati fino all'ultimo kB</span>
+            </span>
+          </li>
+
+          <li class="hero-note-2 float-slow">
+            <span class="hero-note-punto" aria-hidden="true"></span>
+            <span>
+              <span class="hero-note-titolo">Il codice è tuo</span>
+              <span class="hero-note-riga">Sorgenti, dominio e accessi</span>
+            </span>
+          </li>
+
+          <li class="hero-note-3 float-fast">
+            <span class="hero-note-punto" aria-hidden="true"></span>
+            <span>
+              <span class="hero-note-titolo">Risposta in 1 giorno</span>
+              <span class="hero-note-riga">Lavorativo, e risponde una persona</span>
+            </span>
+          </li>
+        </ul>
       </div>
     </div>
   </section>
@@ -346,13 +355,36 @@ const PHASES = [
                     della scheda. Sono inquadrature strette — mani e un oggetto
                     solo — perché a 320 px una stanza intera diventa poltiglia.
                     I quattro gesti (scrivere, sfogliare, digitare, passare)
-                    raccontano il percorso anche senza leggere i titoli. */}
+                    raccontano il percorso anche senza leggere i titoli.
+
+                    `widths` NON cambia: dalla build non esce nessun file
+                    nuovo, cambia solo quale dei tre il telefono sceglie.
+                    Cambia `sizes`, che sotto i 1024 dichiarava 40vw — una
+                    misura di comodo per un riquadro che nessuno vedeva. Ora
+                    dice la misura vera: 384px è il tetto che gli mette il CSS
+                    nella fascia dei tablet, 80vw è quanto occupa davvero sui
+                    telefoni (a 390px il riquadro è ~291, 80vw ne dichiara
+                    312: arrotondato per eccesso, così il browser non sceglie
+                    mai un file più piccolo del necessario).
+
+                    `lazy` resta: la sezione sta a due schermate abbondanti
+                    dalla piega, fuori da LCP e dal primo pacchetto. Sono però
+                    byte NUOVI, e non voglio farli passare per zero: finora il
+                    telefono quelle quattro foto non le scaricava affatto,
+                    perché un `lazy` dentro un elemento con `display: none` non
+                    arriva mai a fare la richiesta. Sono ~53 KB differiti,
+                    misurati sui 640w in dist (di cui 23 della fase 2: il
+                    taccuino a matita è tutto dettaglio fine e il WebP lo
+                    comprime male — se un giorno servono byte, si rigenera
+                    quel render). width/height li mette Astro sull'img e il CSS
+                    fissa l'aspect-ratio: il posto è prenotato prima del
+                    download, quindi CLS resta zero. */}
                 <figure class="passo-scena">
                   <Image
                     src={p.photo}
                     alt={p.photoAlt}
                     widths={[320, 480, 640]}
-                    sizes="(min-width: 1024px) 320px, 40vw"
+                    sizes="(min-width: 1024px) 320px, (min-width: 480px) 384px, 80vw"
                     loading="lazy"
                   />
                 </figure>
@@ -370,7 +402,14 @@ const PHASES = [
 
       {/* Una dichiarazione per la sezione e non quattro sotto ogni scheda:
           le foto si vedono qui, la riga sta qui, e il lettore non se la
-          ritrova ripetuta a ogni pannello. */}
+          ritrova ripetuta a ogni pannello.
+
+          Ora vale anche sul telefono, ed è il pezzo da non perdere di vista:
+          finché le foto erano nascoste sotto i 1024px questa riga parlava di
+          immagini che il lettore mobile non vedeva. Da qui in avanti le vede,
+          e la riga è l'unica dichiarazione che le copre — quindi non deve mai
+          finire dentro una media query. `.metodo-credito` è solo un aggancio:
+          oggi non ha nessuna regola in tutto src/, e va bene così. */}
       <AiCredit
         label="Le fotografie di questa sezione sono generate con IA."
         class="metodo-credito"
@@ -625,13 +664,57 @@ const PHASES = [
   }
 
   /*
-   * Il riquadro della foto. `aspect-ratio` fisso e `object-fit: cover`: i
-   * render sono 1152x896 (1,29) contro il 4:3 del riquadro (1,33), quindi il
-   * ritaglio vale il 4% ai lati e nessuna inquadratura ne soffre.
+   * Il riquadro della foto.
+   *
+   * Qui c'era `display: none` fino ai 1024px, con questa motivazione: quattro
+   * foto in colonna allungherebbero la pila al punto da perdere il ritmo
+   * dello scorrimento. Il vincolo era vero, la cura troppo grossa. Il
+   * problema non è la foto, è la sua ALTEZZA — e l'altezza si governa con il
+   * taglio, non nascondendo l'immagine.
+   *
+   * Da dove nasce il vincolo: `.passo` è `position: sticky`, e un pannello
+   * più alto dello spazio in cui si aggancia mostra solo la testa. Il fondo
+   * non c'è modo di leggerlo, perché il pannello successivo gli sale sopra
+   * prima che arrivi in vista — e la foto sta in fondo alla scheda, quindi se
+   * qualcosa sfora è esattamente lei a sparire.
+   *
+   * Misurato sulla build minificata a 375x667, il caso peggiore. Spazio
+   * agganciato = 667 meno il `top` del pannello (barra 56 + 24 + lo scalino):
+   *
+   *              spazio    scheda 3:2   margine     scheda 4:3   margine
+   *   pannello 1   587         507        +80          529         +58
+   *   pannello 2   575         453       +122          474        +101
+   *   pannello 3   563         480        +83          502         +61
+   *   pannello 4   551         453        +98          474         +77
+   *
+   * Ci starebbero entrambi i tagli: la scelta del 3:2 quaggiù non è che il
+   * 4:3 sfondi, è che una riga di testo costa 27px e il 4:3 lascia margine
+   * per due, il 3:2 per tre. Su testi che qualcuno riscriverà, quella è la
+   * differenza fra un margine e una scommessa.
+   *
+   * Il limite che resta, detto per intero: con le barre del browser APERTE
+   * (~114px in meno su un telefono da 667) il primo pannello non ci sta con
+   * nessuno dei due tagli. Vale solo finché il browser non le chiude, e qui
+   * si arriva dopo due schermate di scorrimento, quindi già chiuse. Se un
+   * giorno i testi di PHASES crescono, questa tabella è il conto da rifare.
+   *
+   * `object-fit: cover` su render 1152x896 (1,29): il 3:2 (1,50) toglie il
+   * 14% dell'altezza, metà sopra e metà sotto, e su queste inquadrature è
+   * margine morto — volti, mani e oggetto stanno al centro. Il 4:3 (1,33) ne
+   * toglie il 4%. Il taglio è verticale, non laterale: qui c'era scritto «ai
+   * lati», ed era sbagliato.
+   *
+   * `max-width` è il tetto oltre il quale la fotografia diventa molle: il
+   * file più grande che generiamo è 640w, e a 24rem di riquadro su schermo a
+   * doppia densità siamo a 1,67 pixel veri per pixel CSS — sotto il 2x
+   * pieno, ma abbastanza da non vedersi. Serve nella fascia 640-1023, dove la
+   * scheda interna arriva a ~635px e senza tetto la stessa immagine
+   * scenderebbe a 1x. Sul telefono il tetto non morde (la scheda è più
+   * stretta) e sopra i 1024 è inerte, perché la colonna è già 20rem.
    */
   .passo-scena {
-    display: none;
     margin: 0;
+    max-width: 24rem;
     overflow: hidden;
     border-radius: var(--radius-lg);
     background: var(--color-paper-2);
@@ -639,13 +722,13 @@ const PHASES = [
   .passo-scena :global(img) {
     display: block;
     width: 100%;
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 3 / 2;
     object-fit: cover;
   }
-  /* Sotto i 1024px la scheda resta di solo testo: quattro foto in colonna
-     allungherebbero la pila al punto da perdere il ritmo dello scorrimento. */
+  /* In colonna a destra la foto non compete più con il testo per l'altezza:
+     torna il 4:3, il taglio più vicino al render originale. */
   @media (min-width: 1024px) {
-    .passo-scena { display: block; }
+    .passo-scena :global(img) { aspect-ratio: 4 / 3; }
   }
 
   /* Quattro tacche in alto a destra: dicono a che punto del percorso si è
@@ -777,20 +860,47 @@ const PHASES = [
      una mezzaluna in fondo alla schermata — e la hero era lunga il doppio
      dello schermo. Così invece il pianeta fa da fondale, come nel disegno
      originale, e la hero sta in una schermata. */
-  @media (max-width: 1023px) {
+  /* 1023.98 e non 1023, ed è un bug vero che chiudo passando di qui: con lo
+     zoom del browser o un dpr non intero la larghezza del viewport è
+     frazionaria, e fra `max-width: 1023px` e `min-width: 1024px` restava un
+     buco in cui NESSUNO dei due blocchi si applicava. A 1023,5 px entrambe le
+     media query sono false, e siccome `.hero-globo-sfera` riceve la sua
+     `width` solo dentro quei due blocchi, lì il pianeta spariva del tutto. */
+  @media (max-width: 1023.98px) {
     .hero-griglia {
       position: relative;
     }
 
+    /*
+     * Il fondale è ancorato alla PRIMA SCHERMATA, non all'altezza della hero.
+     *
+     * Con `inset: 0` il riquadro del globo seguiva la hero: ora che le tre
+     * note scendono nel flusso la hero è più alta di circa 210 px, e il
+     * pianeta sarebbe sceso con lei finendo dietro alle note invece che
+     * dietro al titolo. Legato alla finestra resta dentro la prima schermata
+     * qualunque cosa cresca sotto.
+     */
     .hero-globo {
       position: absolute;
-      inset: 0;
+      inset: 0 0 auto 0;
+      height: calc(100svh - var(--nav-h));
       z-index: 0;
       pointer-events: none;
     }
 
     .hero-globo-sfera {
-      top: 44%;
+      /*
+       * 52% e non più 44% perché la percentuale si misura ora su una
+       * schermata (100svh − barra) invece che su tutta la hero.
+       *
+       * Sui telefoni dove la hero già sbordava — il caso normale: a
+       * 375x667 la hero era 773 px contro 667 di finestra — Messina cade
+       * dov'era, a un paio di pixel. Dove invece la hero ci stava in una
+       * schermata sola (schermi alti, 390x844) il pianeta scende di una
+       * sessantina di pixel: resta dietro al testo e dentro la prima
+       * schermata. È un assestamento accettato, non una misura identica.
+       */
+      top: 52%;
       left: 50%;
       width: 34rem;
       max-width: 165%;
@@ -808,8 +918,20 @@ const PHASES = [
   }
 
   @media (min-width: 1024px) {
+    /* Il globo e l'elenco delle note occupano la STESSA cella e devono
+       essere alti uguale: le percentuali di `.hero-note-1/2/3` si misurano su
+       questa altezza, e se i due numeri divergono le didascalie si staccano
+       dal pianeta. Un solo posto dove cambiarla. */
+    .hero-griglia {
+      --hero-globo-h: 33rem;
+    }
+
     .hero-globo {
-      height: 33rem;
+      /* Cella dichiarata a mano, perché adesso la divide con `.hero-note`:
+         con il posizionamento automatico la lista si prenderebbe la cella
+         libera e il globo verrebbe spinto in una seconda riga. */
+      grid-area: 1 / 2;
+      height: var(--hero-globo-h);
     }
 
     /*
@@ -889,11 +1011,79 @@ const PHASES = [
     max-width: 15rem;
   }
 
-  /* Solo nel layout a due colonne: sotto i 1024 px il globo passa dietro al
-     testo e le didascalie gli finirebbero addosso. */
+  /*
+   * Da 1024 px in su l'elenco torna sul pianeta: occupa la STESSA cella del
+   * globo ed è alto quanto lui (`--hero-globo-h`), così le percentuali di
+   * `.hero-note-1/2/3` qui sopra continuano a misurarsi sulla stessa altezza
+   * di prima e le tre didascalie non si spostano.
+   *
+   * `pointer-events` sull'elenco e non sulle note: il riquadro dell'elenco
+   * copre tutto il disco, e senza questo intercetterebbe il puntatore al
+   * posto del globo. Le singole note lo riprendono, altrimenti il loro testo
+   * non sarebbe più selezionabile.
+   */
   @media (min-width: 1024px) {
+    .hero-note {
+      grid-area: 1 / 2;
+      position: relative;
+      height: var(--hero-globo-h);
+      pointer-events: none;
+    }
+
     .hero-note li {
       display: flex;
+      pointer-events: auto;
+    }
+  }
+
+  /*
+   * Sotto i 1024 px le tre note scendono nel flusso, una sotto l'altra, in
+   * fondo alla colonna di testo. Restano puntino + filo + targhetta come sul
+   * desktop: è la stessa figura, solo impaginata in colonna invece che
+   * sparsa sul disco — e la targhetta bianca è ciò che le tiene leggibili
+   * sopra il reticolo del globo, che qui fa da fondale.
+   *
+   * `animation: none` non è pignoleria: `.float` le fa oscillare, e tre
+   * targhette incolonnate che ondeggiano a velocità diverse si leggono come
+   * un difetto. Sul globo galleggiavano su qualcosa, qui no. Cade anche il
+   * `will-change`, cioè tre livelli di composizione in meno sul dispositivo
+   * che ne ha meno.
+   */
+  @media (max-width: 1023.98px) {
+    .hero-note {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 0.5rem;
+      /* La stessa misura del paragrafo d'apertura: sui tablet stretti una
+         targhetta larga tutta la colonna con dentro due righe di testo minuto
+         sembra un errore di impaginazione. */
+      max-width: 36rem;
+    }
+
+    .hero-note li {
+      position: static;
+      display: flex;
+      width: auto;
+      min-width: 0;
+      max-width: none;
+      animation: none;
+      will-change: auto;
+    }
+  }
+
+  /* Da 768 px in su ci stanno in riga: tre colonne invece di tre righe
+     valgono un centinaio di pixel di hero in meno sui tablet.
+     `minmax(0, 1fr)` e non `1fr`, ed è la differenza fra funzionare e no:
+     con `1fr` il minimo della colonna è il contenuto, e la terza nota — che
+     ha il testo più lungo — sfondava la sua colonna finendo tagliata
+     dall'`overflow: hidden` della hero. */
+  @media (min-width: 768px) and (max-width: 1023.98px) {
+    .hero-note {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+      max-width: none;
+      align-items: start;
     }
   }
 
@@ -934,6 +1124,26 @@ const PHASES = [
     background: var(--color-paper);
     border: 1px solid var(--color-line);
     box-shadow: var(--shadow-sm);
+  }
+
+  /*
+   * La targhetta quando le note stanno in colonna. `flex: 1` perché qui la
+   * riga è larga tutta la colonna e non più `max-content`, e un filo più
+   * compatta: le note sono tre di fila e ogni millimetro è altezza che la
+   * hero non prende.
+   *
+   * VA QUI SOTTO, non insieme al resto della disposizione mobile più in alto.
+   * La regola base qui sopra ha la stessa specificità e nessuna media query,
+   * quindi fra le due vince l'ultima scritta: messa prima, il padding
+   * compatto non aveva alcun effetto a nessuna larghezza. Verificato
+   * sull'HTML costruito, non sul foglio sorgente.
+   */
+  @media (max-width: 1023.98px) {
+    .hero-note li > span:last-child {
+      flex: 1;
+      min-width: 0;
+      padding: 0.4375rem 0.75rem 0.5rem;
+    }
   }
 
   .hero-note-titolo {

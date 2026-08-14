@@ -42,24 +42,21 @@ const ICONE: IconName[] = ["globe", "bag", "phone", "dashboard", "sparkles"];
 
 <div class="schede">
   {/*
-    I radio vengono prima di tutto il resto perché le regole che accendono
-    voce di menu, disegno e testo usano il combinatore "fratello successivo"
-    (`~`). L'ORDINE CONTA: prima i cinque servizi, poi i due della modalità.
-    Le regole di stato accoppiano il radio in posizione N con la voce in
-    posizione N usando `nth-of-type`, che conta gli `input` e ignora le
-    classi: infilare un radio in mezzo scompagina tutto.
+    I RADIO NON STANNO PIÙ QUI IN CIMA, E IL MOTIVO È UN DIFETTO VERO.
+
+    Stavano prima di tutto il resto perché le regole di stato usavano il
+    combinatore "fratello successivo" (`~`), che accende solo ciò che viene
+    DOPO. Quel vincolo li teneva a forza in cima alla sezione — cioè lontani
+    dal punto che si tocca — e al tocco il browser, dopo aver dato il fuoco al
+    radio, lo porta in vista: da quassù significava risalire fino alla barra
+    (più i 5.5rem di `scroll-padding-top` di global.css), e il disegno appena
+    scelto usciva dallo schermo proprio mentre lo si stava guardando.
+
+    Adesso ogni radio vive dentro la propria linguetta, cioè esattamente dove
+    è appena arrivato il dito: non c'è più niente da portare in vista. Ad
+    accoppiare radio, disegno e testo è `:has()` sul contenitore, con `data-i`
+    (1…5) scritto in chiaro su entrambe le parti.
   */}
-  {
-    SERVICES.map((s, i) => (
-      <input
-        class="schede-radio"
-        type="radio"
-        name="servizio"
-        id={`sv-${s.slug}`}
-        checked={i === 0}
-      />
-    ))
-  }
 
   {/*
     ── LA RIGA DEI COMANDI ────────────────────────────────────────────────
@@ -71,7 +68,24 @@ const ICONE: IconName[] = ["globe", "bag", "phone", "dashboard", "sparkles"];
     <div class="schede-tabs">
       {
         SERVICES.map((s, i) => (
-          <label class="schede-tab" for={`sv-${s.slug}`}>
+          <label class="schede-tab">
+            {/* Il radio dentro la sua linguetta. Da tocco e da mouse è già in
+                vista per costruzione, quindi il "porta in vista" del fuoco non
+                ha niente da fare. Da tastiera vale il contrario ed è giusto
+                così: le frecce spostano il fuoco sul radio della linguetta
+                successiva, e se quella fosse fuori schermo il browser la porta
+                in vista — che è esattamente il comportamento che serve.
+                Niente `for`: l'etichetta contiene il proprio controllo, quindi
+                l'associazione è implicita. L'`id` resta perché è un aggancio
+                stabile se un domani servisse collegarci qualcosa. */}
+            <input
+              class="schede-radio"
+              type="radio"
+              name="servizio"
+              id={`sv-${s.slug}`}
+              data-i={i + 1}
+              checked={i === 0}
+            />
             <Icon name={ICONE[i]} size={15} />
             <span>{s.title}</span>
           </label>
@@ -88,7 +102,7 @@ const ICONE: IconName[] = ["globe", "bag", "phone", "dashboard", "sparkles"];
         SERVICES.map((s, i) => {
           const Disegno = DISEGNI[i];
           return (
-            <div class="viz" data-scena={s.slug}>
+            <div class="viz" data-i={i + 1} data-scena={s.slug}>
               <div class="viz-orbita">
                   <div class="viz-strato viz-reticolo" aria-hidden="true" />
 
@@ -129,8 +143,8 @@ const ICONE: IconName[] = ["globe", "bag", "phone", "dashboard", "sparkles"];
     {/* ── LA COLONNA DI DESTRA ──────────────────────────────────────────── */}
     <div class="lato">
       {
-        SERVICES.map((s) => (
-          <section class="testo">
+        SERVICES.map((s, i) => (
+          <section class="testo" data-i={i + 1}>
             <span class="pannello-indice tabular">{s.index}</span>
             <h3 class="pannello-titolo">{s.title}</h3>
             <p class="pannello-riga">{s.headline}</p>
@@ -169,7 +183,16 @@ const ICONE: IconName[] = ["globe", "bag", "phone", "dashboard", "sparkles"];
   }
 
   /* Nascosti alla vista ma non alla tastiera: niente `display:none`, che li
-     toglierebbe dal giro del Tab e ucciderebbe le frecce. */
+     toglierebbe dal giro del Tab e ucciderebbe le frecce.
+
+     `position: absolute` senza `top`/`left` li lascia nella posizione statica,
+     che adesso è DENTRO la linguetta: un punto largo un pixel sopra
+     l'etichetta che si è appena toccata. È tutto quello che serve perché il
+     browser non debba scorrere per portare in vista il campo che riceve il
+     fuoco — prima quel punto stava in cima alla sezione, e la pagina risaliva.
+
+     `pointer-events: none` non impedisce di accenderli: il tocco lo prende
+     l'etichetta, che attiva il proprio controllo comunque. */
   .schede-radio {
     position: absolute;
     width: 1px;
@@ -249,26 +272,45 @@ const ICONE: IconName[] = ["globe", "bag", "phone", "dashboard", "sparkles"];
   }
 
   /* ── Stato attivo ─────────────────────────────────────────────────────
-   * Cinque coppie scritte una volta con `nth-of-type`: il radio in posizione
-   * N accende il pulsante N, il disegno N e il testo N. Se un domani i servizi
-   * diventano sei, si aggiunge una riga per gruppo — e i due radio della
-   * modalità restano in fondo, dove non spostano i conti. */
-  .schede-radio:nth-of-type(1):checked ~ .schede-barra .schede-tab:nth-of-type(1),
-  .schede-radio:nth-of-type(2):checked ~ .schede-barra .schede-tab:nth-of-type(2),
-  .schede-radio:nth-of-type(3):checked ~ .schede-barra .schede-tab:nth-of-type(3),
-  .schede-radio:nth-of-type(4):checked ~ .schede-barra .schede-tab:nth-of-type(4),
-  .schede-radio:nth-of-type(5):checked ~ .schede-barra .schede-tab:nth-of-type(5) {
+   * Una regola sola, valida per tutte e cinque: la linguetta contiene il
+   * proprio radio, quindi non c'è più niente da accoppiare per posizione. Le
+   * cinque coppie con `nth-of-type` non erano solo prolisse: erano il VINCOLO
+   * che obbligava i radio a stare in cima alla sezione, ed è quel vincolo che
+   * faceva risalire la pagina a ogni cambio di servizio.
+   *
+   * Il conto della specificità è la cosa da non sbagliare qui: questa regola
+   * vale (0,4,0) — classe, attributo di scope Astro e il `:checked` dentro
+   * `:has()`, che porta con sé il peso del proprio argomento — contro (0,3,0)
+   * del `:hover` qui sopra. Il pulsante scelto quindi resta navy anche con il
+   * mouse sopra, come prima. */
+  .schede-tab:has(.schede-radio:checked) {
     background: var(--color-navy);
     border-color: var(--color-navy);
     color: #fff;
   }
 
-  .schede-radio:nth-of-type(1):checked ~ .schede-barra .schede-tab:nth-of-type(1) :global(svg),
-  .schede-radio:nth-of-type(2):checked ~ .schede-barra .schede-tab:nth-of-type(2) :global(svg),
-  .schede-radio:nth-of-type(3):checked ~ .schede-barra .schede-tab:nth-of-type(3) :global(svg),
-  .schede-radio:nth-of-type(4):checked ~ .schede-barra .schede-tab:nth-of-type(4) :global(svg),
-  .schede-radio:nth-of-type(5):checked ~ .schede-barra .schede-tab:nth-of-type(5) :global(svg) {
+  .schede-tab:has(.schede-radio:checked) :global(svg) {
     opacity: 1;
+  }
+
+  /* Il fuoco si vede sulla LINGUETTA, non sul radio: il radio sta a opacità
+     zero e con lui sparirebbe anche il suo anello — chi naviga da tastiera non
+     aveva alcun segno di dove si trovasse. Solo `:focus-visible`, così resta
+     un fatto della tastiera e non compare a ogni tocco. Colore e spessore sono
+     quelli di `:focus-visible` in global.css: l'anello segue il raggio a
+     pillola del pulsante da solo. */
+  .schede-tab:has(.schede-radio:focus-visible) {
+    outline: 2px solid var(--color-blue);
+    outline-offset: 2px;
+  }
+
+  /* E l'anello del radio va spento, o se ne vedono DUE. `:focus-visible` in
+     global.css (riga 222) è globale e senza eccezioni: disegna 2px con 2px di
+     stacco attorno a un elemento di un pixel per un pixel. Finché quel pixel
+     stava in cima alla sezione non se ne accorgeva nessuno; adesso cade sul
+     bordo interno della pillola, sopra l'icona. */
+  .schede-radio:focus-visible {
+    outline: none;
   }
 
   @media (hover: hover) {
@@ -280,11 +322,16 @@ const ICONE: IconName[] = ["globe", "bag", "phone", "dashboard", "sparkles"];
 
   .testo { display: none; }
 
-  .schede-radio:nth-of-type(1):checked ~ .schede-corpo .testo:nth-of-type(1),
-  .schede-radio:nth-of-type(2):checked ~ .schede-corpo .testo:nth-of-type(2),
-  .schede-radio:nth-of-type(3):checked ~ .schede-corpo .testo:nth-of-type(3),
-  .schede-radio:nth-of-type(4):checked ~ .schede-corpo .testo:nth-of-type(4),
-  .schede-radio:nth-of-type(5):checked ~ .schede-corpo .testo:nth-of-type(5) {
+  /* Radio e testo non sono più fratelli: a tenerli insieme è `:has()` sul
+     contenitore. Il numero d'ordine è SCRITTO, in `data-i`, invece di essere
+     contato dal browser: un servizio in più domani è una riga qui e un
+     `data-i` nel markup, e se i due numeri non combaciano si vede subito —
+     mentre un `nth-of-type` fuori conto sbaglia in silenzio. */
+  .schede:has(.schede-radio[data-i="1"]:checked) .testo[data-i="1"],
+  .schede:has(.schede-radio[data-i="2"]:checked) .testo[data-i="2"],
+  .schede:has(.schede-radio[data-i="3"]:checked) .testo[data-i="3"],
+  .schede:has(.schede-radio[data-i="4"]:checked) .testo[data-i="4"],
+  .schede:has(.schede-radio[data-i="5"]:checked) .testo[data-i="5"] {
     display: block;
   }
 
@@ -440,12 +487,26 @@ const ICONE: IconName[] = ["globe", "bag", "phone", "dashboard", "sparkles"];
 
   .viz { display: none; }
 
-  .schede-radio:nth-of-type(1):checked ~ .schede-corpo .viz:nth-of-type(1),
-  .schede-radio:nth-of-type(2):checked ~ .schede-corpo .viz:nth-of-type(2),
-  .schede-radio:nth-of-type(3):checked ~ .schede-corpo .viz:nth-of-type(3),
-  .schede-radio:nth-of-type(4):checked ~ .schede-corpo .viz:nth-of-type(4),
-  .schede-radio:nth-of-type(5):checked ~ .schede-corpo .viz:nth-of-type(5) {
+  .schede:has(.schede-radio[data-i="1"]:checked) .viz[data-i="1"],
+  .schede:has(.schede-radio[data-i="2"]:checked) .viz[data-i="2"],
+  .schede:has(.schede-radio[data-i="3"]:checked) .viz[data-i="3"],
+  .schede:has(.schede-radio[data-i="4"]:checked) .viz[data-i="4"],
+  .schede:has(.schede-radio[data-i="5"]:checked) .viz[data-i="5"] {
     display: block;
+  }
+
+  /* Rete di sicurezza per i browser senza `:has()` (roba anteriore al 2023).
+     Là i selettori qui sopra vengono scartati INTERI, e siccome disegno e
+     testo partono da `display: none` la sezione resterebbe vuota: il modo
+     peggiore di degradare. Con questo resta acceso il primo servizio — si
+     perde il cambio, non il contenuto.
+
+     Va bene che stia QUI e non altrove: più in basso `.viz` viene ripreso per
+     bordo, fondo e prospettiva, ma quel blocco non ridichiara `display`,
+     quindi non se lo rimangia. */
+  @supports not selector(:has(*)) {
+    .viz[data-i="1"],
+    .testo[data-i="1"] { display: block; }
   }
 
   .viz {

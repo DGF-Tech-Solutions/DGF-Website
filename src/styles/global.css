@@ -1233,3 +1233,22 @@ main { padding-top: var(--nav-h); }
 .prose pre code { background: none; padding: 0; color: #e6edf3; }
 .prose img { border-radius: var(--radius-lg); }
 .prose hr { margin-block: 3rem; height: 1px; background: var(--color-line); border: 0; }
+
+/* ============================================================================
+   SALTARE IL LAVORO CHE NON SI VEDE — TOLTO, E VALE LA PENA SAPERE PERCHE'
+   ----------------------------------------------------------------------------
+   Qui c'era `content-visibility: auto` sulle sezioni sotto la piega, per non
+   farle impaginare prima del primo disegno. Funzionava: il tempo di blocco era
+   sceso da 100 a 50 ms.
+
+   Ma `content-visibility` obbliga a dichiarare `contain-intrinsic-size`, cioe'
+   l'altezza che la sezione avra' — e quell'altezza e' un numero scritto a mano
+   che cambia a ogni larghezza e a ogni modifica dei testi. Misurate: 1600
+   dichiarati contro 595 reali, 1200 contro 808. Mille pixel di vuoto riservati
+   per niente, che si vedevano come una fascia bianca sopra al footer.
+
+   Il punteggio Lighthouse non cambiava (98 con e senza: i 50 ms guadagnati
+   valevano zero punti). Un difetto visibile in cambio di niente, piu' quattro
+   numeri magici da tenere aggiornati a mano per sempre: si toglie.
+   ------------------------------------------------------------------------- */
+

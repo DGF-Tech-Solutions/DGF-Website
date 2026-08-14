@@ -133,12 +133,38 @@ const {
           in formato moderno) sovrapposta al video: viene nascosta al primo
           fotogramma riprodotto. Usare l'attributo `poster=""` avrebbe servito
           il PNG originale non ottimizzato.
+
+          `sizes`: sotto i 1100px il poster non viene MAI disegnato alla
+          larghezza del riquadro (vedi il foglio di stile), quindi il valore
+          qui non è la misura del riquadro. Fra 641 e 1099px è a grandezza
+          naturale — `object-fit: none`, un pixel di sorgente per pixel CSS,
+          cioè 1280. Sotto i 640 è ritagliato con `cover`, e per coprire un
+          riquadro alto 10/9 la sorgente viene disegnata a 0,537 della sua
+          misura: su un riquadro da 348px sono ~687px CSS di immagine, cioè
+          ~1374 pixel fisici a densità doppia. In tutti e due i casi la
+          variante giusta da scaricare è quella da 1280 — che è anche la più
+          grande che esista, quindi non c'è modo di chiedere di meglio. Dichiarare 92vw lì farebbe scaricare la versione da 960px
+          per poi stamparla 1:1 sui 1280 — un poster impastato accanto a un
+          video nitido, con lo scatto a fuoco visibile nell'istante in cui la
+          riproduzione parte. Costa 16KB in più del ritaglio da 960 su un
+          telefono a densità doppia, ed è l'unica cosa che si vede con
+          `prefers-reduced-motion: reduce` o quando `play()` viene rifiutato.
+
+          Il commento sta QUI e non fra gli attributi: un commento in
+          posizione di attributo manda in errore `astro check` (il tag non si
+          chiude più e il file intero smette di essere type-checkato), anche
+          se `astro build` lo scarta in silenzio e sembra funzionare.
+
+          E per la stessa ragione qui dentro non si scrive la sequenza che
+          CHIUDE un commento: la prima versione di questa nota la citava per
+          spiegarla, chiudeva il blocco a metà frase e mandava in errore la
+          build con un «Unexpected token» dodici righe più sotto.
         */}
         <Image
           src={poster}
           alt="Interfaccia di Nexia durante l'importazione di una fattura"
           widths={[640, 960, 1280]}
-          sizes="(min-width: 1280px) 1100px, 92vw"
+          sizes="(max-width: 1099px) 1280px, (min-width: 1280px) 1100px, 92vw"
           loading="lazy"
           class="video-poster"
           data-poster
@@ -701,29 +727,12 @@ const {
   }
 
   /*
-   * Su telefono l'intera schermata di un gestionale sta in 370 px: le righe
-   * diventano trattini grigi e il video non dice più niente. Meglio entrare
-   * dentro l'inquadratura e mostrare bene UNA parte — l'elenco delle fatture —
-   * piuttosto che mostrare tutto e non far leggere niente.
-   *
-   * Con `scale(1.9)` resta visibile poco più della metà del fotogramma: su uno
-   * schermo a densità doppia i pixel della sorgente bastano ancora, quindi il
-   * testo si legge invece di sgranarsi. Poster e video hanno la stessa
-   * trasformazione, altrimenti l'immagine salterebbe al primo fotogramma.
-   */
-  @media (max-width: 640px) {
-    .video-poster,
-    .video-el {
-      transform: scale(1.9);
-      transform-origin: 45% 52%;
-    }
-  }
-
-  /*
-   * Su schermo largo NON serve alcuno zoom: con il video tornato al centro il
-   * riquadro è largo circa 930 px, e la tabella si legge alla sua misura
-   * naturale. Lo zoom serviva quando stava in mezza riga; tenerlo adesso
-   * ritaglierebbe il menu laterale senza guadagnare nulla.
+   * Da 1100px in su nessun ritocco: il riquadro è largo 800-880px, la
+   * registrazione ci sta quasi tutta e la tabella si legge alla sua misura
+   * naturale. Sotto quella soglia serve invece un'inquadratura diversa — sta
+   * più in basso, subito DOPO queste regole di base, e non è un vezzo di
+   * ordinamento: deve riscrivere `object-fit`, e a parità di specificità
+   * vince la regola che viene dopo.
    */
   .video-poster,
   .video-el {
@@ -740,6 +749,141 @@ const {
   .video-poster[hidden] {
     opacity: 0;
     pointer-events: none;
+  }
+
+  /*
+   * FRA 641 E 1099px LA REGISTRAZIONE VA MOSTRATA 1:1, NON RIMPICCIOLITA.
+   *
+   * La sorgente è 1280×720 e riprende un gestionale da desktop: i testi
+   * dell'interfaccia lì dentro sono alti ~13px. Con `object-fit: cover` il
+   * fotogramma viene riscalato per riempire il riquadro, e il riquadro su
+   * telefono è largo 348px (100vw meno il padding di .wrap e i bordi della
+   * cornice): fattore 0,27, cioè l'intera interfaccia rimpicciolita a poco
+   * più di un quarto — trattini grigi al posto di una tabella. Su un tablet,
+   * però, il riquadro è largo il doppio: a 768px la finestra 1:1 è larga
+   * 710px di sorgente e inquadra più di mezza schermata con i testi alla
+   * loro misura vera. Per QUESTA fascia è la soluzione giusta.
+   *
+   * `object-fit: none` toglie del tutto il riscalamento: un pixel della
+   * registrazione = un pixel CSS, quindi i 13px dell'applicazione restano
+   * 13px anche sul telefono. Si vede una fetta più stretta, ma quella fetta
+   * SI LEGGE. Il prezzo, dichiarato: su uno schermo a densità doppia o tripla
+   * la sorgente viene ingrandita 2-3× in pixel dispositivo e i bordi sono più
+   * morbidi di prima. Non è aggirabile in CSS con una sorgente da 1280px —
+   * la correzione definitiva è ricodificare la registrazione a 2560×1440,
+   * e quel giorno queste regole non cambiano di una riga.
+   *
+   * La fascia dove serve è 641–1099.98px, non tutto ciò che sta sotto i 1100.
+   * A 768px la finestra 1:1 è larga 710px di sorgente: le colonne ci stanno
+   * tutte. Su un telefono da 348px, invece, inquadra poco più di un QUARTO di
+   * fotogramma (348 su 1280) e, con la Y al 40%, apre a y=114 — cioè sotto la
+   * riga dei filtri, che finisce a y=112. Misurato sui fotogrammi veri: si
+   * vedono il nome del fornitore e il numero del documento, e basta. Niente
+   * importi, niente badge DA PAGARE/PAGATA, niente intestazioni. Nitida e
+   * muta. Lì comanda il blocco successivo, che ritaglia in scala: ~7px CSS di
+   * testo, ma la tabella si legge come tabella. Nitidezza e leggibilità non
+   * sono la stessa cosa, e su telefono conta la seconda: un fotogramma che
+   * non racconta più il prodotto non guadagna niente a essere nitido.
+   *
+   * `object-position`: la X è in pixel della sorgente e non in percentuale,
+   * perché l'ancoraggio deve restare fermo mentre il riquadro cambia misura —
+   * -260px porta al bordo sinistro la colonna FORNITORE e lascia fuori il
+   * menu laterale, che su schermo stretto non aggiunge niente. La Y resta in
+   * percentuale: si adatta all'altezza del riquadro senza mai sfondare il
+   * fotogramma, e apre appena sopra la riga delle intestazioni di colonna.
+   */
+  @media (max-width: 1099.98px) {
+    .video-poster,
+    .video-el {
+      object-fit: none;
+      object-position: -260px 40%;
+    }
+  }
+
+  /*
+   * Su telefono il riquadro diventa più ALTO che largo.
+   *
+   * Ed è il RAPPORTO a decidere quanto fotogramma entra, non la larghezza
+   * dello schermo. Con `object-fit: cover` e un riquadro più stretto del 16/9
+   * della sorgente il fattore lo impone l'altezza, quindi la fetta visibile è
+   * larga sempre 720 × (rapporto) pixel di sorgente: con 9/10 fanno 648, cioè
+   * metà esatta dei 1280, e in altezza entra tutto il fotogramma.
+   *
+   * Le alternative, misurate sui fotogrammi veri (colonne della sorgente:
+   * bordo della scheda a 234, FORNITORE a 273, DOCUMENTO a 545, IMPORTO a
+   * 707-750, badge STATO a 790-843, RIPARTIZIONE — testo grigio segnaposto —
+   * da 924): con 4/5 la fetta è 576px e i badge di stato restano fuori; con
+   * 1/1 è 720px ma il testo scende a 6,3px CSS. 9/10 è l'unico rapporto che
+   * tiene dentro le quattro colonne che contano.
+   *
+   * Nessun rischio di CLS: l'altezza continua a derivare dalla larghezza
+   * prima che il video arrivi, esattamente come faceva il 16/9.
+   *
+   * Niente più `max-height`: serviva perché con `object-fit: none` un riquadro
+   * più alto del fotogramma lasciava scoperta una striscia di fondo, e col 4/5
+   * il caso si presentava davvero fra i 619 e i 640px di viewport. Con 9/10 il
+   * riquadro non arriva mai a 648px di altezza sotto i 640 di viewport, e
+   * comunque `cover` riempie sempre, per definizione: quella riga è diventata
+   * inerte due volte.
+   *
+   * IL PREZZO, DICHIARATO. La sorgente viene disegnata a 0,537 della sua
+   * misura (687px CSS su un riquadro da 348), quindi i 13px dell'interfaccia
+   * diventano ~7px CSS. Non è però una perdita di dettaglio vera: a densità
+   * doppia i 648 pixel di sorgente inquadrati finiscono su 696 pixel fisici
+   * (i 348 CSS del riquadro, per due), cioè 1,07× — praticamente uno a uno,
+   * i bordi restano puliti. La correzione definitiva resta ricodificare a
+   * 2560×1440, e quel giorno queste regole non cambiano.
+   *
+   * COSA RESTA FUORI, e va saputo: la barra laterale del menu (i primi ~213px
+   * della sorgente), la colonna RIPARTIZIONE (segnaposto grigio, da 924) e i
+   * tasti in alto a destra — quindi anche il menu dell'importazione, che
+   * intorno al quinto secondo si apre a x≈937. Il filmato dura 7,5s e per i
+   * primi 6,3 sta sull'elenco delle fatture: è quella la parte che racconta il
+   * prodotto, ed è quella che si è scelto di inquadrare. Nell'ultimo secondo
+   * passa alla pagina «Importa Fatture», e lì nel ritaglio entra per intero il
+   * pannello «Come funziona»: cambia scena, non si svuota.
+   */
+  @media (max-width: 640px) {
+    .video-stage {
+      /* Rapporto fisso, quindi lo spazio resta riservato prima che il video
+         arrivi: CLS invariato, zero. Cambia solo il numero. */
+      aspect-ratio: 9 / 10;
+    }
+
+    /*
+     * Il ritaglio, in PERCENTUALE e non in pixel di sorgente: così
+     * l'inquadratura è la stessa su un telefono da 320 e su uno da 430 —
+     * cambia la misura, non che cosa si vede. Con `object-position: -260px`
+     * la finestra si stringeva a 278px sui telefoni piccoli e la tabella
+     * spariva: una composizione non si ancora in pixel quando il riquadro è
+     * fluido.
+     *
+     * 37% porta il bordo sinistro a x≈234 della sorgente e quello destro a
+     * x≈882: entrano il bordo della scheda, i filtri (Tutte / Da pagare /
+     * Pagate), le intestazioni e le colonne FORNITORE, DOCUMENTO, IMPORTO e
+     * STATO coi badge colorati. Il taglio cade nel bianco fra i badge (che
+     * finiscono a 843) e la colonna RIPARTIZIONE (che parte a 924), quindi
+     * non spezza nessuna parola.
+     *
+     * La Y è inerte finché il riquadro è più stretto del 16/9 della sorgente
+     * (non c'è avanzo verticale da spostare): resta 50%, il valore neutro.
+     *
+     * Le stesse due righe per poster e video, e non è una ripetizione da
+     * accorpare altrove: con `cover` la geometria dipende SOLO dal riquadro —
+     * non dalla variante di srcset scaricata, come invece accadeva con
+     * `none`, dove il disegno del poster vale quanto dice `sizes`. Stesso
+     * rapporto sorgente (1280×720, e così le varianti 640 e 960), stesso
+     * ritaglio: combaciano al pixel e nell'istante in cui parte la
+     * riproduzione l'immagine non salta.
+     *
+     * Deve stare DOPO il blocco `max-width: 1099.98px`: stessa specificità,
+     * vince la regola che viene dopo. Spostarlo più in su rimette `none`.
+     */
+    .video-poster,
+    .video-el {
+      object-fit: cover;
+      object-position: 37% 50%;
+    }
   }
 
 

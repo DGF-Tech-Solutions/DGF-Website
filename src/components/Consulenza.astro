@@ -217,6 +217,43 @@ const CHAT = [
     --color-soft: rgb(255 255 255 / 0.16);
     --color-soft-2: rgb(255 255 255 / 0.22);
     color: var(--color-ink-2);
+
+    /* ── I NUMERI DELLA SCOCCA «TELEFONO» ──────────────────────────────
+     *
+     * COMANDA L'ALTEZZA, tutto il resto la segue: larghezza, raggio,
+     * cornice e isola sono FRAZIONI di questa, mai misure fisse. È il
+     * motivo per cui il mockup resta lo stesso oggetto su ogni schermo
+     * invece di diventare tozzo quando lo spazio in verticale finisce —
+     * che è come stava prima: larghezza bloccata a 84vw e altezza a 66svh
+     * davano 1:1,70 su un iPhone e 1:1,40 su uno schermo da 360.
+     *
+     * 9/19,5 è la proporzione di un telefono vero (iPhone 15, Pixel 8).
+     *
+     * 0,062 dell'altezza = 13,4% della larghezza: il raggio che hanno
+     * davvero gli angoli di un telefono. Generoso, ma lontano dalla
+     * pillola, che sarebbe il 50%.
+     *
+     * La cornice è 1,45% dell'altezza = 3,1% della larghezza, identica sui
+     * quattro lati. Il raggio dello schermo è SEMPRE quello della scocca
+     * meno la cornice (raggi concentrici): senza quella sottrazione la
+     * cornice si legge più spessa negli angoli che sui lati, ed è metà del
+     * motivo per cui il mockup sembrava mal fatto.
+     *
+     * Stanno qui e non su `.cons-telaio` perché le legge anche `.cons-palco`,
+     * che è un antenato: le variabili scendono, non salgono.
+     */
+    --cons-tel-h: clamp(30rem, 66svh, 43.75rem);
+    --cons-tel-w: calc(var(--cons-tel-h) * 9 / 19.5);
+    --cons-tel-r: calc(var(--cons-tel-h) * 0.062);
+    --cons-tel-bordo: calc(var(--cons-tel-h) * 0.0145);
+    --cons-isola-h: calc(var(--cons-tel-h) * 0.046);
+
+    /* Ombra alla scala dell'OGGETTO: quella del portatile (50px di stacco,
+       90 di sfocatura) su una scocca larga 230 lo faceva galleggiare un
+       metro sopra la pagina. */
+    --cons-tel-ombra:
+      0 18px 34px -14px rgb(6 16 34 / 0.5),
+      0 6px 12px -6px rgb(6 16 34 / 0.35);
   }
 
   /* La discesa nel footer: il gradiente del marchio finisce sul suo punto
@@ -245,7 +282,14 @@ const CHAT = [
     z-index: 2;
     display: grid;
     place-items: center;
-    min-height: min(43.75rem, 66svh);
+    /* Legge la STESSA variabile dell'altezza del telefono invece di ripeterne
+       il valore: il giorno in cui quella cambia, lo spazio riservato la segue
+       da solo. Ripetuto a mano, il salto di layout che questo blocco esiste
+       per impedire tornerebbe alla prima modifica distratta.
+       Resta lo stato più alto dei due: il telefono sta a 66svh, il portatile
+       a 60svh, quindi non lo supera mai. Misurato su 1440x900: la sezione è
+       alta 808,4px prima e dopo la trasformazione, salto zero. */
+    min-height: var(--cons-tel-h);
   }
 
 
@@ -300,7 +344,11 @@ const CHAT = [
       height var(--cons-dur) var(--cons-curva),
       padding var(--cons-dur) var(--cons-curva),
       border-radius var(--cons-dur) var(--cons-curva),
-      background-color var(--cons-dur) var(--cons-curva);
+      background-color var(--cons-dur) var(--cons-curva),
+      /* L'ombra cambia scala fra portatile e telefono: senza transizione
+         scatterebbe tutta all'istante zero mentre la scocca ci mette 1,1s a
+         stringersi. È una proprietà di sola ridipintura, non tocca il layout. */
+      box-shadow var(--cons-dur) var(--cons-curva);
 
     /* Durata e curva in un posto solo: tutto ciò che si muove le condivide,
        così le parti non possono scollarsi fra loro. */
@@ -309,20 +357,35 @@ const CHAT = [
   }
 
   .consulenza.is-vista .cons-telaio {
-    width: min(21.25rem, 84vw);
-    height: min(43.75rem, 66svh);
-    padding: 0.6875rem;
-    border-radius: 2.75rem;
+    /* Larghezza DERIVATA dall'altezza, non indipendente: è l'unico modo
+       perché il rapporto 9/19,5 tenga anche quando la finestra è bassa.
+       Su un portatile 1440x900 la scocca faceva 340x594, cioè 1:1,75.
+       Larghezza esplicita e non `aspect-ratio` con `width: auto`: `auto` non
+       è interpolabile e la transizione dal portatile scatterebbe. */
+    width: var(--cons-tel-w);
+    height: var(--cons-tel-h);
+    padding: var(--cons-tel-bordo);
+    border-radius: var(--cons-tel-r);
     background: #fff;
+    box-shadow: var(--cons-tel-ombra);
   }
 
   .cons-tacca {
     position: absolute;
     left: 50%;
-    top: 0.75rem;
+    /* Cornice PIÙ un rientro, non 0,75rem a occhio: prima la tacca partiva a
+       12px con una cornice di 11 e restava un pixel di schermo scoperto sopra
+       — la riga sottile che la faceva sembrare appiccicata storta.
+       Così è un'isola che galleggia dentro lo schermo (misurati 9,5px di
+       stacco su desktop, 6,7 su telefono), e l'orario e la batteria le
+       passano ai lati come su un telefono vero. */
+    top: calc(var(--cons-tel-bordo) + var(--cons-tel-h) * 0.016);
     z-index: 3;
-    width: 6rem;
-    height: 1.25rem;
+    /* 3,4:1 e un terzo della larghezza della scocca: le proporzioni
+       dell'isola vera (125x37 su uno schermo da 393). Prima era 96x20, cioè
+       4,8:1 — troppo bassa e troppo larga per leggersi come tale. */
+    height: var(--cons-isola-h);
+    width: calc(var(--cons-isola-h) * 3.4);
     translate: -50% 0;
     border-radius: var(--radius-pill);
     background: rgb(0 0 0 / 0.9);
@@ -343,7 +406,11 @@ const CHAT = [
       background-color 1100ms cubic-bezier(0.65, 0, 0.35, 1);
   }
   .consulenza.is-vista .cons-schermo {
-    border-radius: 1.875rem;
+    /* RAGGI CONCENTRICI: raggio dello schermo = raggio della scocca meno la
+       cornice. Era 1,875rem contro 2,75-0,6875 = 2,0625: quei 3px di
+       scarto facevano leggere la cornice più spessa negli angoli che sui
+       lati, ed è il difetto che si nota senza saperlo nominare. */
+    border-radius: calc(var(--cons-tel-r) - var(--cons-tel-bordo));
     background: var(--color-navy);
   }
 
@@ -471,7 +538,12 @@ const CHAT = [
      righe più su, ed è la forma esatta del difetto che in global.css ha
      cambiato nove sezioni senza che nessuno se ne accorgesse. */
   .cons-mobile {
-    padding: 2.25rem 1rem 1rem;
+    /* Sopra: esattamente il rientro dell'isola, così la riga di stato ci
+       finisce ACCANTO invece che sotto — orario a sinistra, batteria a
+       destra, isola in mezzo. Prima erano 2,25rem di vuoto per scansare una
+       tacca alta 1,25rem: 20px buttati su uno schermo dove ne mancavano 7
+       perché la chat ci stesse. */
+    padding: calc(var(--cons-tel-h) * 0.016) 1rem 0.625rem;
     color: #fff;
     opacity: 0;
     visibility: hidden;
@@ -481,6 +553,9 @@ const CHAT = [
     display: flex;
     align-items: center;
     justify-content: space-between;
+    /* Prenota la fascia dell'isola: è quello che tiene l'orario centrato con
+       lei invece che qualche pixel più in alto o più in basso. */
+    min-height: var(--cons-isola-h);
     padding-inline: 0.5rem;
     font-size: 0.625rem;
     font-weight: 600;
@@ -525,6 +600,13 @@ const CHAT = [
     flex-direction: column;
     gap: 0.5rem;
     flex: 1;
+    /* I messaggi si appoggiano in basso, contro la barra di scrittura, come
+       in una chat vera: lo spazio che avanza resta sotto l'intestazione
+       invece di aprire un buco fra l'ultimo messaggio e la barra.
+       Ha anche il fallimento giusto: se un giorno la conversazione non ci
+       stesse, a essere tagliato sarebbe il messaggio più vecchio in alto e
+       non l'indicatore «sta scrivendo», che è la parte viva. */
+    justify-content: flex-end;
     padding-block: 0.875rem;
     overflow: hidden;
   }
@@ -614,9 +696,11 @@ const CHAT = [
   }
 
   .cons-maniglia {
-    width: 6rem;
-    height: 0.25rem;
-    margin: 0.75rem auto 0;
+    /* In percentuale e non 6rem: su una scocca larga 230 quei 96px erano
+       quasi metà della barra, la maniglia vera sta al 35%. */
+    width: 35%;
+    height: 0.1875rem;
+    margin: 0.625rem auto 0;
     border-radius: var(--radius-pill);
     background: rgb(255 255 255 / 0.3);
   }
@@ -670,21 +754,117 @@ const CHAT = [
   @media (max-width: 1023px) {
     .cons-desktop { display: none; }
     .cons-base { display: none; }
+    /*
+     * LE MISURE STANNO NELLE VARIABILI, NON NELLE REGOLE QUI SOTTO.
+     *
+     * Le media query non aggiungono specificità: dopo lo scoping di Astro
+     * `.consulenza[cid].is-vista .cons-telaio[cid]` vale 0,5,0 e batte
+     * `.cons-telaio[cid]` scritto qui dentro, che vale 0,2,0. E `is-vista`
+     * la mette l'osservatore a QUALUNQUE larghezza. Finora non si vedeva
+     * perché i due blocchi avevano numeri identici; qualunque numero nuovo
+     * scritto solo qui verrebbe ignorato appena la sezione entra nello
+     * schermo. Ridefinendo le variabili su `.consulenza` — stesso elemento,
+     * stessa specificità, più in basso nel file — vincono queste, e le
+     * leggono entrambe le regole. Verificato sulla build minificata: con e
+     * senza `is-vista` i valori calcolati sono gli stessi.
+     */
+    .consulenza {
+      /* Più corta e più stretta del desktop di proposito: dentro un telefono
+         vero il mockup deve leggersi come un OGGETTO dentro la pagina, non
+         come una copia a grandezza naturale di quello che si ha in mano.
+         62svh con tetto a 31rem: 496x229 su un iPhone 15 (59vw di larghezza),
+         416x192 appena il viewport scende sotto i ~671px di altezza (53vw su
+         uno schermo da 360). Il fondo a 26rem serve in orizzontale, dove
+         62svh darebbe una scocca alta 240px con dentro un testo illeggibile:
+         là la sezione si allunga e la pagina scorre. */
+      --cons-tel-h: clamp(26rem, 62svh, 31rem);
+      --cons-tel-ombra:
+        0 12px 24px -10px rgb(6 16 34 / 0.5),
+        0 4px 8px -4px rgb(6 16 34 / 0.35);
+    }
+
+    /* Niente altezza riservata: qui la trasformazione non avviene, quindi non
+       c'è nessun salto da prevenire e il palco può stringersi sul telefono. */
+    .cons-palco { min-height: 0; }
+
     .cons-telaio {
-      width: min(21.25rem, 84vw);
-      height: min(43.75rem, 66svh);
-      padding: 0.6875rem;
-      border-radius: 2.75rem;
+      width: var(--cons-tel-w);
+      height: var(--cons-tel-h);
+      padding: var(--cons-tel-bordo);
+      border-radius: var(--cons-tel-r);
       background: #fff;
+      box-shadow: var(--cons-tel-ombra);
       transition: none;
     }
     .cons-schermo {
-      border-radius: 1.875rem;
+      border-radius: calc(var(--cons-tel-r) - var(--cons-tel-bordo));
       background: var(--color-navy);
       transition: none;
     }
     .cons-tacca { opacity: 1; transition: none; }
     .cons-mobile { opacity: 1; visibility: visible; transition: none; }
+
+    /* ── I TESTI DENTRO IL TELEFONO, SU SCHERMO STRETTO ─────────────────
+     *
+     * La scocca qui è larga 192-229px contro i 274-323 del desktop. Le stesse
+     * misure dentro un oggetto più piccolo danno bolle che vanno a capo ogni
+     * tre parole e una conversazione che non ci sta — `.cons-conversazione`
+     * ha `flex: 1` e `overflow: hidden`, quindi non sborda: si comprime e
+     * taglia.
+     *
+     * IL CASO PEGGIORE NON È «LO SCHERMO DA 360». Siccome la larghezza
+     * discende dall'altezza, OGNI viewport alto meno di ~671px produce la
+     * stessa identica scocca da 192x416 — 320, 360, 375 e il telefono in
+     * orizzontale sono lo stesso caso. Lì l'area della conversazione è di
+     * 272,8px: sono questi i numeri contro cui vanno verificate le misure
+     * qui sotto, misurando sulla build (:7000) e non a stima. */
+    .cons-mobile { padding-inline: 0.75rem; }
+    .cons-stato { font-size: 0.5625rem; }
+    .cons-intestazione {
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+    .cons-avatar {
+      width: 1.75rem;
+      height: 1.75rem;
+      font-size: 0.625rem;
+    }
+    .cons-nome { font-size: 0.75rem; }
+    .cons-attivo { font-size: 0.5625rem; }
+    .cons-conversazione {
+      gap: 0.375rem;
+      padding-block: 0.625rem;
+    }
+    /*
+     * 95%, ED È UN GRADINO, NON UN RITOCCO.
+     *
+     * Su 155,9px di colonna, «Perfetto, possiamo aiutarti. Ti torna comodo
+     * una call domani?» va a capo su QUATTRO righe fino al 93% compreso: lì
+     * la conversazione chiede 274,0px e ne ha 272,8, cioè sfora e viene
+     * tagliata in cima con margine zero. Al 94% scendono a tre righe e
+     * avanzano 14px; al 95% le bolle diventano 2/2/3/1 e ne avanzano 30 —
+     * ed è lo stesso margine sul telefono in orizzontale.
+     *
+     * Non toglie il carattere di chat: su una scocca larga 192px a
+     * distinguere chi parla sono il colore, il lato e l'angolo con la coda,
+     * non la larghezza della bolla. Chi cambia questo numero, o i testi in
+     * CHAT, rimisuri: 30px sono un messaggio corto, non un margine comodo. */
+    .cons-bolla {
+      max-width: 95%;
+      padding: 0.4375rem 0.625rem;
+      font-size: 0.6875rem;
+      line-height: 1.4;
+    }
+    .cons-bolla-noi { border-radius: 0.875rem 0.875rem 0.875rem 0.25rem; }
+    .cons-bolla-tu { border-radius: 0.875rem 0.875rem 0.25rem 0.875rem; }
+    .cons-scrive {
+      padding: 0.4375rem 0.625rem;
+      border-radius: 0.875rem 0.875rem 0.875rem 0.25rem;
+    }
+    .cons-invio { padding: 0.25rem 0.25rem 0.25rem 0.625rem; }
+    .cons-campo { font-size: 0.625rem; }
+    .cons-invio-tasto { width: 1.5rem; height: 1.5rem; }
   }
 
   /* Chi ha chiesto meno movimento arriva allo stato finale senza il viaggio. */

@@ -143,24 +143,48 @@ const SERVICE_ICONS = ["globe", "bag", "phone", "dashboard", "sparkles"] as cons
       </summary>
 
       <nav aria-label="Navigazione principale" class="mobile-panel">
-        <div class="wrap flex flex-col gap-1 py-4">
-          <span class="t-eyebrow px-1 pb-2 pt-1">Servizi</span>
-          {
-            SERVICES.map((s, i) => (
-              <a href={`/servizi/${s.slug}`} class="mobile-service group">
-                <span class="icon-tile icon-tile-sm">
-                  <Icon name={SERVICE_ICONS[i]} size={17} />
-                </span>
-                <span class="font-semibold text-[var(--color-ink)]">{s.title}</span>
-              </a>
-            ))
-          }
-          <a href="/servizi" class="mobile-service group">
-            <span class="icon-tile icon-tile-sm"><Icon name="layers" size={17} /></span>
-            <span class="font-semibold text-[var(--color-navy)]">Tutti i servizi</span>
-          </a>
+        <div class="wrap flex flex-col gap-1 py-2">
+          {/*
+            I cinque servizi stavano aperti in elenco: sei righe da 56px, cioè
+            336px, il 68% dell'altezza utile di un iPhone SE consumata prima
+            ancora di arrivare a Progetti, Blog e Chi siamo. Ecco perché
+            "Contatti" finiva sotto la piega.
 
-          <hr class="my-3 h-px border-0 bg-[var(--color-line)]" />
+            Adesso sono un gruppo richiudibile: un details annidato, quindi
+            apertura e chiusura le fa il browser e non serve una riga di
+            JavaScript. Chiuso di default, ma GIÀ APERTO quando sei su una
+            pagina di servizio — è l'unico momento in cui i fratelli servono
+            davvero, e `isActive` si risolve a build time.
+          */}
+          <details class="mobile-group" open={isActive("/servizi")}>
+            <summary class="mobile-summary">
+              Servizi
+              <Icon name="chevron-down" size={16} />
+            </summary>
+
+            <div class="mobile-group-body">
+              {
+                SERVICES.map((s, i) => (
+                  <a
+                    href={`/servizi/${s.slug}`}
+                    class="mobile-service"
+                    aria-current={isActive(`/servizi/${s.slug}`) ? "page" : undefined}
+                  >
+                    <span class="icon-tile icon-tile-sm">
+                      <Icon name={SERVICE_ICONS[i]} size={17} />
+                    </span>
+                    <span class="font-semibold text-[var(--color-ink)]">{s.title}</span>
+                  </a>
+                ))
+              }
+              <a href="/servizi" class="mobile-service">
+                <span class="icon-tile icon-tile-sm"><Icon name="layers" size={17} /></span>
+                <span class="font-semibold text-[var(--color-navy)]">Tutti i servizi</span>
+              </a>
+            </div>
+          </details>
+
+          <hr class="my-2 h-px border-0 bg-[var(--color-line)]" />
 
           {
             NAV.filter((l) => l.href !== "/servizi").map((link) => (
@@ -169,11 +193,26 @@ const SERVICE_ICONS = ["globe", "bag", "phone", "dashboard", "sparkles"] as cons
               </a>
             ))
           }
+        </div>
 
-          <a href={NAV_CTA.href} class="btn btn-primary mt-3">
-            {NAV_CTA.label}
-            <Icon name="arrow-right" size={15} />
-          </a>
+        {/*
+          "Contatti" è l'azione principale del sito: non può stare sotto la
+          piega del pannello. Sta fuori dalla colonna che scorre e si ancora in
+          fondo con `position: sticky`.
+
+          Sticky e non fixed: sticky OCCUPA il suo spazio nel flusso, quindi
+          quando si è in fondo all'elenco non copre nulla, e non provoca
+          spostamenti di layout — il CLS resta 0. Fuori da `.wrap` perché la
+          barretta deve essere a tutta larghezza: se fosse dentro, il contenuto
+          scorrerebbe visibile nei due margini laterali.
+        */}
+        <div class="mobile-cta">
+          <div class="wrap">
+            <a href={NAV_CTA.href} class="btn btn-primary w-full">
+              {NAV_CTA.label}
+              <Icon name="arrow-right" size={15} />
+            </a>
+          </div>
         </div>
       </nav>
     </details>
@@ -410,7 +449,18 @@ const SERVICE_ICONS = ["globe", "bag", "phone", "dashboard", "sparkles"] as cons
   }
 
   /* ─── Mobile ──────────────────────────────────────────────────────── */
-  .mobile summary {
+  /*
+   * FIGLIO DIRETTO, non discendente.
+   *
+   * Era `.mobile summary`, cioè QUALUNQUE summary dentro il menu. Finché il
+   * pannello conteneva solo link non si notava, ma dal momento in cui i
+   * servizi diventano un details annidato quel selettore colpirebbe anche il
+   * suo summary: 2,75rem quadrati, incolonnato e con -0.5rem di margine
+   * destro. La voce "Servizi" diventerebbe un quadratino storto.
+   *
+   * Il `>` lo lega al solo panino, dove effettivamente serve.
+   */
+  .mobile > summary {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -421,7 +471,7 @@ const SERVICE_ICONS = ["globe", "bag", "phone", "dashboard", "sparkles"] as cons
     cursor: pointer;
     list-style: none;
   }
-  .mobile summary::-webkit-details-marker { display: none; }
+  .mobile > summary::-webkit-details-marker { display: none; }
 
   .mobile .bar {
     display: block;
@@ -439,28 +489,153 @@ const SERVICE_ICONS = ["globe", "bag", "phone", "dashboard", "sparkles"] as cons
     position: absolute;
     inset-inline: 0;
     top: 100%;
-    max-height: calc(100dvh - 4rem);
-    overflow-y: auto;
+    /*
+     * `svh` e non `dvh`, `--nav-h` e non 4rem.
+     *
+     * Due errori nella stessa riga. Il primo: 4rem è l'altezza della barra da
+     * 1024px in su, ma il menu a panino si vede fino a 1280px e sotto i
+     * 1024px la barra è alta 3,5rem — si sottraevano 8px inesistenti.
+     * `--nav-h` è lo stesso token che usa `main`, quindi il conto torna a
+     * tutte le larghezze invece che a una sola.
+     *
+     * Il secondo, più fastidioso: `dvh` cambia valore mentre le barre del
+     * browser entrano ed escono, quindi il pannello si ridimensionava sotto
+     * il dito durante lo scorrimento — e sotto di lui la barretta ancorata.
+     * `svh` è il viewport con le barre VISIBILI, cioè il caso peggiore: un
+     * numero solo, che non si muove mai.
+     *
+     * La riga `vh` sopra è il ripiego per i browser precedenti al 2022, dove
+     * `svh` non esiste.
+     */
+    /*
+     * ALTEZZA PIENA, non «al massimo».
+     *
+     * Con `max-height` il pannello si fermava dove finiva l'elenco: una
+     * scatoletta bianca a metà schermo, con la pagina che continuava sotto e
+     * il pulsante «Contatti» sospeso in mezzo al nulla. Un menu che si apre
+     * su un telefono prende lo schermo: è una schermata, non una tendina.
+     *
+     * `height` fissa lo prende tutto, e la colonna qui sotto distribuisce:
+     * l'elenco in alto, «Contatti» appoggiato al fondo dello schermo —
+     * l'ultima cosa che si vede, a qualunque altezza di telefono.
+     */
+    height: calc(100vh - var(--nav-h));
+    height: calc(100svh - var(--nav-h));
+    display: flex;
+    flex-direction: column;
+    /* Lo scorrimento appartiene alla colonna dell'elenco, non al pannello:
+       se restasse qui, scorrendo si porterebbe via anche «Contatti». */
+    overflow: hidden;
     background: var(--color-paper);
     border-bottom: 1px solid var(--color-line);
     box-shadow: var(--shadow-lg);
   }
 
+  /*
+   * La colonna che scorre. `min-height: 0` non è pignoleria: un elemento
+   * flessibile ha per impostazione `min-height: auto`, cioè «non rimpicciolire
+   * sotto il tuo contenuto» — con quello l'elenco spingerebbe «Contatti» fuori
+   * dallo schermo invece di scorrere al proprio interno, che è esattamente il
+   * difetto da cui siamo partiti.
+   */
+  .mobile-panel > .wrap {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    /* Arrivati in fondo all'elenco, lo scorrimento non prosegue sulla pagina
+       sotto: il menu è un contesto chiuso finché è aperto. */
+    overscroll-behavior: contain;
+  }
+
+  /*
+   * Righe da 44px NETTI: 4 + piastrella `icon-tile-sm` 2,25rem (36) + 4.
+   *
+   * Erano 56 (10+36+10). Il taglio si ferma esattamente a 44 e non un pixel
+   * sotto, perché 44x44 è il bersaglio minimo per il dito: comprimere
+   * ulteriormente farebbe risparmiare pochi pixel e romperebbe l'unica cosa
+   * che su telefono conta più della compattezza.
+   */
   .mobile-service {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.625rem 0.25rem;
+    padding: 0.25rem;
+    border-radius: var(--radius-sm);
     font-size: 0.9375rem;
   }
+  /* Il servizio su cui sei già: stesso segno del mega-menu da desktop.
+     Senza questa riga `aria-current` lo sentirebbe solo lo screen reader e
+     il `border-radius` qui sopra non servirebbe a niente. */
+  .mobile-service[aria-current="page"] { background: var(--color-soft); }
 
-  .mobile-link {
-    padding: 0.75rem 0.25rem;
+  /* 16px x 1,6 = 25,6 di riga + 10 + 10 = 45,6px: sopra i 44 richiesti.
+     La voce "Servizi" usa le stesse misure delle altre, così l'elenco resta
+     una colonna sola e non sembra che il gruppo sia di rango diverso. */
+  .mobile-link,
+  .mobile-summary {
+    padding: 0.625rem 0.25rem;
     font-size: 1rem;
     font-weight: 600;
     color: var(--color-ink);
   }
   .mobile-link[aria-current="page"] { color: var(--color-navy); }
+
+  /* ─── Gruppo Servizi richiudibile ─────────────────────────────────── */
+  .mobile-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    list-style: none;
+  }
+  .mobile-summary::-webkit-details-marker { display: none; }
+
+  /*
+   * Il chevron si punta DAL GENITORE, non con una classe sua.
+   *
+   * `<Icon>` non inoltra all'SVG l'attributo di scope che Astro mette sugli
+   * elementi del template: una regola `.mobile-caret { … }` verrebbe
+   * compilata in `.mobile-caret[data-astro-cid-…]` e non troverebbe mai
+   * niente — CSS morto che sembra funzionare finché non si guarda il menu.
+   * (È esattamente ciò che succede a `.mega-caret` qui sopra: da desktop la
+   * freccetta non ruota, e nessuno se n'era accorto.)
+   *
+   * `.mega-fact :global(svg)` è il modo già usato in questo file e compila in
+   * `.mega-fact[cid] svg`: il genitore porta lo scope, il figlio no.
+   */
+  .mobile-summary :global(svg) {
+    flex: none;
+    color: var(--color-ink-3);
+    transition: transform var(--dur) var(--ease-out-quart);
+  }
+  .mobile-group[open] .mobile-summary :global(svg) { transform: rotate(180deg); }
+
+  .mobile-group-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding-top: 0.25rem;
+  }
+
+  /*
+   * La barretta di "Contatti".
+   *
+   * `sticky` + `bottom: 0` dentro `.mobile-panel`, che è il contenitore di
+   * scorrimento: quando l'elenco è più alto del pannello la barretta si
+   * ferma al bordo inferiore invece di scorrere via. Quando l'elenco ci sta
+   * tutto, sta semplicemente in fondo — nessun caso particolare da gestire.
+   *
+   * Il fondo pieno e il filetto non sono decorazione: senza, le voci
+   * passerebbero VISIBILI dietro al pulsante mentre si scorre.
+   */
+  .mobile-cta {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    padding-block: 0.625rem;
+    background: var(--color-paper);
+    border-top: 1px solid var(--color-line);
+  }
 
   @media (prefers-reduced-motion: no-preference) {
     .mobile-panel { animation: fade-rise 220ms var(--ease-out-quart) both; }

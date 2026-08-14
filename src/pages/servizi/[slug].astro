@@ -131,39 +131,6 @@ const schema = [
     </div>
   </section>
 
-  <!-- Quando NON serve -->
-  <section class="on-dark section">
-    <div class="wrap">
-      <div class="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
-        <div>
-          <span class="t-eyebrow">Onestà</span>
-          <h2 class="t-h2 mt-3">
-            Quando <span class="t-dim">non ti serve.</span>
-          </h2>
-          <p class="t-lead mt-4">
-            Nessun sito di software house scrive questa sezione. Noi sì, perché
-            un progetto sbagliato è un problema per entrambi, e perderci un
-            preventivo costa meno che perderci la reputazione.
-          </p>
-        </div>
-
-        <ul class="space-y-4">
-          {
-            service.notFor.map((n, i) => (
-              <li class="card p-6 reveal" style={`--i:${i}`}>
-                <p class="flex items-start gap-3 text-[0.9375rem] font-semibold text-white">
-                  <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-cyan)]" aria-hidden="true" />
-                  {n.case}
-                </p>
-                <p class="t-body mt-2.5 pl-[1.125rem] text-[0.875rem]">{n.instead}</p>
-              </li>
-            ))
-          }
-        </ul>
-      </div>
-    </div>
-  </section>
-
   <!-- Cosa comprende -->
   <section class="band-soft section">
     <div class="wrap">
@@ -207,8 +174,9 @@ const schema = [
   </section>
 
   <!-- Gli altri servizi.
-       Sta su fondo chiaro apposta: fa da stacco fra la fascia scura "Quando
-       non ti serve" (più su) e la fascia di chiusura, che è anch'essa scura. -->
+       Su fondo tinto apposta: è la seconda cresta dell'onda
+       bianco → azzurro → blu, e prepara la fascia scura di chiusura invece di
+       farla arrivare di colpo dal bianco. -->
   <section class="band-soft section-sm">
     <div class="wrap">
       <h2 class="t-eyebrow">Gli altri servizi</h2>
