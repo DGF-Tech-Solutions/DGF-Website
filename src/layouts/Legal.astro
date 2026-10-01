@@ -23,9 +23,15 @@ interface Props {
   canonical: string;
   /** Data dell'ultimo aggiornamento, in ISO. */
   updated: string;
+  /**
+   * La nota in fondo, per i documenti che non riguardano il sito (le
+   * informative delle app): quella normale parla del sito vetrina, e lì
+   * sarebbe falsa.
+   */
+  note?: string;
 }
 
-const { title, description, canonical, updated } = Astro.props;
+const { title, description, canonical, updated, note } = Astro.props;
 
 const updatedLabel = new Intl.DateTimeFormat("it-IT", {
   day: "numeric",
@@ -75,13 +81,19 @@ const DOCUMENTI = [
           </div>
         </div>
 
-        <p class="t-small legale-nota">
-          Documento redatto per un sito vetrina con modulo di contatto, sulla
-          traccia di quelli di Nexia Home™ (stessa società: {SITE.legalName}).
-          Non sostituisce il parere di un professionista: se un domani il sito
-          raccoglie categorie particolari di dati, attiva account o vende
-          online, va rivisto da un consulente prima di pubblicarlo.
-        </p>
+        {
+          note ? (
+            <p class="t-small legale-nota">{note}</p>
+          ) : (
+            <p class="t-small legale-nota">
+              Documento redatto per un sito vetrina con modulo di contatto, sulla
+              traccia di quelli di Nexia Home™ (stessa società: {SITE.legalName}).
+              Non sostituisce il parere di un professionista: se un domani il sito
+              raccoglie categorie particolari di dati, attiva account o vende
+              online, va rivisto da un consulente prima di pubblicarlo.
+            </p>
+          )
+        }
       </div>
     </div>
   </section>
