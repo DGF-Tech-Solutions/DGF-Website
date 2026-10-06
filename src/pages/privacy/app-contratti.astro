@@ -1,18 +1,20 @@
 ---
 /*
- * Informativa privacy dell'app Android "Studio Zuccarello"
- * (com.dgftechsolutions.contratti), distribuita col Play Store.
+ * Informativa privacy dell'app Android "DGF Check"
+ * (com.dgftechsolutions.contratti), distribuita col Play Store. Fino alla
+ * 1.14 l'app si chiamava "Studio Zuccarello": l'indirizzo è rimasto lo stesso.
  *
  * Google vuole un indirizzo pubblico per l'informativa di ogni app: è questo,
  * ed è quello scritto nella Play Console. Se si sposta, va aggiornato anche lì.
  * Le informative delle app stanno tutte qui accanto: /privacy/app-<nome>.
  *
- * I fatti vengono dal codice dell'app (repo ZuccarelloFlatter-, privato): i
- * documenti restano nella memoria privata dell'app, il backup su Drive è
- * spento (allowBackup="false"), l'unica rete è quella di Google ML Kit per le
- * sue statistiche tecniche. Se l'app cambia su uno di questi punti, questa
- * pagina va cambiata insieme — e la sezione "Sicurezza dei dati" della Play
- * Console con lei.
+ * I fatti vengono dal codice dell'app (repo ZuccarelloFlatter-, privato):
+ * documenti, clienti e foto dei documenti restano nella memoria privata
+ * dell'app, il backup su Drive è spento (allowBackup="false"), la rete serve
+ * a due cose sole: la licenza (e i moduli) dal nostro sito, cercati con
+ * un'impronta del codice dello studio, e le statistiche tecniche di Google ML
+ * Kit. Se l'app cambia su uno di questi punti, questa pagina va cambiata
+ * insieme — e la sezione "Sicurezza dei dati" della Play Console con lei.
  */
 import Legal from "@/layouts/Legal.astro";
 import { SITE } from "@/data/site";
@@ -21,27 +23,35 @@ import EmailLink from "@/components/EmailLink.astro";
 const GARANTE = "https://www.garanteprivacy.it";
 const MLKIT = "https://developers.google.com/ml-kit/android-data-disclosure";
 const GOOGLE_PRIVACY = "https://policies.google.com/privacy";
+const GITHUB_PRIVACY =
+  "https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement";
 ---
 
 <Legal
-  title="Privacy dell'app Studio Zuccarello"
-  description="Informativa sul trattamento dei dati personali dell'app Android Studio Zuccarello, per compilare, firmare e timbrare i moduli PDF dei clienti."
+  title="Privacy dell'app DGF Check"
+  description="Informativa sul trattamento dei dati personali dell'app Android DGF Check, per compilare, firmare e timbrare sul tablet i moduli dei clienti di uno studio professionale."
   canonical="/privacy/app-contratti"
-  updated="2026-10-01"
-  note="Informativa redatta sul funzionamento dell'app nella versione 1.8.0. Non sostituisce il parere di un professionista: se un aggiornamento dell'app inizia a inviare dati fuori dal dispositivo, va rivista prima di pubblicarlo."
+  updated="2026-10-06"
+  note="Informativa redatta sul funzionamento dell'app nella versione 1.15.1. Non sostituisce il parere di un professionista: se un aggiornamento dell'app inizia a inviare altri dati fuori dal dispositivo, va rivista prima di pubblicarlo."
 >
   <p>
-    Questa informativa riguarda l'app Android <strong>Studio Zuccarello</strong>
-    (identificativo <code>com.dgftechsolutions.contratti</code>), sviluppata da
-    <strong>{SITE.legalName}</strong>, che serve a compilare, firmare e timbrare
-    sul tablet i moduli PDF dei clienti di uno studio professionale. Per il sito
-    web vale invece la <a href="/privacy">privacy policy del sito</a>.
+    Questa informativa riguarda l'app Android <strong>DGF Check</strong>
+    (identificativo <code>com.dgftechsolutions.contratti</code>; fino alla
+    versione 1.14 si chiamava "Studio Zuccarello"), sviluppata da
+    <strong>{SITE.legalName}</strong>. È uno strumento di lavoro per gli studi
+    professionali: serve a compilare, firmare e timbrare sul tablet i moduli
+    dei clienti (adeguata verifica, titolare effettivo, lettera di incarico,
+    privacy). Per il sito web vale invece la
+    <a href="/privacy">privacy policy del sito</a>.
   </p>
   <p>
-    In breve: <strong>i documenti, i nomi dei clienti e le firme restano sul
-    dispositivo</strong>. L'app non li invia a noi né a nessun altro: escono
-    solo quando lo decide chi la usa (invio per email, salvataggio, stampa).
-    Non ci sono account, pubblicità né statistiche nostre.
+    In breve: <strong>i dati dei clienti, le foto dei loro documenti, i moduli
+    compilati e le firme restano sul dispositivo</strong>. L'app non li invia a
+    noi né a nessun altro: escono solo quando lo decide chi la usa (invio per
+    email, salvataggio, stampa). Internet serve solo per attivare l'app col
+    codice dello studio e ricontrollarne la licenza, e per le statistiche
+    tecniche di Google ML Kit descritte sotto. Non ci sono account, pubblicità
+    né statistiche nostre.
   </p>
 
   <h2>Chi tratta i dati</h2>
@@ -52,32 +62,56 @@ const GOOGLE_PRIVACY = "https://policies.google.com/privacy";
     E-mail: <EmailLink />
   </div>
   <p>
-    I dati dei clienti trattati con l'app (moduli compilati, firme) sono gestiti
-    dallo <strong>studio professionale che usa l'app</strong>, che ne è titolare
-    del trattamento ai sensi del Regolamento UE 2016/679 (GDPR). {SITE.legalName}
+    I dati dei clienti trattati con l'app (schede dei clienti, foto dei
+    documenti d'identità, moduli compilati, firme) sono gestiti dallo
+    <strong>studio professionale che usa l'app</strong>, che ne è titolare del
+    trattamento ai sensi del Regolamento UE 2016/679 (GDPR). {SITE.legalName}
     fornisce lo strumento e <strong>non ha accesso</strong> a quei dati: non
     passano dai nostri sistemi.
+  </p>
+  <p>
+    {SITE.legalName} tratta soltanto i dati della <strong>licenza</strong> che
+    concede allo studio (nome dello studio e data fino alla quale l'app è
+    attiva), per gestire il rapporto con lo studio cliente.
   </p>
 
   <h2>Quali dati tratta l'app e dove restano</h2>
   <ul>
-    <li><strong>Documenti PDF</strong> aperti o aggiunti come moduli, e i PDF compilati.</li>
-    <li><strong>Nome del cliente</strong> indicato all'apertura del documento (facoltativo).</li>
+    <li>
+      <strong>Schede dei clienti</strong>: nome e cognome, data e luogo di
+      nascita, residenza, codice fiscale, estremi del documento d'identità ed
+      eventuali dati della società rappresentata, scritti dallo studio o letti
+      dalle foto dei documenti.
+    </li>
+    <li>
+      <strong>Foto dei documenti d'identità</strong> dei clienti (carta
+      d'identità, tessera sanitaria, patente, passaporto), scattate con la
+      fotocamera dentro l'app o scelte dalla galleria. Restano nella scheda del
+      cliente e, se lo studio lo sceglie, vengono allegate in fondo al PDF del
+      modulo.
+    </li>
+    <li><strong>Documenti PDF</strong>: i moduli vuoti dello studio e i moduli compilati.</li>
     <li>
       <strong>Testi, firme autografe disegnate sullo schermo e timbri</strong>
       messi sui documenti.
     </li>
-    <li><strong>Logo e dati dello studio</strong> usati per il timbro.</li>
+    <li><strong>Dati, logo e firme dello studio</strong> usati per compilare e timbrare.</li>
+    <li>
+      <strong>Codice dello studio e licenza</strong>, salvati per non doverli
+      riscrivere a ogni avvio.
+    </li>
   </ul>
   <p>
     Tutto viene salvato nella memoria riservata dell'app sul dispositivo,
     protetta dal sistema Android: le altre app non possono leggerla. Non esiste
     una copia su server nostri, e il <strong>backup automatico di Android su
-    Google Drive è disattivato</strong> per questa app.
+    Google Drive è disattivato</strong> per questa app. Le foto scattate per
+    leggere un documento vengono cancellate dalla memoria temporanea appena
+    lette.
   </p>
 
   <h2>Quando i dati escono dal dispositivo</h2>
-  <p>Solo per un'azione esplicita di chi usa l'app:</p>
+  <p>I dati dei clienti escono solo per un'azione esplicita di chi usa l'app:</p>
   <ul>
     <li>
       <strong>Invia per email</strong>: si apre il menu di condivisione di
@@ -94,11 +128,37 @@ const GOOGLE_PRIVACY = "https://policies.google.com/privacy";
     </li>
   </ul>
 
+  <h2>Attivazione e licenza</h2>
+  <p>
+    Al primo avvio l'app chiede il <strong>codice dello studio</strong>, che
+    {SITE.legalName} dà agli studi clienti. Per attivarsi scarica dal nostro
+    sito (<code>dgftechsolutions.com</code>) la licenza dello studio: un file
+    il cui nome è un'<strong>impronta del codice</strong> (calcolata con
+    SHA-256), da cui non si risale al codice. Il file è cifrato col codice e
+    firmato da {SITE.legalName}. Poi, quando c'è internet, l'app lo
+    ricontrolla circa una volta al giorno. Allo stesso modo, con il codice di
+    uno studio i cui moduli non sono già nell'app, scarica il pacchetto
+    cifrato dei moduli vuoti dello studio.
+  </p>
+  <p>
+    Queste richieste <strong>non contengono dati dei clienti né
+    documenti</strong>: chiedono solo un file al sito, e il codice stesso non
+    viene inviato. Come per qualsiasi pagina web, il servizio che ospita il
+    sito (GitHub Pages, di GitHub Inc.) riceve i dati tecnici della
+    connessione, come l'indirizzo IP e il tipo di programma che fa la
+    richiesta, e può registrarli per sicurezza e funzionamento del servizio:
+    noi non li usiamo per identificare chi usa l'app. Le richieste viaggiano
+    cifrate (HTTPS). Dettagli:
+    <a href={GITHUB_PRIVACY} rel="noopener noreferrer" target="_blank">informativa
+    privacy di GitHub</a>.
+  </p>
+
   <h2>Riconoscimento del testo (Google ML Kit)</h2>
   <p>
-    Per trovare da sola i punti dove firmare, l'app legge il testo stampato
-    delle pagine con <strong>Google ML Kit</strong>, che lavora interamente sul
-    dispositivo: <strong>le immagini delle pagine e il testo letto non vengono
+    Per trovare da sola i punti dove firmare e per leggere i dati dalle foto
+    dei documenti d'identità, l'app legge il testo con
+    <strong>Google ML Kit</strong>, che lavora interamente sul dispositivo:
+    <strong>le foto, le immagini delle pagine e il testo letto non vengono
     inviati</strong> a Google né ad altri.
   </p>
   <p>
@@ -107,36 +167,54 @@ const GOOGLE_PRIVACY = "https://policies.google.com/privacy";
     di Android del dispositivo, nome e versione dell'app, un identificativo
     legato all'installazione (non alla persona), tempi di elaborazione, formato
     e dimensioni delle immagini elaborate, eventi ed errori. Viaggiano cifrati
-    (HTTPS) e Google dichiara di non cederli a terzi. È per questo che l'app ha
-    il permesso di accesso a Internet, che non usa per nient'altro. Dettagli:
+    (HTTPS) e Google dichiara di non cederli a terzi. Dettagli:
     <a href={MLKIT} rel="noopener noreferrer" target="_blank">dati raccolti da ML Kit</a>
     e <a href={GOOGLE_PRIVACY} rel="noopener noreferrer" target="_blank">informativa
     privacy di Google</a>.
   </p>
 
+  <h2>Permessi dell'app</h2>
+  <ul>
+    <li>
+      <strong>Fotocamera</strong>: chiesta la prima volta che si fotografa il
+      documento di un cliente, e usata solo per quello. Se viene negata, le
+      foto si possono scegliere dalla galleria.
+    </li>
+    <li>
+      <strong>Internet</strong>: solo per la licenza (e i moduli dello studio)
+      dal nostro sito e per i dati tecnici di ML Kit.
+    </li>
+  </ul>
+  <p>L'app non usa posizione, contatti, microfono né altri permessi.</p>
+
   <h2>Conservazione</h2>
   <p>
-    I documenti restano sul dispositivo finché l'utente non li elimina
-    dall'app. Disinstallando l'app, Android cancella tutti i suoi dati
-    (documenti, moduli, timbro). I PDF salvati dall'utente in altre cartelle,
-    per esempio Download, restano dove li ha messi.
+    Documenti, schede dei clienti e foto dei documenti restano sul dispositivo
+    finché lo studio non li elimina dall'app; eliminando un cliente si
+    cancellano anche le foto dei suoi documenti. Disinstallando l'app, Android
+    cancella tutti i suoi dati (documenti, clienti, foto, moduli, timbro,
+    licenza). I PDF salvati dall'utente in altre cartelle, per esempio
+    Download, restano dove li ha messi.
   </p>
 
   <h2>Sicurezza</h2>
   <p>
-    I dati stanno nella memoria privata dell'app. Poiché contengono dati
-    personali dei clienti, raccomandiamo di proteggere il dispositivo con un
-    blocco schermo (PIN, password o impronta) e di tenerlo aggiornato.
+    I dati stanno nella memoria privata dell'app, e quello che l'app scarica o
+    invia viaggia cifrato (HTTPS). La licenza è cifrata col codice dello
+    studio e firmata da {SITE.legalName}: senza il codice non si legge, e non
+    si può modificare. Poiché sul dispositivo ci sono dati personali dei
+    clienti e copie dei loro documenti d'identità, raccomandiamo di proteggerlo
+    con un blocco schermo (PIN, password o impronta) e di tenerlo aggiornato.
   </p>
 
   <h2>Diritti dell'interessato e reclamo al Garante</h2>
   <p>
-    Per i dati dei clienti contenuti nei documenti, i diritti previsti dagli
-    artt. 15-22 GDPR (accesso, rettifica, cancellazione, limitazione,
-    opposizione, portabilità) si esercitano nei confronti dello studio che usa
-    l'app. Per i dati tecnici raccolti da ML Kit vale l'informativa di Google.
-    Per qualsiasi domanda sull'app scrivi a <EmailLink />. Hai inoltre diritto
-    di proporre reclamo al
+    Per i dati dei clienti (schede, foto dei documenti, moduli), i diritti
+    previsti dagli artt. 15-22 GDPR (accesso, rettifica, cancellazione,
+    limitazione, opposizione, portabilità) si esercitano nei confronti dello
+    studio che usa l'app. Per i dati della licenza scrivi a <EmailLink />; per i
+    dati tecnici raccolti da ML Kit vale l'informativa di Google. Hai inoltre
+    diritto di proporre reclamo al
     <a href={GARANTE} rel="noopener noreferrer" target="_blank">
       Garante per la protezione dei dati personali</a>.
   </p>
