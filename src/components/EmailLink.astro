@@ -21,10 +21,12 @@ import { SITE } from "@/data/site";
 
 interface Props {
   class?: string;
+  /** Un altro indirizzo (per esempio l'assistenza delle app). */
+  address?: string;
 }
 
-const { class: className } = Astro.props;
-const [utente, dominio] = SITE.email.split("@");
+const { class: className, address } = Astro.props;
+const [utente, dominio] = (address ?? SITE.email).split("@");
 
 /* Se il testo lo mette chi usa il componente, lo script non deve toccarlo:
    `data-pt` c'è solo quando il testo visibile è l'indirizzo da comporre. */

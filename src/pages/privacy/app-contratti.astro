@@ -1,8 +1,8 @@
 ---
 /*
  * Informativa privacy dell'app Android "DGF Check"
- * (com.dgftechsolutions.contratti), distribuita col Play Store. Fino alla
- * 1.14 l'app si chiamava "Studio Zuccarello": l'indirizzo è rimasto lo stesso.
+ * (com.dgftechsolutions.contratti), distribuita col Play Store. Si apre anche
+ * da dentro l'app (Studio > Informazioni, e il "Benvenuto"), come chiede Google.
  *
  * Google vuole un indirizzo pubblico per l'informativa di ogni app: è questo,
  * ed è quello scritto nella Play Console. Se si sposta, va aggiornato anche lì.
@@ -11,9 +11,9 @@
  * I fatti vengono dal codice dell'app (repo ZuccarelloFlatter-, privato):
  * documenti, clienti e foto dei documenti restano nella memoria privata
  * dell'app, il backup su Drive è spento (allowBackup="false"), la rete serve
- * a due cose sole: la licenza (e i moduli) dal nostro sito, cercati con
- * un'impronta del codice dello studio, e le statistiche tecniche di Google ML
- * Kit. Se l'app cambia su uno di questi punti, questa pagina va cambiata
+ * a due cose sole: licenza e pacchetto dello studio (moduli, dati e timbro
+ * dello studio, cifrati) dal nostro sito, cercati con un'impronta del codice
+ * dello studio, e le statistiche tecniche di Google ML Kit. Se l'app cambia su uno di questi punti, questa pagina va cambiata
  * insieme — e la sezione "Sicurezza dei dati" della Play Console con lei.
  */
 import Legal from "@/layouts/Legal.astro";
@@ -28,29 +28,29 @@ const GITHUB_PRIVACY =
 ---
 
 <Legal
-  title="Privacy dell'app DGF Check"
+  title="Informativa privacy dell'app DGF Check"
   description="Informativa sul trattamento dei dati personali dell'app Android DGF Check, per compilare, firmare e timbrare sul tablet i moduli dei clienti di uno studio professionale."
   canonical="/privacy/app-contratti"
-  updated="2026-10-06"
-  note="Informativa redatta sul funzionamento dell'app nella versione 1.15.1. Non sostituisce il parere di un professionista: se un aggiornamento dell'app inizia a inviare altri dati fuori dal dispositivo, va rivista prima di pubblicarlo."
+  updated="2026-10-08"
+  note="Informativa redatta sul funzionamento dell'app nella versione 1.5.0. Non sostituisce il parere di un professionista: se un aggiornamento dell'app inizia a inviare altri dati fuori dal dispositivo, va rivista prima di pubblicarlo."
 >
   <p>
     Questa informativa riguarda l'app Android <strong>DGF Check</strong>
-    (identificativo <code>com.dgftechsolutions.contratti</code>; fino alla
-    versione 1.14 si chiamava "Studio Zuccarello"), sviluppata da
+    (identificativo <code>com.dgftechsolutions.contratti</code>), sviluppata da
     <strong>{SITE.legalName}</strong>. È uno strumento di lavoro per gli studi
     professionali: serve a compilare, firmare e timbrare sul tablet i moduli
     dei clienti (adeguata verifica, titolare effettivo, lettera di incarico,
     privacy). Per il sito web vale invece la
-    <a href="/privacy">privacy policy del sito</a>.
+    <a href="/privacy">privacy policy del sito</a>; le regole d'uso dell'app
+    sono nelle <a href="/termini/app-contratti">condizioni d'uso</a>.
   </p>
   <p>
     In breve: <strong>i dati dei clienti, le foto dei loro documenti, i moduli
     compilati e le firme restano sul dispositivo</strong>. L'app non li invia a
     noi né a nessun altro: escono solo quando lo decide chi la usa (invio per
     email, salvataggio, stampa). Internet serve solo per attivare l'app col
-    codice dello studio e ricontrollarne la licenza, e per le statistiche
-    tecniche di Google ML Kit descritte sotto. Non ci sono account, pubblicità
+    codice dello studio, ricontrollarne la licenza e aggiornare i moduli dello
+    studio, e per le statistiche tecniche di Google ML Kit descritte sotto. Non ci sono account, pubblicità
     né statistiche nostre.
   </p>
 
@@ -58,8 +58,8 @@ const GITHUB_PRIVACY =
   <div class="legale-titolare">
     <strong>{SITE.legalName}</strong> — sviluppatore dell'app<br />
     {SITE.street}, {SITE.zip} {SITE.city} ({SITE.region}), {SITE.countryName}<br />
-    P. IVA {SITE.vatId}<br />
-    E-mail: <EmailLink />
+    P. IVA {SITE.vatId} · REA {SITE.rea}<br />
+    E-mail: <EmailLink address={SITE.supportEmail} /> · PEC: {SITE.pec}
   </div>
   <p>
     I dati dei clienti trattati con l'app (schede dei clienti, foto dei
@@ -70,9 +70,51 @@ const GITHUB_PRIVACY =
     passano dai nostri sistemi.
   </p>
   <p>
-    {SITE.legalName} tratta soltanto i dati della <strong>licenza</strong> che
-    concede allo studio (nome dello studio e data fino alla quale l'app è
-    attiva), per gestire il rapporto con lo studio cliente.
+    {SITE.legalName} è invece titolare dei dati che tratta per fornire il
+    servizio allo studio cliente:
+  </p>
+  <ul>
+    <li>
+      la <strong>licenza</strong>: nome dello studio e data fino alla quale
+      l'app è attiva;
+    </li>
+    <li>
+      il <strong>pacchetto dello studio</strong>, che prepara su richiesta dello
+      studio: i suoi moduli vuoti, i dati dello studio da scrivere nei moduli
+      (nome dello studio e del professionista, codice fiscale, partita IVA,
+      sede, email, PEC, telefono) e il timbro con il logo;
+    </li>
+    <li>
+      le <strong>email</strong> di chi chiede l'accesso all'app o
+      l'assistenza.
+    </li>
+  </ul>
+
+  <h2>Finalità, base giuridica e conservazione dei dati trattati da {SITE.legalName}</h2>
+  <ul>
+    <li>
+      <strong>Licenza e pacchetto dello studio</strong>: servono a fornire
+      l'app allo studio secondo il contratto (art. 6.1.b GDPR). Restano sul
+      nostro sito finché dura il contratto e vengono tolti entro 30 giorni dalla
+      sua fine. Poiché il sito è pubblicato tramite un archivio di versioni,
+      copie precedenti dei file possono restare nello storico: sono cifrate col
+      codice dello studio e illeggibili senza di esso. I documenti del
+      contratto e della fatturazione si conservano per i tempi previsti dalla
+      legge (10 anni).
+    </li>
+    <li>
+      <strong>Richieste di accesso e assistenza</strong>: servono a rispondere
+      e, se lo studio lo chiede, a preparare il contratto (art. 6.1.b GDPR). Si
+      conservano per il tempo necessario e comunque non oltre 24 mesi
+      dall'ultimo contatto, salvo che diventino parte di un contratto.
+    </li>
+  </ul>
+  <p>
+    Il sito che ospita licenza e pacchetto (GitHub Pages, di GitHub Inc.) e
+    Google (per ML Kit) hanno sede negli Stati Uniti: i dati tecnici che
+    ricevono possono essere trasferiti fuori dall'Unione Europea, sulla base
+    della decisione di adeguatezza UE-USA (EU-U.S. Data Privacy Framework) o
+    delle clausole contrattuali tipo della Commissione europea.
   </p>
 
   <h2>Quali dati tratta l'app e dove restano</h2>
@@ -92,8 +134,9 @@ const GITHUB_PRIVACY =
     </li>
     <li><strong>Documenti PDF</strong>: i moduli vuoti dello studio e i moduli compilati.</li>
     <li>
-      <strong>Testi, firme autografe disegnate sullo schermo e timbri</strong>
-      messi sui documenti.
+      <strong>Testi, firme tracciate a mano sullo schermo e timbri</strong>
+      messi sui documenti. La firma tracciata sul tablet è una firma
+      elettronica semplice, non una firma digitale.
     </li>
     <li><strong>Dati, logo e firme dello studio</strong> usati per compilare e timbrare.</li>
     <li>
@@ -136,9 +179,12 @@ const GITHUB_PRIVACY =
     il cui nome è un'<strong>impronta del codice</strong> (calcolata con
     SHA-256), da cui non si risale al codice. Il file è cifrato col codice e
     firmato da {SITE.legalName}. Poi, quando c'è internet, l'app lo
-    ricontrolla circa una volta al giorno. Allo stesso modo, con il codice di
-    uno studio i cui moduli non sono già nell'app, scarica il pacchetto
-    cifrato dei moduli vuoti dello studio.
+    ricontrolla circa una volta al giorno. Allo stesso modo scarica il
+    <strong>pacchetto dello studio</strong> (moduli vuoti, dati e timbro dello
+    studio), cifrato col codice: dati e timbro si scrivono solo se sul
+    dispositivo non ce ne sono già. Una volta al giorno l'app legge un piccolo
+    file con la data del pacchetto e lo riscarica solo se lo studio l'ha
+    aggiornato.
   </p>
   <p>
     Queste richieste <strong>non contengono dati dei clienti né
@@ -181,20 +227,34 @@ const GITHUB_PRIVACY =
       foto si possono scegliere dalla galleria.
     </li>
     <li>
-      <strong>Internet</strong>: solo per la licenza (e i moduli dello studio)
-      dal nostro sito e per i dati tecnici di ML Kit.
+      <strong>Internet</strong> e <strong>stato della rete</strong>: solo per la
+      licenza e il pacchetto dello studio dal nostro sito e per i dati tecnici di
+      ML Kit.
     </li>
   </ul>
-  <p>L'app non usa posizione, contatti, microfono né altri permessi.</p>
+  <p>
+    L'app non usa posizione, contatti, microfono, né l'accesso ai file del
+    dispositivo: PDF e foto si scelgono col selettore di Android.
+  </p>
 
   <h2>Conservazione</h2>
   <p>
     Documenti, schede dei clienti e foto dei documenti restano sul dispositivo
-    finché lo studio non li elimina dall'app; eliminando un cliente si
-    cancellano anche le foto dei suoi documenti. Disinstallando l'app, Android
-    cancella tutti i suoi dati (documenti, clienti, foto, moduli, timbro,
-    licenza). I PDF salvati dall'utente in altre cartelle, per esempio
-    Download, restano dove li ha messi.
+    finché lo studio non li elimina dall'app. Eliminando un cliente si
+    cancellano la sua scheda e le foto dei suoi documenti; i moduli già
+    compilati per lui restano nell'Archivio, dove si eliminano uno per uno (la
+    normativa antiriciclaggio può chiedere allo studio di conservarli). I PDF
+    preparati per l'invio per email si cancellano dalla memoria temporanea
+    dell'app. Disinstallando l'app, Android cancella tutti i suoi dati
+    (documenti, clienti, foto, moduli, timbro, licenza). I PDF salvati
+    dall'utente in altre cartelle, per esempio Download, restano dove li ha
+    messi.
+  </p>
+  <p>
+    L'app non è un sistema di conservazione a norma e non fa copie su
+    internet: la conservazione dei documenti chiesta allo studio dalla legge
+    (per esempio quella antiriciclaggio) resta a carico dello studio, che salva
+    o invia i PDF dove preferisce.
   </p>
 
   <h2>Sicurezza</h2>
@@ -202,7 +262,8 @@ const GITHUB_PRIVACY =
     I dati stanno nella memoria privata dell'app, e quello che l'app scarica o
     invia viaggia cifrato (HTTPS). La licenza è cifrata col codice dello
     studio e firmata da {SITE.legalName}: senza il codice non si legge, e non
-    si può modificare. Poiché sul dispositivo ci sono dati personali dei
+    si può modificare. Anche il pacchetto dello studio è cifrato col codice e
+    si riconosce se viene alterato. Poiché sul dispositivo ci sono dati personali dei
     clienti e copie dei loro documenti d'identità, raccomandiamo di proteggerlo
     con un blocco schermo (PIN, password o impronta) e di tenerlo aggiornato.
   </p>
@@ -212,8 +273,9 @@ const GITHUB_PRIVACY =
     Per i dati dei clienti (schede, foto dei documenti, moduli), i diritti
     previsti dagli artt. 15-22 GDPR (accesso, rettifica, cancellazione,
     limitazione, opposizione, portabilità) si esercitano nei confronti dello
-    studio che usa l'app. Per i dati della licenza scrivi a <EmailLink />; per i
-    dati tecnici raccolti da ML Kit vale l'informativa di Google. Hai inoltre
+    studio che usa l'app. Per i dati della licenza, del pacchetto dello studio
+    e delle richieste di accesso scrivi a <EmailLink address={SITE.supportEmail} />; per i dati tecnici
+    raccolti da ML Kit vale l'informativa di Google. Hai inoltre
     diritto di proporre reclamo al
     <a href={GARANTE} rel="noopener noreferrer" target="_blank">
       Garante per la protezione dei dati personali</a>.

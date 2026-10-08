@@ -18,6 +18,16 @@ export const SITE = {
   email: "founders.dgftechsolutions@gmail.com",
   vatId: "IT03882320835",
   taxId: "03882320835",
+  /* Dati della visura camerale, obbligatori anche sul sito per una S.r.l.
+     (art. 2250 c.c.): registro e numero d'iscrizione (= codice fiscale),
+     REA e capitale sociale effettivamente versato. */
+  rea: "ME-266933",
+  register: "Registro delle Imprese di Messina",
+  shareCapital: "€ 10.200,00",
+  paidCapital: "€ 2.550,00",
+  pec: "dgftechsolutions@pec.it",
+  /** L'assistenza delle app (DGF Check: "Non hai l'accesso? Richiedilo"). */
+  supportEmail: "assistenza@dgftechsolutions.com",
   /* Sede legale. Serve ai documenti legali, dove il titolare del trattamento
      va identificato per intero, e ai dati strutturati dell'organizzazione.
      Stessa sede dichiarata nelle pagine legali di Nexia: è la stessa società. */

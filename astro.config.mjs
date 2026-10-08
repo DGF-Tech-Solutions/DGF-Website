@@ -125,7 +125,10 @@ export default defineConfig({
       filter: (pagina) =>
         !["/privacy/", "/cookie/", "/termini/", "/contatti/inviato/"].some((p) =>
           pagina.endsWith(p),
-        ),
+        ) &&
+        /* Le pagine legali delle app (/privacy/app-…, /termini/app-…) sono
+           noindex come le altre: fuori anche loro. */
+        !/\/(privacy|termini)\/app-/.test(pagina),
     }),
   ],
 
