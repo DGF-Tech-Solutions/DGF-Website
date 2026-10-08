@@ -11,11 +11,17 @@ import { SITE } from "@/data/site";
  *
  * Bloccato solo Bytespider: scraper aggressivo che consuma banda senza
  * restituire alcuna visibilità.
+ *
+ * /studi/ è per l'app DGF Check (licenze e pacchetti degli studi, cifrati
+ * col codice di ogni studio, coi nomi che sono impronte del codice): non è
+ * una pagina, non è collegato da nessuna parte, e nessun crawler deve
+ * scaricarlo.
  */
 export const GET: APIRoute = () => {
   const body = `# ${SITE.name}
 User-agent: *
 Allow: /
+Disallow: /studi/
 
 User-agent: Bytespider
 Disallow: /
