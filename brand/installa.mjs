@@ -35,7 +35,7 @@ const SCELTE = [
   // testa alla pagina dei contatti, non ridotta a decorazione da 180 px.
   ["02-serie-A/contatti-a.png", "contatti", "contatti"],
   ["03-ascolto/ascolto-c.png", "ascolto", "come lavoriamo"],
-  // Le quattro fasi le ha scelte David una per una, guardando i provini.
+  // Le quattro fasi sono state scelte una per una, guardando i provini.
   // La fascia di chiusura: una conversazione a un tavolo, tono freddo che
   // si sposa con il blu della fascia invece di litigarci.
   ["00-prove/prova-ufficio.png", "parliamone", "fascia di chiusura, ogni pagina"],
